@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
 
 export default function AdminVendorsPage() {
@@ -27,25 +28,24 @@ export default function AdminVendorsPage() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Vendor Verification
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Approve or reject pending vendor claims.
-      </p>
+      <AdminPageHeader
+        title="Vendor"
+        titleEm="Verification"
+        subtitle="Approve or reject pending vendor claims."
+      />
 
       {isLoading ? (
         <CardListSkeleton count={3} />
       ) : !pending.length ? (
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
+        <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           No pending verifications.
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {pending.map((vp) => (
             <div
               key={vp.user_id}
-              className="bg-card border border-border rounded-[var(--radius-lg)] p-6"
+              className="bg-card border border-border rounded-[14px] p-5 hover:border-[rgba(255,255,255,0.1)] transition-colors"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
 type Booking = {
@@ -36,21 +37,19 @@ export default function AdminBookingsPage() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        All Bookings
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Cross-restaurant view. Filter and export via API.
-      </p>
+      <AdminPageHeader
+        title="Bookings"
+        subtitle="Cross-restaurant view. Filter and export via API."
+      />
 
       {isLoading ? (
         <TableSkeleton rows={10} cols={4} />
       ) : !bookings.length ? (
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
+        <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           No bookings.
         </div>
       ) : (
-        <div className="border border-border rounded-[var(--radius-lg)] overflow-x-auto">
+        <div className="bg-card border border-border rounded-[14px] overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-surface border-b border-border">

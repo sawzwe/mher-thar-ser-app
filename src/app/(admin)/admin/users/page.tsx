@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 type UserRow = {
   id: string;
@@ -109,12 +110,10 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Users
-      </h1>
-      <p className="text-sm text-text-muted mb-6">
-        Search and manage users. Suspend/activate and change roles (superadmin only).
-      </p>
+      <AdminPageHeader
+        title="Users & roles"
+        subtitle="Search and manage users. Suspend/activate and change roles (superadmin only)."
+      />
 
       <div className="mb-6 flex items-center gap-4">
         <Input
@@ -128,7 +127,7 @@ export default function AdminUsersPage() {
 
       {message && (
         <div
-          className={`mb-4 px-4 py-2 rounded-[var(--radius-md)] text-sm ${
+          className={`mb-6 px-4 py-3 rounded-[14px] text-[13px] ${
             message.type === "success"
               ? "bg-success-dim text-success border border-success-border"
               : "bg-danger-dim text-danger border border-danger-border"
@@ -139,15 +138,15 @@ export default function AdminUsersPage() {
       )}
 
       {isLoading ? (
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
+        <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           Loading users…
         </div>
       ) : !users.length ? (
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
+        <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           {searchDebounced ? "No users match your search." : "No users found."}
         </div>
       ) : (
-        <div className="border border-border rounded-[var(--radius-lg)] overflow-hidden">
+        <div className="bg-card border border-border rounded-[14px] overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-surface border-b border-border">

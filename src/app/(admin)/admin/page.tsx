@@ -12,6 +12,7 @@ import {
   ChartLineUp,
   Storefront as StoreIcon,
 } from "@phosphor-icons/react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 type OverviewData = {
   stats: {
@@ -78,17 +79,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      {/* Page header */}
-      <div className="mb-7 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[28px] font-bold text-text-primary leading-tight tracking-tight">
-            Platform <em className="text-brand-light not-italic">Overview</em>
-          </h1>
-          <p className="text-[13px] text-text-muted mt-1">
-            All data live from Supabase
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <AdminPageHeader
+        title="Platform"
+        titleEm="Overview"
+        subtitle="All data live from Supabase"
+        action={
           <Link
             href="/admin/restaurants/new"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-brand text-white hover:bg-brand-hover transition-colors shrink-0"
@@ -96,8 +91,8 @@ export default function AdminDashboard() {
             <Plus size={16} weight="bold" />
             Add Restaurant
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       {/* Health strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">

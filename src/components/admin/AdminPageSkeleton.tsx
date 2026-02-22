@@ -1,6 +1,6 @@
 export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
-    <div className="border border-border rounded-[var(--radius-lg)] overflow-hidden animate-admin-enter">
+    <div className="border border-border rounded-[14px] overflow-hidden animate-admin-enter">
       <div className="bg-surface border-b border-border">
         <div className="flex gap-4 px-4 py-3">
           {Array.from({ length: cols }).map((_, i) => (
@@ -30,7 +30,7 @@ export function CardListSkeleton({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="bg-card border border-border rounded-[var(--radius-lg)] p-6"
+          className="bg-card border border-border rounded-[14px] p-6"
         >
           <div className="flex justify-between">
             <div className="admin-skeleton h-5 rounded w-32" />

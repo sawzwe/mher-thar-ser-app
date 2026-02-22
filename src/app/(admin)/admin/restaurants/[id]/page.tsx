@@ -13,6 +13,7 @@ import {
   BANGKOK_DISTRICTS,
   BANGKOK_SUBDISTRICTS_BY_DISTRICT,
 } from "@/data/constants";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
 
 type Restaurant = {
@@ -153,24 +154,22 @@ export default function AdminRestaurantEditPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl animate-admin-enter">
+    <div className="p-8 animate-admin-enter">
       <div className="flex items-center gap-4 mb-6">
         <Link
           href="/admin/restaurants"
-          className="text-sm text-text-muted hover:text-text-primary"
+          className="text-[13px] text-text-muted hover:text-text-primary"
         >
           ← Restaurants
         </Link>
       </div>
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Edit restaurant
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Update restaurant details. Vendors linked to this restaurant can manage
-        it in the vendor CMS.
-      </p>
+      <AdminPageHeader
+        title="Edit"
+        titleEm="restaurant"
+        subtitle="Update restaurant details. Vendors linked here can manage it in the vendor CMS."
+      />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         <Input
           label="Name"
           required

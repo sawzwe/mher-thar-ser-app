@@ -12,6 +12,7 @@ import {
   BANGKOK_DISTRICTS,
   BANGKOK_SUBDISTRICTS_BY_DISTRICT,
 } from "@/data/constants";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default function NewRestaurantPage() {
   const router = useRouter();
@@ -73,23 +74,22 @@ export default function NewRestaurantPage() {
   };
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-8 animate-admin-enter">
       <div className="flex items-center gap-4 mb-6">
         <Link
           href="/admin/restaurants"
-          className="text-sm text-text-muted hover:text-text-primary"
+          className="text-[13px] text-text-muted hover:text-text-primary"
         >
           ← Restaurants
         </Link>
       </div>
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Add restaurant
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Create a new restaurant. Vendors can then claim it from the claim page.
-      </p>
+      <AdminPageHeader
+        title="New"
+        titleEm="Restaurant"
+        subtitle="Create a new restaurant. Vendors can claim it from the claim page."
+      />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         <Input
           label="Name"
           required

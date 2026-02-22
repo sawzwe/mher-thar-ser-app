@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import Link from "next/link";
 import { ApproveRejectButtons } from "@/app/(admin)/admin/vendors/[id]/ApproveRejectButtons";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default async function AdminVendorDetailPage({
   params,
@@ -45,18 +46,20 @@ export default async function AdminVendorDetailPage({
   const isPending = vp.verified_at == null;
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-admin-enter">
       <Link
         href="/admin/vendors"
-        className="text-sm text-brand-light hover:underline mb-6 inline-block"
+        className="text-[13px] text-text-muted hover:text-text-primary mb-6 inline-block"
       >
         ← Back to vendors
       </Link>
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Vendor Review
-      </h1>
+      <AdminPageHeader
+        title="Vendor"
+        titleEm="Review"
+        subtitle="Review vendor claim and approve or reject."
+      />
 
-      <div className="bg-card border border-border rounded-[var(--radius-lg)] p-6 space-y-6">
+      <div className="bg-card border border-border rounded-[14px] p-6 space-y-6">
         <div>
           <div className="text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
             User

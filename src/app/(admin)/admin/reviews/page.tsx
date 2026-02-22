@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
 type Review = {
@@ -34,21 +35,19 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      <h1 className="text-2xl font-bold text-text-primary mb-2">
-        Reviews
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Low ratings shown first for moderation.
-      </p>
+      <AdminPageHeader
+        title="Reviews"
+        subtitle="Low ratings shown first for moderation."
+      />
 
       {isLoading ? (
         <TableSkeleton rows={10} cols={3} />
       ) : !reviews.length ? (
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
+        <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           No reviews.
         </div>
       ) : (
-        <div className="border border-border rounded-[var(--radius-lg)] overflow-hidden">
+        <div className="bg-card border border-border rounded-[14px] overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-surface border-b border-border">
