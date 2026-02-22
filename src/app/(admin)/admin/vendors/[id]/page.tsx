@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import Link from "next/link";
-import { ApproveRejectButtons } from "./ApproveRejectButtons";
+import { ApproveRejectButtons } from "@/app/(admin)/admin/vendors/[id]/ApproveRejectButtons";
 
 export default async function AdminVendorDetailPage({
   params,
@@ -26,7 +26,10 @@ export default async function AdminVendorDetailPage({
     return (
       <div className="p-8">
         <p className="text-text-muted">Vendor not found or already verified.</p>
-        <Link href="/admin/vendors" className="text-sm text-brand-light hover:underline mt-2 inline-block">
+        <Link
+          href="/admin/vendors"
+          className="text-sm text-brand-light hover:underline mt-2 inline-block"
+        >
           ← Back to vendors
         </Link>
       </div>
@@ -58,10 +61,10 @@ export default async function AdminVendorDetailPage({
           <div className="text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
             User
           </div>
-          <div className="font-semibold text-text-primary">{email || `User ${String(vendorUserId).slice(0, 8)}…`}</div>
-          <div className="text-sm text-text-muted mt-1">
-            ID: {vendorUserId}
+          <div className="font-semibold text-text-primary">
+            {email || `User ${String(vendorUserId).slice(0, 8)}…`}
           </div>
+          <div className="text-sm text-text-muted mt-1">ID: {vendorUserId}</div>
         </div>
 
         {vp.company_name && (
@@ -79,24 +82,31 @@ export default async function AdminVendorDetailPage({
           </div>
           {vr?.length ? (
             <ul className="space-y-2">
-              {vr.map((row: { restaurant_id: string; role: string; restaurants: { id: string; name: string; area: string; status: string } | null }) => (
-                <li
-                  key={row.restaurant_id}
-                  className="flex items-center justify-between py-2 px-3 rounded-[var(--radius-md)] bg-surface border border-border"
-                >
-                  <div>
-                    <span className="font-medium text-text-primary">
-                      {row.restaurants?.name ?? "Unknown"}
-                    </span>
-                    <span className="text-sm text-text-muted ml-2">
-                      {row.restaurants?.area ?? ""} · {row.restaurants?.status ?? "—"}
-                    </span>
-                  </div>
-                </li>
-              ))}
+              {vr.map((row) => {
+                const rest = Array.isArray(row.restaurants)
+                  ? row.restaurants[0]
+                  : row.restaurants;
+                return (
+                  <li
+                    key={row.restaurant_id}
+                    className="flex items-center justify-between py-2 px-3 rounded-[var(--radius-md)] bg-surface border border-border"
+                  >
+                    <div>
+                      <span className="font-medium text-text-primary">
+                        {rest?.name ?? "Unknown"}
+                      </span>
+                      <span className="text-sm text-text-muted ml-2">
+                        {rest?.area ?? ""} · {rest?.status ?? "—"}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
-            <p className="text-sm text-text-muted">No claimed restaurants found.</p>
+            <p className="text-sm text-text-muted">
+              No claimed restaurants found.
+            </p>
           )}
         </div>
 
