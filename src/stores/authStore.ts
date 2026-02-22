@@ -9,12 +9,12 @@ interface AuthState {
   initialized: boolean;
 
   initialize: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signIn: (email: string, password: string) => Promise<{ error?: string; code?: string }>;
   signUp: (
     email: string,
     password: string,
     name: string
-  ) => Promise<{ error?: string }>;
+  ) => Promise<{ error?: string; code?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -49,7 +49,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       set({ loading: false });
-      return { error: error.message };
+      return { error: error.message, code: error.code };
     }
     // onAuthStateChange will update the user
     return {};
@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
     if (error) {
       set({ loading: false });
-      return { error: error.message };
+      return { error: error.message, code: error.code };
     }
     return {};
   },

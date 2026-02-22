@@ -34,7 +34,9 @@ export function AuthModal({ onClose, defaultMode = "sign-in" }: AuthModalProps) 
     if (mode === "sign-in") {
       const result = await signIn(email, password);
       if (result.error) {
-        setError(result.error);
+        setError(result.code === "email_address_invalid"
+          ? "That email format isn't accepted. Try one like you@example.com or yourname@gmail.com."
+          : result.error);
       } else {
         onClose();
       }
@@ -45,7 +47,9 @@ export function AuthModal({ onClose, defaultMode = "sign-in" }: AuthModalProps) 
       }
       const result = await signUp(email, password, name);
       if (result.error) {
-        setError(result.error);
+        setError(result.code === "email_address_invalid"
+          ? "That email format isn't accepted. Try one like you@example.com or yourname@gmail.com."
+          : result.error);
       } else {
         setSuccess(
           "Check your email for a confirmation link. You can close this window."
