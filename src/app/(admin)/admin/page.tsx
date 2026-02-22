@@ -206,7 +206,7 @@ export default function AdminDashboard() {
                 </div>
               ))
             ) : (data?.activity ?? []).length > 0 ? (
-              data.activity.slice(0, 5).map((a) => (
+              (data?.activity ?? []).slice(0, 5).map((a) => (
                 <div
                   key={a.user_id}
                   className="flex items-start gap-3 px-5 py-3 hover:bg-card-hover/50 transition-colors"
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                 </div>
               ))
             ) : (data?.topRestaurants ?? []).length > 0 ? (
-              data.topRestaurants.map((r, i) => (
+              (data?.topRestaurants ?? []).map((r, i) => (
                 <div
                   key={r.id}
                   className="flex items-center gap-3 px-5 py-2.5 hover:bg-card-hover/50 transition-colors"
