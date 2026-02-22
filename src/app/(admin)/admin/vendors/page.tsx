@@ -1,18 +1,32 @@
-import { createClient } from "@/lib/supabase/server";
-import { UserFactory } from "@/lib/auth/UserFactory";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
 
-export default async function AdminVendorsPage() {
-  const supabase = await createClient();
-  await UserFactory.fromSupabase(supabase); // layout already guards
+export default function AdminVendorsPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-vendors"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/vendors");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to load");
+      return json as { pending: { user_id: string }[] };
+    },
+  });
 
-  const { data: pending } = await supabase
-    .from("vendor_profiles")
-    .select("user_id")
-    .is("verified_at", null);
+  const pending = data?.pending ?? [];
+
+  if (error) {
+    return (
+      <div className="p-8 animate-admin-enter">
+        <p className="text-danger">{(error as Error).message}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-admin-enter">
       <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
         Vendor Verification
       </h1>
@@ -20,21 +34,23 @@ export default async function AdminVendorsPage() {
         Approve or reject pending vendor claims.
       </p>
 
-      {!pending?.length ? (
+      {isLoading ? (
+        <CardListSkeleton count={3} />
+      ) : !pending.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
           No pending verifications.
         </div>
       ) : (
         <div className="space-y-6">
-          {pending.map((vp: Record<string, unknown>) => (
+          {pending.map((vp) => (
             <div
-              key={String(vp.user_id)}
+              key={vp.user_id}
               className="bg-card border border-border rounded-[var(--radius-lg)] p-6"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="font-semibold text-text-primary">
-                    User {String(vp.user_id).slice(0, 8)}…
+                    User {vp.user_id.slice(0, 8)}…
                   </div>
                 </div>
                 <Link

@@ -1,18 +1,34 @@
-import { createClient } from "@/lib/supabase/server";
-import { UserFactory } from "@/lib/auth/UserFactory";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
-export default async function AdminRestaurantsPage() {
-  const supabase = await createClient();
-  await UserFactory.fromSupabase(supabase);
+type Restaurant = { id: string; name: string; slug: string | null; area: string; status: string };
 
-  const { data: restaurants } = await supabase
-    .from("restaurants")
-    .select("id, name, slug, area, status")
-    .order("name");
+export default function AdminRestaurantsPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-restaurants"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/restaurants/list");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to load");
+      return json as { restaurants: Restaurant[] };
+    },
+  });
+
+  const restaurants = data?.restaurants ?? [];
+
+  if (error) {
+    return (
+      <div className="p-8 animate-admin-enter">
+        <p className="text-danger">{(error as Error).message}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-admin-enter">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
@@ -30,7 +46,9 @@ export default async function AdminRestaurantsPage() {
         </Link>
       </div>
 
-      {!restaurants?.length ? (
+      {isLoading ? (
+        <TableSkeleton rows={8} cols={4} />
+      ) : !restaurants.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
           No restaurants.
         </div>
@@ -76,10 +94,10 @@ export default async function AdminRestaurantsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
-                      href={`/vendor/restaurants/${r.id}`}
+                      href={`/admin/restaurants/${r.id}`}
                       className="text-sm text-brand-light hover:underline"
                     >
-                      View in CMS
+                      Edit
                     </Link>
                   </td>
                 </tr>

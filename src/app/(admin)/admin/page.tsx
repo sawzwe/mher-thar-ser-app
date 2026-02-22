@@ -1,31 +1,38 @@
-import { createClient } from "@/lib/supabase/server";
-import { UserFactory } from "@/lib/auth/UserFactory";
+"use client";
 
-export default async function AdminDashboard() {
-  const supabase = await createClient();
-  const user = await UserFactory.fromSupabase(supabase);
-  const today = new Date().toISOString().split("T")[0];
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
-  const [
-    usersCount,
-    pendingVendorsCount,
-    todayBookingsCount,
-  ] = await Promise.all([
-    supabase
-      .from("user_roles")
-      .select("user_id", { count: "exact", head: true }),
-    supabase
-      .from("vendor_profiles")
-      .select("user_id", { count: "exact", head: true })
-      .is("verified_at", null),
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("date", today),
-  ]);
+type Stats = {
+  totalUsers: number;
+  customers: number;
+  vendors: number;
+  admins: number;
+  pendingVendors: number;
+  todayBookings: number;
+};
+
+export default function AdminDashboard() {
+  const { data: stats, isLoading, error } = useQuery<Stats>({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/stats");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to load stats");
+      return json;
+    },
+  });
+
+  if (error) {
+    return (
+      <div className="p-8 animate-admin-enter">
+        <p className="text-danger">Failed to load stats: {(error as Error).message}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-admin-enter">
       <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
         Admin Overview
       </h1>
@@ -33,59 +40,78 @@ export default async function AdminDashboard() {
         Platform-wide stats and activity.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-5">
-          <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">
-            Total Users
-          </div>
-          <div className="text-2xl font-bold text-text-primary">
-            {usersCount.count ?? 0}
-          </div>
-        </div>
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-5">
-          <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">
-            Pending Vendor Verifications
-          </div>
-          <div className="text-2xl font-bold text-text-primary">
-            {pendingVendorsCount.count ?? 0}
-          </div>
-          {(pendingVendorsCount.count ?? 0) > 0 && (
-            <a
-              href="/admin/vendors"
-              className="mt-2 text-sm text-brand-light hover:underline block"
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="bg-card border border-border rounded-[var(--radius-lg)] p-5 animate-pulse"
             >
-              Review →
-            </a>
-          )}
+              <div className="h-3 bg-surface rounded w-24 mb-2" />
+              <div className="h-8 bg-surface rounded w-12" />
+            </div>
+          ))}
         </div>
-        <div className="bg-card border border-border rounded-[var(--radius-lg)] p-5">
-          <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">
-            Today&apos;s Bookings
-          </div>
-          <div className="text-2xl font-bold text-text-primary">
-            {todayBookingsCount.count ?? 0}
-          </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+          <StatCard label="Total Users" value={stats?.totalUsers ?? 0} />
+          <StatCard label="Customers" value={stats?.customers ?? 0} />
+          <StatCard label="Vendors" value={stats?.vendors ?? 0} />
+          <StatCard label="Admins" value={stats?.admins ?? 0} />
+          <StatCard
+            label="Pending Vendors"
+            value={stats?.pendingVendors ?? 0}
+            href="/admin/vendors"
+            linkLabel="Review →"
+          />
+          <StatCard label="Today's Bookings" value={stats?.todayBookings ?? 0} />
         </div>
-      </div>
+      )}
 
       <div className="text-sm text-text-muted">
         Quick links:{" "}
-        <a href="/admin/vendors" className="text-brand-light hover:underline">
+        <Link href="/admin/vendors" className="text-brand-light hover:underline">
           Vendors
-        </a>
+        </Link>
         {" · "}
-        <a href="/admin/users" className="text-brand-light hover:underline">
+        <Link href="/admin/users" className="text-brand-light hover:underline">
           Users
-        </a>
+        </Link>
         {" · "}
-        <a href="/admin/restaurants" className="text-brand-light hover:underline">
+        <Link href="/admin/restaurants" className="text-brand-light hover:underline">
           Restaurants
-        </a>
+        </Link>
         {" · "}
-        <a href="/admin/bookings" className="text-brand-light hover:underline">
+        <Link href="/admin/bookings" className="text-brand-light hover:underline">
           Bookings
-        </a>
+        </Link>
       </div>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  href,
+  linkLabel,
+}: {
+  label: string;
+  value: number;
+  href?: string;
+  linkLabel?: string;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-[var(--radius-lg)] p-5">
+      <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">
+        {label}
+      </div>
+      <div className="text-2xl font-bold text-text-primary">{value}</div>
+      {href && linkLabel && value > 0 && (
+        <Link href={href} className="mt-2 text-sm text-brand-light hover:underline block">
+          {linkLabel}
+        </Link>
+      )}
     </div>
   );
 }

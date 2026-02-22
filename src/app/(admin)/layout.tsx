@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { AdminUser } from "@/lib/auth/users/AdminUser";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminQueryProvider } from "@/components/admin/AdminQueryProvider";
 
 export default async function AdminLayout({
   children,
@@ -24,5 +25,9 @@ export default async function AdminLayout({
     department: admin.department,
   };
 
-  return <AdminShell user={userProps}>{children}</AdminShell>;
+  return (
+    <AdminQueryProvider>
+      <AdminShell user={userProps}>{children}</AdminShell>
+    </AdminQueryProvider>
+  );
 }

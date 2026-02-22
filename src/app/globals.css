@@ -188,9 +188,32 @@ body {
   to { transform: rotate(360deg); }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes adminPageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .animate-fade-in { animation: fadeIn var(--dur-slow) var(--ease-out) both; }
 .animate-slide-up { animation: slideUp var(--dur-slow) var(--ease-spring) both; }
 .animate-slide-down { animation: slideDown var(--dur-slow) var(--ease-out) both; }
 .animate-overlay { animation: overlayShow var(--dur-base) var(--ease-out) both; }
 .animate-pulse-dot { animation: pulse 2s infinite; }
 .animate-spin { animation: spin 0.7s linear infinite; }
+.animate-admin-enter { animation: adminPageEnter 0.3s var(--ease-out) both; }
+
+/* Admin skeleton shimmer */
+.admin-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 0%,
+    var(--card) 50%,
+    var(--surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}

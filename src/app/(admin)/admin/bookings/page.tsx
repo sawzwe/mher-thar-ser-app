@@ -1,19 +1,41 @@
-import { createClient } from "@/lib/supabase/server";
-import { UserFactory } from "@/lib/auth/UserFactory";
+"use client";
 
-export default async function AdminBookingsPage() {
-  const supabase = await createClient();
-  await UserFactory.fromSupabase(supabase);
+import { useQuery } from "@tanstack/react-query";
+import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
-  const { data: bookings } = await supabase
-    .from("bookings")
-    .select("id, booking_ref, customer_name, date, time, status, restaurant_id")
-    .order("date", { ascending: false })
-    .order("time", { ascending: false })
-    .limit(100);
+type Booking = {
+  id: string;
+  booking_ref: string;
+  customer_name: string;
+  date: string;
+  time: string;
+  status: string;
+  restaurant_id: string;
+};
+
+export default function AdminBookingsPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-bookings"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/bookings");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to load");
+      return json as { bookings: Booking[] };
+    },
+  });
+
+  const bookings = data?.bookings ?? [];
+
+  if (error) {
+    return (
+      <div className="p-8 animate-admin-enter">
+        <p className="text-danger">{(error as Error).message}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-admin-enter">
       <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
         All Bookings
       </h1>
@@ -21,7 +43,9 @@ export default async function AdminBookingsPage() {
         Cross-restaurant view. Filter and export via API.
       </p>
 
-      {!bookings?.length ? (
+      {isLoading ? (
+        <TableSkeleton rows={10} cols={4} />
+      ) : !bookings.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
           No bookings.
         </div>
