@@ -29,10 +29,12 @@ export default function HomePage() {
           </div>
 
           <h1 className="font-serif text-[clamp(48px,7vw,88px)] font-black leading-[1.0] tracking-[-2px] text-text-primary max-w-[680px] mb-5">
-            Find your next <em className="italic text-brand-light">great</em> meal
+            Find your next <em className="italic text-brand-light">great</em>{" "}
+            meal
           </h1>
           <p className="text-[15px] text-text-secondary max-w-[460px] leading-[1.65] mb-10">
-            Exclusive deals, handpicked restaurants, and table bookings — instantly confirmed.
+            Exclusive deals, handpicked restaurants, and table bookings —
+            instantly confirmed.
           </p>
 
           <SearchAndFilters />
@@ -43,14 +45,21 @@ export default function HomePage() {
       <div className="px-6 md:px-8 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <p className="text-[13px] text-text-muted">
-            Showing <strong className="text-text-secondary font-medium">{restaurants.length} restaurants</strong> · Bangkok
+            Showing{" "}
+            <strong className="text-text-secondary font-medium">
+              {restaurants.length} restaurants
+            </strong>{" "}
+            · Bangkok
           </p>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-card rounded-[var(--radius-lg)] border border-border overflow-hidden animate-pulse">
+              <div
+                key={i}
+                className="bg-card rounded-[var(--radius-lg)] border border-border overflow-hidden animate-pulse"
+              >
                 <div className="aspect-[16/9] bg-surface" />
                 <div className="p-4 space-y-3">
                   <div className="h-4 bg-surface rounded w-2/3" />
@@ -62,8 +71,15 @@ export default function HomePage() {
           </div>
         ) : restaurants.length === 0 ? (
           <div className="text-center py-24">
-            <p className="text-lg text-text-secondary mb-4">No restaurants found matching your criteria.</p>
-            <Button variant="ghost" onClick={() => useRestaurantStore.getState().resetFilters()}>Clear all filters</Button>
+            <p className="text-lg text-text-secondary mb-4">
+              No restaurants found matching your criteria.
+            </p>
+            <Button
+              variant="ghost"
+              onClick={() => useRestaurantStore.getState().resetFilters()}
+            >
+              Clear all filters
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

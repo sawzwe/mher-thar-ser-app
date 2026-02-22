@@ -28,6 +28,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     null,
   );
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [signOutLoading, setSignOutLoading] = useState(false);
 
   useEffect(() => {
     runMigrations();
@@ -155,13 +156,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         setUserMenuOpen(false);
-                        signOut();
+                        setSignOutLoading(true);
+                        try {
+                          await signOut();
+                        } finally {
+                          setSignOutLoading(false);
+                        }
                       }}
-                      className="w-full text-left px-4 py-3 text-[13px] text-text-secondary hover:bg-card hover:text-danger transition-colors duration-[var(--dur-fast)] cursor-pointer bg-transparent border-none"
+                      disabled={signOutLoading}
+                      className="w-full text-left px-4 py-3 text-[13px] text-text-secondary hover:bg-card hover:text-danger transition-colors duration-[var(--dur-fast)] cursor-pointer bg-transparent border-none disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      Sign out
+                      {signOutLoading ? "Signing out…" : "Sign out"}
                     </button>
                   </div>
                 </>

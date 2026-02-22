@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
@@ -33,9 +34,13 @@ export function AdminShell({
   const path = usePathname();
   const router = useRouter();
   const signOut = useAuthStore((s) => s.signOut);
+  const [signOutLoading, setSignOutLoading] = useState(false);
 
   const handleSignOut = () => {
-    signOut().then(() => router.push("/"));
+    setSignOutLoading(true);
+    signOut()
+      .then(() => router.push("/"))
+      .finally(() => setSignOutLoading(false));
   };
 
   return (
@@ -78,9 +83,10 @@ export function AdminShell({
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium text-text-secondary hover:bg-card hover:text-danger transition-colors text-left"
+            disabled={signOutLoading}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium text-text-secondary hover:bg-card hover:text-danger transition-colors text-left disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Sign out
+            {signOutLoading ? "Signing out…" : "Sign out"}
           </button>
         </div>
       </aside>
