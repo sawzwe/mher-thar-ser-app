@@ -36,7 +36,7 @@ export default async function DealsPage({
       >
         ← {restaurant.name}
       </Link>
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
         Deals
       </h1>
       <p className="text-sm text-text-muted mb-8">

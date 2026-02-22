@@ -55,7 +55,7 @@ export function ModalHeader({ title, titleMy, onClose }: ModalHeaderProps) {
   return (
     <div className="px-6 py-6 border-b border-border flex items-start justify-between">
       <div>
-        <h2 className="font-serif text-[24px] font-bold text-text-primary tracking-[-0.5px]">
+        <h2 className="text-[24px] font-bold text-text-primary tracking-[-0.5px]">
           {title}
         </h2>
         {titleMy && (

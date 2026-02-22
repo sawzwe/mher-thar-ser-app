@@ -38,7 +38,7 @@ export default function BookingsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-12 py-12">
-      <h1 className="font-serif text-[38px] font-bold text-text-primary tracking-[-1px] mb-8">My Bookings</h1>
+      <h1 className="text-[38px] font-bold text-text-primary tracking-[-1px] mb-8">My Bookings</h1>
 
       {loading ? (
         <div className="space-y-4">{[1, 2, 3].map((i) => <div key={i} className="animate-pulse bg-card border border-border rounded-[var(--radius-lg)] p-5"><div className="h-5 bg-surface rounded w-1/3 mb-3" /><div className="h-4 bg-surface rounded w-2/3 mb-2" /><div className="h-4 bg-surface rounded w-1/2" /></div>)}</div>

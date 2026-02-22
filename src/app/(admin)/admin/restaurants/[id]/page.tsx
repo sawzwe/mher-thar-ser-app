@@ -162,7 +162,7 @@ export default function AdminRestaurantEditPage() {
           ← Restaurants
         </Link>
       </div>
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
         Edit restaurant
       </h1>
       <p className="text-sm text-text-muted mb-8">
@@ -326,21 +326,19 @@ export default function AdminRestaurantEditPage() {
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Open time"
-            type="text"
+            type="time"
             value={form.open_time}
             onChange={(e) =>
               setForm((f) => ({ ...f, open_time: e.target.value }))
             }
-            placeholder="11:00"
           />
           <Input
             label="Close time"
-            type="text"
+            type="time"
             value={form.close_time}
             onChange={(e) =>
               setForm((f) => ({ ...f, close_time: e.target.value }))
             }
-            placeholder="22:00"
           />
         </div>
         <Select

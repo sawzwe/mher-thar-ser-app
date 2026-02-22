@@ -34,7 +34,7 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="p-8 animate-admin-enter">
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
         Reviews
       </h1>
       <p className="text-sm text-text-muted mb-8">

@@ -11,7 +11,7 @@ function SignInContent() {
 
   return (
     <div className="w-full max-w-[400px]">
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
         Sign in to continue
       </h1>
       <p className="text-sm text-text-muted mb-6">

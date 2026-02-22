@@ -55,7 +55,7 @@ export default async function RestaurantEditorPage({
           ← Restaurants
         </Link>
       </div>
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-6">
+      <h1 className="text-2xl font-bold text-text-primary mb-6">
         {restaurant.name}
       </h1>
 

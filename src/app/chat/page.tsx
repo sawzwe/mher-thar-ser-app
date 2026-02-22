@@ -351,7 +351,7 @@ function EmptyState({ onChip }: { onChip: (msg: string) => void }) {
       <div className="w-[72px] h-[72px] rounded-[var(--radius-xl)] bg-brand-dim border border-brand-border flex items-center justify-center text-[32px] mb-6 animate-[float_3s_ease-in-out_infinite]">
         🍜
       </div>
-      <h1 className="font-serif text-[clamp(28px,4vw,42px)] font-black tracking-[-1.5px] text-text-primary mb-2.5 leading-[1.1]">
+      <h1 className="text-[clamp(28px,4vw,42px)] font-bold tracking-[-1.5px] text-text-primary mb-2.5 leading-[1.1]">
         Not sure what to <em className="italic text-brand-light">eat?</em>
       </h1>
       <p className="text-[15px] text-text-secondary max-w-[400px] leading-[1.65] mb-2">
@@ -502,7 +502,7 @@ function RecCardComponent({ rec }: { rec: RecCard }) {
 function TypingIndicator() {
   return (
     <div className="flex gap-3 px-8 max-md:px-4 py-1 animate-[msgIn_0.3s_ease_both]">
-      <div className="w-8 h-8 rounded-full bg-brand font-serif font-bold text-white text-[12px] shrink-0 flex items-center justify-center mt-0.5">
+      <div className="w-8 h-8 rounded-full bg-brand font-bold text-white text-[12px] shrink-0 flex items-center justify-center mt-0.5">
         H
       </div>
       <div className="flex items-center gap-1 px-[18px] py-3.5 bg-card border border-border-strong rounded-[18px_18px_18px_4px] w-fit">

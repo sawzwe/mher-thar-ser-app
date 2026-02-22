@@ -19,7 +19,7 @@ export default async function ClaimPage() {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
         Claim your restaurant
       </h1>
       <p className="text-sm text-text-muted mb-8">

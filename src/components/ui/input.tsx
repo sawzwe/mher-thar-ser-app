@@ -60,9 +60,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={cn(
-            "h-11 px-4 pr-8 bg-card border border-border-strong rounded-[var(--radius-md)] text-[13px] text-text-secondary",
+            "h-11 pl-4 pr-12 bg-card border border-border-strong rounded-[var(--radius-md)] text-[13px] text-text-secondary",
             "outline-none cursor-pointer transition-[border-color] duration-[var(--dur-fast)]",
             "focus:border-brand [&>option]:bg-card",
+            "select-arrow-padding",
             className
           )}
           {...props}

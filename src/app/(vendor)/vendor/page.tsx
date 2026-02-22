@@ -35,7 +35,7 @@ export default async function VendorDashboard() {
 
   return (
     <div className="p-8">
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-1">
+      <h1 className="text-2xl font-bold text-text-primary mb-1">
         Good morning, {user.name} 👋
       </h1>
       <p className="text-sm text-text-muted mb-8">

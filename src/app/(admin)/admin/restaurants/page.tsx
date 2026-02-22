@@ -31,7 +31,7 @@ export default function AdminRestaurantsPage() {
     <div className="p-8 animate-admin-enter">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-text-primary mb-2">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             Restaurants
           </h1>
           <p className="text-sm text-text-muted">
