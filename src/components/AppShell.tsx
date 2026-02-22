@@ -24,7 +24,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const signOut = useAuthStore((s) => s.signOut);
   const initialize = useAuthStore((s) => s.initialize);
 
-  const [authModal, setAuthModal] = useState<"sign-in" | "sign-up" | null>(null);
+  const [authModal, setAuthModal] = useState<"sign-in" | "sign-up" | null>(
+    null,
+  );
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -35,7 +37,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const { restaurants } = useRestaurantStore.getState();
       if (restaurants.length > 0) {
         initializeSlotsIfNeeded(
-          restaurants.map((r) => ({ id: r.id, openTime: r.openTime, closeTime: r.closeTime }))
+          restaurants.map((r) => ({
+            id: r.id,
+            openTime: r.openTime,
+            closeTime: r.closeTime,
+          })),
         );
       }
     });
@@ -48,14 +54,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
 
   const isChat = pathname === "/chat";
-  const isCms = pathname?.startsWith("/vendor") || pathname?.startsWith("/admin");
+  const isCms =
+    pathname?.startsWith("/vendor") || pathname?.startsWith("/admin");
 
   if (isCms) {
     return <>{children}</>;
   }
 
   return (
-    <div className={cn("min-h-screen flex flex-col bg-bg", isChat && "h-screen overflow-hidden")}>
+    <div
+      className={cn(
+        "min-h-screen flex flex-col bg-bg",
+        isChat && "h-screen overflow-hidden",
+      )}
+    >
       <nav className="sticky top-0 z-[var(--z-nav)] flex items-center justify-between px-6 md:px-8 h-14 bg-[rgba(10,10,8,0.88)] backdrop-blur-[24px] border-b border-border shrink-0">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-[var(--radius-md)] bg-brand flex items-center justify-center font-serif text-[13px] font-bold text-white">
@@ -75,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 "px-3 py-[5px] rounded-[var(--radius-full)] text-[13px] font-medium transition-all duration-[var(--dur-fast)]",
                 pathname === item.href
                   ? "bg-brand-dim text-brand-light"
-                  : "text-text-muted hover:text-text-primary"
+                  : "text-text-muted hover:text-text-primary",
               )}
             >
               {item.label}
@@ -103,9 +115,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   />
                   <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-border-strong rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[calc(var(--z-overlay)+1)] overflow-hidden">
                     <div className="px-4 py-3 border-b border-border">
-                      <p className="text-[12px] font-semibold text-text-primary truncate">{user.name}</p>
+                      <p className="text-[12px] font-semibold text-text-primary truncate">
+                        {user.name}
+                      </p>
                       {user.email && (
-                        <p className="text-[11px] text-text-muted truncate mt-0.5">{user.email}</p>
+                        <p className="text-[11px] text-text-muted truncate mt-0.5">
+                          {user.email}
+                        </p>
                       )}
                       <span className="inline-block mt-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-dim text-brand-light border border-brand-border">
                         {user.type}
@@ -139,7 +155,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                     </div>
                     <button
-                      onClick={() => { setUserMenuOpen(false); signOut(); }}
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        signOut();
+                      }}
                       className="w-full text-left px-4 py-3 text-[13px] text-text-secondary hover:bg-card hover:text-danger transition-colors duration-[var(--dur-fast)] cursor-pointer bg-transparent border-none"
                     >
                       Sign out
@@ -159,13 +178,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
-      <main className={cn("flex-1", isChat && "overflow-hidden")}>{children}</main>
+      <main className={cn("flex-1", isChat && "overflow-hidden")}>
+        {children}
+      </main>
 
       {!isChat && (
         <footer className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between">
           <div>
-            <span className="font-serif text-[15px] font-bold text-text-primary">Hmar Thar Sar</span>
-            <span className="text-[12px] text-text-muted ml-2">&copy; {new Date().getFullYear()}</span>
+            <span className="font-serif text-[15px] font-bold text-text-primary">
+              Hmar Thar Sar
+            </span>
+            <span className="text-[12px] text-text-muted ml-2">
+              &copy; {new Date().getFullYear()}
+            </span>
           </div>
           <div className="text-[12px] text-text-muted">
             Dark-first &middot; EN + MY
@@ -184,10 +209,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {authModal && (
-        <AuthModal
-          defaultMode={authModal}
-          onClose={() => setAuthModal(null)}
-        />
+        <AuthModal defaultMode={authModal} onClose={() => setAuthModal(null)} />
       )}
     </div>
   );

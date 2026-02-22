@@ -11,9 +11,18 @@ export default async function RestaurantEditorPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const user = (await UserFactory.fromSupabase(supabase)) as VendorUser;
+  const user = await UserFactory.fromSupabase(supabase);
 
-  if (!user.ownsRestaurant(id)) {
+  if (user.type !== "vendor") {
+    redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/vendor/restaurants/${id}`);
+  }
+
+  const vendor = user as VendorUser;
+  const ownsRestaurant =
+    typeof vendor.ownsRestaurant === "function"
+      ? vendor.ownsRestaurant(id)
+      : (vendor.restaurantIds ?? []).includes(id);
+  if (!ownsRestaurant) {
     redirect("/vendor");
   }
 

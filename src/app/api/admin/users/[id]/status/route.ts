@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { supabase: _s } = await requireAdmin();
+    await requireAdmin();
     const { id } = await params;
     const body = await req.json();
     const { status } = body;
@@ -16,8 +17,13 @@ export async function PATCH(
         { status: 400 }
       );
     }
-    // TODO: Use Supabase Auth Admin API with service role to ban/unban user
-    // supabase.auth.admin.updateUserById(id, { ban_duration: "876000h" }) for suspend
+
+    const admin = createAdminClient();
+    const { error } = await admin.auth.admin.updateUserById(id, {
+      ban_duration: status === "suspended" ? "876000h" : "none",
+    } as { ban_duration: string });
+    if (error) throw error;
+
     return NextResponse.json({ success: true });
   } catch (err) {
     const e = err as Error & { status?: number };

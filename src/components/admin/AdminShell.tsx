@@ -1,9 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import type { AdminUser } from "@/lib/auth/users/AdminUser";
+import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
+
+export type AdminShellUser = {
+  id: string;
+  name: string;
+  email: string | null;
+  type: "admin";
+  accessLevel: string;
+  department: string | null;
+};
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: "📊" },
@@ -17,8 +26,17 @@ const NAV_ITEMS = [
 export function AdminShell({
   user,
   children,
-}: { user: AdminUser; children: React.ReactNode }) {
+}: {
+  user: AdminShellUser;
+  children: React.ReactNode;
+}) {
   const path = usePathname();
+  const router = useRouter();
+  const signOut = useAuthStore((s) => s.signOut);
+
+  const handleSignOut = () => {
+    signOut().then(() => router.push("/"));
+  };
 
   return (
     <div className="flex h-screen bg-bg overflow-hidden">
@@ -37,7 +55,8 @@ export function AdminShell({
         <nav className="flex-1 p-2 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const isActive =
-              path === item.href || (item.href !== "/admin" && path?.startsWith(item.href));
+              path === item.href ||
+              (item.href !== "/admin" && path?.startsWith(item.href));
             return (
               <Link
                 key={item.href}
@@ -46,7 +65,7 @@ export function AdminShell({
                   "flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium mb-0.5 transition-all duration-[var(--dur-fast)]",
                   isActive
                     ? "bg-[rgba(155,124,245,0.12)] text-[#9B7CF5] border border-[rgba(155,124,245,0.25)]"
-                    : "text-text-secondary hover:bg-card hover:text-text-primary"
+                    : "text-text-secondary hover:bg-card hover:text-text-primary",
                 )}
               >
                 <span>{item.icon}</span>
@@ -55,6 +74,15 @@ export function AdminShell({
             );
           })}
         </nav>
+        <div className="p-2 border-t border-border space-y-1">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium text-text-secondary hover:bg-card hover:text-danger transition-colors text-left"
+          >
+            Sign out
+          </button>
+        </div>
       </aside>
       <main className="flex-1 overflow-y-auto">{children}</main>
     </div>

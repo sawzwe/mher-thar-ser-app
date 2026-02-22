@@ -2,8 +2,16 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import type { VendorUser } from "@/lib/auth/users/VendorUser";
 import { cn } from "@/lib/utils";
+
+export type VendorShellUser = {
+  id: string;
+  name: string;
+  email: string | null;
+  type: "vendor";
+  companyName?: string | null;
+  verifiedAt: string | null;
+};
 
 const NAV_ITEMS = [
   { href: "/vendor", label: "Dashboard", icon: "⚡" },
@@ -14,7 +22,10 @@ const NAV_ITEMS = [
 export function VendorShell({
   user,
   children,
-}: { user: VendorUser; children: React.ReactNode }) {
+}: {
+  user: VendorShellUser;
+  children: React.ReactNode;
+}) {
   const path = usePathname();
 
   return (
@@ -41,7 +52,8 @@ export function VendorShell({
         <nav className="flex-1 p-2 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const isActive =
-              path === item.href || (item.href !== "/vendor" && path?.startsWith(item.href));
+              path === item.href ||
+              (item.href !== "/vendor" && path?.startsWith(item.href));
             return (
               <Link
                 key={item.href}
@@ -50,7 +62,7 @@ export function VendorShell({
                   "flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium mb-0.5 transition-all duration-[var(--dur-fast)]",
                   isActive
                     ? "bg-brand-dim text-brand-light border border-brand-border"
-                    : "text-text-secondary hover:bg-card hover:text-text-primary"
+                    : "text-text-secondary hover:bg-card hover:text-text-primary",
                 )}
               >
                 <span>{item.icon}</span>

@@ -14,5 +14,15 @@ export default async function AdminLayout({
     redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/admin`);
   }
 
-  return <AdminShell user={user as AdminUser}>{children}</AdminShell>;
+  const admin = user as AdminUser;
+  const userProps = {
+    id: admin.id,
+    name: admin.name,
+    email: admin.email,
+    type: "admin" as const,
+    accessLevel: admin.accessLevel,
+    department: admin.department,
+  };
+
+  return <AdminShell user={userProps}>{children}</AdminShell>;
 }

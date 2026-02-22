@@ -11,9 +11,17 @@ export default async function BookingsPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const user = (await UserFactory.fromSupabase(supabase)) as VendorUser;
-
-  if (!user.ownsRestaurant(id)) redirect("/vendor");
+  const user = await UserFactory.fromSupabase(supabase);
+  if (user.type !== "vendor")
+    redirect(
+      user.isAuthenticated() ? "/" : `/sign-in?next=/vendor/restaurants/${id}`,
+    );
+  const vendor = user as VendorUser;
+  const owns =
+    typeof vendor.ownsRestaurant === "function"
+      ? vendor.ownsRestaurant(id)
+      : (vendor.restaurantIds ?? []).includes(id);
+  if (!owns) redirect("/vendor");
 
   const { data: restaurant } = await supabase
     .from("restaurants")
@@ -25,7 +33,9 @@ export default async function BookingsPage({
 
   const { data: bookings } = await supabase
     .from("bookings")
-    .select("id, booking_ref, customer_name, contact, date, time, party_size, status")
+    .select(
+      "id, booking_ref, customer_name, contact, date, time, party_size, status",
+    )
     .eq("restaurant_id", id)
     .order("date", { ascending: false })
     .order("time", { ascending: false })
@@ -91,7 +101,9 @@ export default async function BookingsPage({
                   <td className="px-4 py-3 text-text-secondary">
                     {b.date} {b.time}
                   </td>
-                  <td className="px-4 py-3 text-text-primary">{b.party_size}</td>
+                  <td className="px-4 py-3 text-text-primary">
+                    {b.party_size}
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold ${

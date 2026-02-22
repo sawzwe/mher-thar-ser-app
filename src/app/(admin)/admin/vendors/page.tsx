@@ -8,14 +8,8 @@ export default async function AdminVendorsPage() {
 
   const { data: pending } = await supabase
     .from("vendor_profiles")
-    .select(
-      `
-      user_id, company_name, created_at,
-      vendor_restaurants(restaurant_id, role, restaurants(id, name, area, status))
-    `
-    )
-    .is("verified_at", null)
-    .order("created_at", { ascending: true });
+    .select("user_id")
+    .is("verified_at", null);
 
   return (
     <div className="p-8">
@@ -42,9 +36,6 @@ export default async function AdminVendorsPage() {
                   <div className="font-semibold text-text-primary">
                     User {String(vp.user_id).slice(0, 8)}…
                   </div>
-                  <div className="text-sm text-text-muted">
-                    {String(vp.company_name || "—")}
-                  </div>
                 </div>
                 <Link
                   href={`/admin/vendors/${vp.user_id}`}
@@ -54,8 +45,7 @@ export default async function AdminVendorsPage() {
                 </Link>
               </div>
               <div className="text-xs text-text-muted">
-                Claimed restaurants will appear here when joined with auth.users.
-                Use API /admin/vendors/[id]/verify to approve.
+                Click Review to see claimed restaurants and approve or reject.
               </div>
             </div>
           ))}

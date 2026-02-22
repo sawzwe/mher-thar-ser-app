@@ -14,5 +14,15 @@ export default async function VendorLayout({
     redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/vendor`);
   }
 
-  return <VendorShell user={user as VendorUser}>{children}</VendorShell>;
+  const vendor = user as VendorUser;
+  const userProps = {
+    id: vendor.id,
+    name: vendor.name,
+    email: vendor.email,
+    type: "vendor" as const,
+    companyName: vendor.companyName,
+    verifiedAt: vendor.verifiedAt,
+  };
+
+  return <VendorShell user={userProps}>{children}</VendorShell>;
 }

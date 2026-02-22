@@ -11,9 +11,11 @@ export default async function SlotsPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const user = (await UserFactory.fromSupabase(supabase)) as VendorUser;
-
-  if (!user.ownsRestaurant(id)) redirect("/vendor");
+  const user = await UserFactory.fromSupabase(supabase);
+  if (user.type !== "vendor") redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/vendor/restaurants/${id}`);
+  const vendor = user as VendorUser;
+  const owns = typeof vendor.ownsRestaurant === "function" ? vendor.ownsRestaurant(id) : (vendor.restaurantIds ?? []).includes(id);
+  if (!owns) redirect("/vendor");
 
   const { data: restaurant } = await supabase
     .from("restaurants")
