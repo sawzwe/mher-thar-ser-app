@@ -93,6 +93,7 @@ export async function PATCH(
       logo_url: body.logo_url?.trim() || null,
       street_view_url: body.street_view_url?.trim() || null,
       restaurant_type: body.restaurant_type?.trim() || null,
+      ...(Array.isArray(body.opening_hours) && { opening_hours: body.opening_hours }),
     };
 
     const { data, error } = await supabase
