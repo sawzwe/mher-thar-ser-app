@@ -41,6 +41,8 @@ export default function NewRestaurantPage() {
     email: "",
     facebook_url: "",
     instagram_url: "",
+    twitter_url: "",
+    tiktok_url: "",
     postal_code: "",
     logo_url: "",
     street_view_url: "",
@@ -259,10 +261,10 @@ export default function NewRestaurantPage() {
             }
           />
         </div>
-        {/* Contact */}
+        {/* Contact & social presets */}
         <fieldset className="border border-border rounded-[var(--radius-lg)] p-4 space-y-4">
           <legend className="text-xs font-semibold text-text-muted uppercase px-2">
-            Contact
+            Contact &amp; social
           </legend>
           <div className="grid grid-cols-2 gap-4">
             <Input
@@ -284,29 +286,36 @@ export default function NewRestaurantPage() {
             type="url"
             value={form.website}
             onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
-            placeholder="https://restaurant.com"
+            placeholder="https://..."
           />
-        </fieldset>
-
-        {/* Social */}
-        <fieldset className="border border-border rounded-[var(--radius-lg)] p-4 space-y-4">
-          <legend className="text-xs font-semibold text-text-muted uppercase px-2">
-            Social
-          </legend>
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Facebook URL"
+              label="Facebook"
               type="url"
               value={form.facebook_url}
               onChange={(e) => setForm((f) => ({ ...f, facebook_url: e.target.value }))}
               placeholder="https://facebook.com/..."
             />
             <Input
-              label="Instagram URL"
+              label="Instagram"
               type="url"
               value={form.instagram_url}
               onChange={(e) => setForm((f) => ({ ...f, instagram_url: e.target.value }))}
               placeholder="https://instagram.com/..."
+            />
+            <Input
+              label="X (Twitter)"
+              type="url"
+              value={form.twitter_url}
+              onChange={(e) => setForm((f) => ({ ...f, twitter_url: e.target.value }))}
+              placeholder="https://x.com/..."
+            />
+            <Input
+              label="TikTok"
+              type="url"
+              value={form.tiktok_url}
+              onChange={(e) => setForm((f) => ({ ...f, tiktok_url: e.target.value }))}
+              placeholder="https://tiktok.com/@..."
             />
           </div>
         </fieldset>

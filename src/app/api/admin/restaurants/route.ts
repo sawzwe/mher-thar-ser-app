@@ -55,6 +55,8 @@ export async function POST(req: Request) {
       email: body.email?.trim() || null,
       facebook_url: body.facebook_url?.trim() || null,
       instagram_url: body.instagram_url?.trim() || null,
+      twitter_url: body.twitter_url?.trim() || null,
+      tiktok_url: body.tiktok_url?.trim() || null,
       postal_code: body.postal_code?.trim() || null,
       logo_url: body.logo_url?.trim() || null,
       street_view_url: body.street_view_url?.trim() || null,

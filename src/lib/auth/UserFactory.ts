@@ -34,9 +34,18 @@ export class UserFactory {
    * and profile data and creates the appropriate typed user.
    */
   static async fromSupabase(supabase: SupabaseClient): Promise<IUser> {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    let user: {
+      id: string;
+      email?: string | null;
+      user_metadata?: Record<string, unknown>;
+    } | null = null;
+    try {
+      const { data } = await supabase.auth.getUser();
+      user = data?.user ?? null;
+    } catch {
+      // Lock timeout or other auth error — treat as guest so the app still loads
+      return UserFactory.createGuest();
+    }
 
     if (!user) return UserFactory.createGuest();
 

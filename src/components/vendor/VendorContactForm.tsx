@@ -11,6 +11,8 @@ type FormState = {
   email: string;
   facebook_url: string;
   instagram_url: string;
+  twitter_url: string;
+  tiktok_url: string;
   logo_url: string;
   restaurant_type: string;
 };
@@ -78,18 +80,32 @@ export function VendorContactForm({
         />
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Facebook URL"
+            label="Facebook"
             type="url"
             value={form.facebook_url}
             onChange={(e) => setForm((f) => ({ ...f, facebook_url: e.target.value }))}
             placeholder="https://facebook.com/..."
           />
           <Input
-            label="Instagram URL"
+            label="Instagram"
             type="url"
             value={form.instagram_url}
             onChange={(e) => setForm((f) => ({ ...f, instagram_url: e.target.value }))}
             placeholder="https://instagram.com/..."
+          />
+          <Input
+            label="X (Twitter)"
+            type="url"
+            value={form.twitter_url}
+            onChange={(e) => setForm((f) => ({ ...f, twitter_url: e.target.value }))}
+            placeholder="https://x.com/..."
+          />
+          <Input
+            label="TikTok"
+            type="url"
+            value={form.tiktok_url}
+            onChange={(e) => setForm((f) => ({ ...f, tiktok_url: e.target.value }))}
+            placeholder="https://tiktok.com/@..."
           />
         </div>
         <ImageUpload

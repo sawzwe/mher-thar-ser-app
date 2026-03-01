@@ -40,6 +40,8 @@ type Restaurant = {
   email: string | null;
   facebook_url: string | null;
   instagram_url: string | null;
+  twitter_url: string | null;
+  tiktok_url: string | null;
   postal_code: string | null;
   logo_url: string | null;
   street_view_url: string | null;
@@ -88,6 +90,8 @@ export default function AdminRestaurantEditPage() {
     email: "",
     facebook_url: "",
     instagram_url: "",
+    twitter_url: "",
+    tiktok_url: "",
     postal_code: "",
     logo_url: "",
     street_view_url: "",
@@ -120,6 +124,8 @@ export default function AdminRestaurantEditPage() {
       email: restaurant.email ?? "",
       facebook_url: restaurant.facebook_url ?? "",
       instagram_url: restaurant.instagram_url ?? "",
+      twitter_url: restaurant.twitter_url ?? "",
+      tiktok_url: restaurant.tiktok_url ?? "",
       postal_code: restaurant.postal_code ?? "",
       logo_url: restaurant.logo_url ?? "",
       street_view_url: restaurant.street_view_url ?? "",
@@ -368,10 +374,10 @@ export default function AdminRestaurantEditPage() {
             }
           />
         </div>
-        {/* Contact */}
+        {/* Contact & social presets */}
         <fieldset className="border border-border rounded-[var(--radius-lg)] p-4 space-y-4">
           <legend className="text-xs font-semibold text-text-muted uppercase px-2">
-            Contact
+            Contact &amp; social
           </legend>
           <div className="grid grid-cols-2 gap-4">
             <Input
@@ -393,29 +399,36 @@ export default function AdminRestaurantEditPage() {
             type="url"
             value={form.website}
             onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
-            placeholder="https://restaurant.com"
+            placeholder="https://..."
           />
-        </fieldset>
-
-        {/* Social */}
-        <fieldset className="border border-border rounded-[var(--radius-lg)] p-4 space-y-4">
-          <legend className="text-xs font-semibold text-text-muted uppercase px-2">
-            Social
-          </legend>
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Facebook URL"
+              label="Facebook"
               type="url"
               value={form.facebook_url}
               onChange={(e) => setForm((f) => ({ ...f, facebook_url: e.target.value }))}
               placeholder="https://facebook.com/..."
             />
             <Input
-              label="Instagram URL"
+              label="Instagram"
               type="url"
               value={form.instagram_url}
               onChange={(e) => setForm((f) => ({ ...f, instagram_url: e.target.value }))}
               placeholder="https://instagram.com/..."
+            />
+            <Input
+              label="X (Twitter)"
+              type="url"
+              value={form.twitter_url}
+              onChange={(e) => setForm((f) => ({ ...f, twitter_url: e.target.value }))}
+              placeholder="https://x.com/..."
+            />
+            <Input
+              label="TikTok"
+              type="url"
+              value={form.tiktok_url}
+              onChange={(e) => setForm((f) => ({ ...f, tiktok_url: e.target.value }))}
+              placeholder="https://tiktok.com/@..."
             />
           </div>
         </fieldset>
@@ -513,6 +526,14 @@ export default function AdminRestaurantEditPage() {
       </form>
 
       <div className="mt-12 pt-8 border-t border-border">
+        <h2 className="font-semibold text-text-primary mb-4">Availability by date</h2>
+        <p className="text-sm text-text-muted mb-4">
+          Booking slots are set per date, not by a single schedule. Vendors manage which dates and times are available under the <strong>Availability</strong> tab in the vendor dashboard.
+        </p>
+        <SlotDatesSummary restaurantId={id} />
+      </div>
+
+      <div className="mt-12 pt-8 border-t border-border">
         <h2 className="font-semibold text-text-primary mb-4">Vendors</h2>
         <p className="text-sm text-text-muted mb-4">
           Vendors linked to this restaurant can manage it in the vendor CMS
@@ -520,6 +541,34 @@ export default function AdminRestaurantEditPage() {
         </p>
         <VendorsSection restaurantId={id} />
       </div>
+    </div>
+  );
+}
+
+function SlotDatesSummary({ restaurantId }: { restaurantId: string }) {
+  const { data: slots } = useQuery({
+    queryKey: ["admin-restaurant-slot-dates", restaurantId],
+    queryFn: async () => {
+      const res = await fetch(`/api/vendor/restaurants/${restaurantId}/slots`);
+      if (!res.ok) return [];
+      const json = await res.json();
+      return json as { date: string; time: string; capacity: number; remaining: number }[];
+    },
+  });
+  const dates = slots?.length
+    ? [...new Set(slots.map((s) => s.date))].sort().slice(0, 14)
+    : [];
+  return (
+    <div className="bg-card border border-border rounded-[var(--radius-lg)] p-4">
+      {dates.length === 0 ? (
+        <p className="text-sm text-text-muted">
+          No slots configured yet. Vendors can generate slots from the Availability tab.
+        </p>
+      ) : (
+        <p className="text-sm text-text-secondary">
+          Slots configured for <strong>{dates.length}</strong> date{dates.length !== 1 ? "s" : ""} (e.g. {dates.slice(0, 3).join(", ")}).
+        </p>
+      )}
     </div>
   );
 }

@@ -124,6 +124,8 @@ export default async function RestaurantEditorPage({
           email: restaurant.email ?? "",
           facebook_url: restaurant.facebook_url ?? "",
           instagram_url: restaurant.instagram_url ?? "",
+          twitter_url: restaurant.twitter_url ?? "",
+          tiktok_url: restaurant.tiktok_url ?? "",
           logo_url: restaurant.logo_url ?? "",
           restaurant_type: restaurant.restaurant_type ?? "",
         }}

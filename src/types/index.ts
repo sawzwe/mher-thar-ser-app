@@ -65,6 +65,8 @@ export interface Restaurant {
   email?: string;
   facebookUrl?: string;
   instagramUrl?: string;
+  twitterUrl?: string;
+  tiktokUrl?: string;
   postalCode?: string;
   logoUrl?: string;
   streetViewUrl?: string;

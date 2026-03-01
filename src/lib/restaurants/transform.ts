@@ -33,6 +33,8 @@ type DbRestaurant = {
   google_maps_url?: string | null;
   google_rating?: number | null;
   google_review_count?: number | null;
+  twitter_url?: string | null;
+  tiktok_url?: string | null;
 };
 
 type DbDeal = {
@@ -108,6 +110,8 @@ type RestaurantRow = {
   email?: string | null;
   facebook_url?: string | null;
   instagram_url?: string | null;
+  twitter_url?: string | null;
+  tiktok_url?: string | null;
   postal_code?: string | null;
   logo_url?: string | null;
   street_view_url?: string | null;
@@ -178,6 +182,8 @@ export function transformDbRestaurant(
     email: row.email ?? undefined,
     facebookUrl: row.facebook_url ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
+    twitterUrl: row.twitter_url ?? undefined,
+    tiktokUrl: row.tiktok_url ?? undefined,
     postalCode: row.postal_code ?? undefined,
     logoUrl: row.logo_url ?? undefined,
     streetViewUrl: row.street_view_url ?? undefined,
