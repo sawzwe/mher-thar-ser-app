@@ -6,7 +6,9 @@ import {
   validateRow,
   type ImportRow,
   type RowValidationError,
+  type RestaurantInsert,
 } from "@/lib/import/restaurantImporter";
+import { reuploadExternalImage } from "@/lib/image/serverUpload";
 
 export async function POST(req: Request) {
   try {
@@ -14,6 +16,8 @@ export async function POST(req: Request) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const reuploadImages = formData.get("reupload_images") === "true";
+
     if (!file) {
       return NextResponse.json(
         { error: "No file uploaded" },
@@ -59,7 +63,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const inserts = rows.map((row) => mapRowToRestaurant(row));
+    const inserts: RestaurantInsert[] = rows.map((row) =>
+      mapRowToRestaurant(row),
+    );
+
+    if (reuploadImages) {
+      for (const row of inserts) {
+        if (row.image_url) {
+          const newUrl = await reuploadExternalImage(row.image_url, row.slug);
+          if (newUrl) row.image_url = newUrl;
+        }
+        if (row.logo_url) {
+          const newUrl = await reuploadExternalImage(row.logo_url, row.slug);
+          if (newUrl) row.logo_url = newUrl;
+        }
+      }
+    }
 
     const BATCH_SIZE = 50;
     let imported = 0;

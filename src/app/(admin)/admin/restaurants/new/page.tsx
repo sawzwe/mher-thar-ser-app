@@ -13,6 +13,7 @@ import {
   BANGKOK_SUBDISTRICTS_BY_DISTRICT,
 } from "@/data/constants";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function NewRestaurantPage() {
   const router = useRouter();
@@ -234,14 +235,11 @@ export default function NewRestaurantPage() {
           <option value="3">฿฿฿ Upscale</option>
           <option value="4">฿฿฿฿ Fine dining</option>
         </Select>
-        <Input
-          label="Image URL (optional)"
-          type="url"
+        <ImageUpload
+          label="Restaurant Image"
           value={form.image_url}
-          onChange={(e) =>
-            setForm((f) => ({ ...f, image_url: e.target.value }))
-          }
-          placeholder="https://..."
+          slug={form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "new"}
+          onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
         />
         <div className="grid grid-cols-2 gap-4">
           <Input

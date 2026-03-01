@@ -117,6 +117,7 @@ export default async function RestaurantEditorPage({
 
       <VendorContactForm
         restaurantId={id}
+        slug={restaurant.slug ?? id}
         initial={{
           phone: restaurant.phone ?? "",
           website: restaurant.website ?? "",

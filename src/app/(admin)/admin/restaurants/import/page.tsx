@@ -51,6 +51,7 @@ export default function AdminImportPage() {
   const [totalRows, setTotalRows] = useState(0);
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [reuploadImages, setReuploadImages] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -96,6 +97,7 @@ export default function AdminImportPage() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      if (reuploadImages) formData.append("reupload_images", "true");
       const res = await fetch("/api/admin/restaurants/import", {
         method: "POST",
         body: formData,
@@ -128,6 +130,7 @@ export default function AdminImportPage() {
     setTotalRows(0);
     setResult(null);
     setParseError(null);
+    setReuploadImages(false);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -290,6 +293,22 @@ export default function AdminImportPage() {
               </div>
             </div>
           )}
+
+          {/* Options */}
+          <label className="flex items-center gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={reuploadImages}
+              onChange={(e) => setReuploadImages(e.target.checked)}
+              className="w-4 h-4 rounded border-border accent-brand"
+            />
+            <span className="text-sm text-text-primary">
+              Download &amp; store images in Supabase
+            </span>
+            <span className="text-xs text-text-muted">
+              (copies external images to your storage)
+            </span>
+          </label>
 
           {/* Import button */}
           <button

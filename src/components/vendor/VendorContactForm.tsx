@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 type FormState = {
   phone: string;
@@ -16,9 +17,11 @@ type FormState = {
 
 export function VendorContactForm({
   restaurantId,
+  slug,
   initial,
 }: {
   restaurantId: string;
+  slug: string;
   initial: FormState;
 }) {
   const [form, setForm] = useState<FormState>(initial);
@@ -89,12 +92,12 @@ export function VendorContactForm({
             placeholder="https://instagram.com/..."
           />
         </div>
-        <Input
-          label="Logo URL"
-          type="url"
+        <ImageUpload
+          label="Logo"
           value={form.logo_url}
-          onChange={(e) => setForm((f) => ({ ...f, logo_url: e.target.value }))}
-          placeholder="https://..."
+          slug={slug}
+          suffix="logo"
+          onChange={(url) => setForm((f) => ({ ...f, logo_url: url }))}
         />
         <Input
           label="Restaurant Type"

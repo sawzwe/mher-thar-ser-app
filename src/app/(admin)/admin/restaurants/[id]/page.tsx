@@ -15,6 +15,7 @@ import {
 } from "@/data/constants";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 type Restaurant = {
   id: string;
@@ -343,14 +344,11 @@ export default function AdminRestaurantEditPage() {
           <option value="3">฿฿฿ Upscale</option>
           <option value="4">฿฿฿฿ Fine dining</option>
         </Select>
-        <Input
-          label="Image URL (optional)"
-          type="url"
+        <ImageUpload
+          label="Restaurant Image"
           value={form.image_url}
-          onChange={(e) =>
-            setForm((f) => ({ ...f, image_url: e.target.value }))
-          }
-          placeholder="https://..."
+          slug={form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "restaurant"}
+          onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
         />
         <div className="grid grid-cols-2 gap-4">
           <Input
