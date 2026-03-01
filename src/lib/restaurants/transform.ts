@@ -2,6 +2,7 @@ import type { Restaurant, Deal, DayHours } from "@/types";
 
 type DbRestaurant = {
   id: string;
+  slug?: string | null;
   name: string;
   description: string;
   area: string;
@@ -88,6 +89,7 @@ const DEFAULT_IMAGE =
 
 type RestaurantRow = {
   id: string;
+  slug?: string | null;
   name: string;
   description?: string;
   area?: string;
@@ -158,6 +160,7 @@ export function transformDbRestaurant(
 
   return {
     id: row.id,
+    slug: (row as { slug?: string | null }).slug ?? null,
     name: row.name,
     description: row.description ?? "",
     area: row.area ?? "",

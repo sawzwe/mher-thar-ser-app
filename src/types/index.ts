@@ -42,6 +42,8 @@ export interface Deal {
 
 export interface Restaurant {
   id: string;
+  /** URL-friendly identifier; prefer over id for public links */
+  slug?: string | null;
   name: string;
   description: string;
   /** Area = neighbourhood (Silom, Sukhumvit, etc.) */

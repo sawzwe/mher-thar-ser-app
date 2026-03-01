@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useBookingStore } from "@/stores/bookingStore";
 import { useWaitlistStore } from "@/stores/waitlistStore";
 import { useRestaurantStore } from "@/stores/restaurantStore";
+import { getRestaurantPath } from "@/lib/restaurants/url";
 import { Booking } from "@/types";
 import { RescheduleModal } from "@/components/RescheduleModal";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,10 @@ export default function BookingsPage() {
 
   const getRestaurantName = (id: string) =>
     restaurants.find((r) => r.id === id)?.name ?? "Unknown";
+  const getRestaurantPathForId = (id: string) => {
+    const r = restaurants.find((x) => x.id === id);
+    return r ? getRestaurantPath(r) : id;
+  };
   const { entries: waitlistEntries, loadWaitlist, remove: removeWaitlist } = useWaitlistStore();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
@@ -57,7 +62,7 @@ export default function BookingsPage() {
                     <CardContent className="flex items-start justify-between gap-4">
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2">
-                          <Link href={`/restaurant/${booking.restaurantId}`} className="font-bold text-lg text-text-primary hover:text-brand-light transition-colors duration-[var(--dur-fast)]">{getRestaurantName(booking.restaurantId)}</Link>
+                          <Link href={`/restaurant/${getRestaurantPathForId(booking.restaurantId)}`} className="font-bold text-lg text-text-primary hover:text-brand-light transition-colors duration-[var(--dur-fast)]">{getRestaurantName(booking.restaurantId)}</Link>
                           <Badge variant={statusVariant[booking.status]}>
                             <BadgeDot />
                             {booking.status}

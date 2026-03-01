@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Restaurant } from "@/types";
+import { getRestaurantPath } from "@/lib/restaurants/url";
 import { Badge, BadgeDot } from "@/components/ui/badge";
 import { isOpenNow } from "@/lib/hours";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,7 @@ export function RestaurantCard({ restaurant, featured = false }: RestaurantCardP
 
   return (
     <Link
-      href={`/restaurant/${r.id}`}
+      href={`/restaurant/${getRestaurantPath(r)}`}
       className={cn("group block focus-ring rounded-[var(--radius-lg)]", featured && "col-span-2")}
     >
       <div className="bg-card border border-border rounded-[var(--radius-lg)] overflow-hidden transition-all duration-[var(--dur-base)] ease-[var(--ease-out)] hover:bg-card-hover hover:border-border-strong hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] active:translate-y-0 active:shadow-[var(--shadow-sm)]">
