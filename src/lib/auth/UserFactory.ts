@@ -45,8 +45,7 @@ export class UserFactory {
       user.email?.split("@")[0] ||
       "User";
 
-    const locale =
-      (user.user_metadata?.locale as string | undefined) || "en";
+    const locale = (user.user_metadata?.locale as string | undefined) || "en";
 
     // Fetch roles + permissions in a single join query
     const { data: userRolesData } = await supabase
@@ -58,14 +57,16 @@ export class UserFactory {
             scope,
             permissions (action, resource)
           )
-        )`
+        )`,
       )
       .eq("user_id", user.id);
 
     const rawRows = (userRolesData ?? []) as unknown as UserRoleRow[];
 
     const roles: RoleRow[] = rawRows
-      .flatMap((ur) => (Array.isArray(ur.roles) ? ur.roles : ur.roles ? [ur.roles] : []))
+      .flatMap((ur) =>
+        Array.isArray(ur.roles) ? ur.roles : ur.roles ? [ur.roles] : [],
+      )
       .filter(Boolean);
 
     const roleSlugs = roles.map((r) => r.slug);
@@ -73,13 +74,15 @@ export class UserFactory {
     const permissions: Permission[] = roles.flatMap((role) =>
       (role.role_permissions ?? []).flatMap((rp) => {
         if (!rp.permissions) return [];
-        const perms = Array.isArray(rp.permissions) ? rp.permissions : [rp.permissions];
+        const perms = Array.isArray(rp.permissions)
+          ? rp.permissions
+          : [rp.permissions];
         return perms.map((p) => ({
           action: p.action as Action,
           resource: p.resource as Resource,
           scope: (rp.scope ?? "own") as "own" | "all",
         }));
-      })
+      }),
     );
 
     const base = {
@@ -119,7 +122,9 @@ export class UserFactory {
 
       return new VendorUser({
         ...base,
-        restaurantIds: (vr ?? []).map((r: { restaurant_id: string }) => r.restaurant_id),
+        restaurantIds: (vr ?? []).map(
+          (r: { restaurant_id: string }) => r.restaurant_id,
+        ),
         companyName: vp?.company_name ?? undefined,
         verifiedAt: vp?.verified_at ?? null,
       });
@@ -127,7 +132,9 @@ export class UserFactory {
 
     const { data: cp } = await supabase
       .from("customer_profiles")
-      .select("preferred_cuisines, preferred_areas, dietary_restrictions, default_party_size")
+      .select(
+        "preferred_cuisines, preferred_areas, dietary_restrictions, default_party_size",
+      )
       .eq("user_id", user.id)
       .single();
 

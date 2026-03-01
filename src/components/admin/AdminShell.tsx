@@ -146,18 +146,18 @@ export function AdminShell({
           className="absolute top-0 left-0 right-0 h-52 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 100% 100% at 50% 0%, rgba(139,108,245,0.08), transparent)",
+              "radial-gradient(ellipse 100% 100% at 50% 0%, rgba(232,66,26,0.08), transparent)",
           }}
         />
         <div className="relative p-4 pb-3 border-b border-border">
-          <div className="text-[10px] font-bold text-[#8B6CF5] uppercase tracking-[0.1em] mb-1.5">
+          <div className="text-[10px] font-bold text-brand uppercase tracking-[0.1em] mb-1.5">
             Admin
           </div>
           <div className="text-[15px] font-bold text-text-primary truncate mb-2">
             {user.name}
           </div>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[rgba(139,108,245,0.12)] text-[#8B6CF5] border border-[rgba(139,108,245,0.28)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8B6CF5]" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-dim text-brand border border-brand-border">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
             {user.accessLevel}
           </span>
         </div>
@@ -198,12 +198,12 @@ export function AdminShell({
                       className={cn(
                         "flex items-center gap-2.5 px-2.5 py-2 rounded-[9px] text-[13px] font-medium transition-all duration-150 relative",
                         isActive
-                          ? "bg-[rgba(139,108,245,0.12)] text-text-primary font-semibold border border-[rgba(139,108,245,0.18)]"
+                          ? "bg-brand-dim text-text-primary font-semibold border border-brand-border"
                           : "text-text-muted hover:bg-card-hover hover:text-text-secondary",
                       )}
                     >
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r bg-[#8B6CF5]" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r bg-brand" />
                       )}
                       <ItemIcon size={18} weight="regular" className="flex-shrink-0" />
                       {item.label}
