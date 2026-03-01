@@ -1,5 +1,6 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import type { Action, IUser, Permission, Resource } from "./types";
+import { getUserWithTimeout } from "./supabaseAuth";
 import { AdminUser } from "./users/AdminUser";
 import { CustomerUser } from "./users/CustomerUser";
 import { GuestUser } from "./users/GuestUser";
@@ -33,14 +34,7 @@ export class UserFactory {
    * Only use this outside of onAuthStateChange callbacks.
    */
   static async fromSupabase(supabase: SupabaseClient): Promise<IUser> {
-    let user: User | null = null;
-    try {
-      const { data } = await supabase.auth.getUser();
-      user = data?.user ?? null;
-    } catch {
-      return UserFactory.createGuest();
-    }
-
+    const user = await getUserWithTimeout(supabase);
     if (!user) return UserFactory.createGuest();
     return UserFactory.resolveUser(supabase, user);
   }

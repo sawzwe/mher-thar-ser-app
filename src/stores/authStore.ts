@@ -1,10 +1,14 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import { UserFactory } from "@/lib/auth/UserFactory";
+import { getSessionWithTimeout } from "@/lib/auth/supabaseAuth";
 import type { IUser } from "@/lib/auth/types";
 
 let authSubscription: { unsubscribe: () => void } | null = null;
 let visibilityHandler: (() => void) | null = null;
+let visibilityDebounceId: ReturnType<typeof setTimeout> | null = null;
+
+const VISIBILITY_DEBOUNCE_MS = 500;
 
 interface AuthState {
   user: IUser | null;
@@ -65,23 +69,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     visibilityHandler = () => {
       if (document.visibilityState !== "visible") return;
-      supabase.auth.getUser().then(async ({ data }) => {
+      if (visibilityDebounceId) clearTimeout(visibilityDebounceId);
+      visibilityDebounceId = setTimeout(async () => {
+        visibilityDebounceId = null;
+        const session = await getSessionWithTimeout(supabase);
         const current = get().user;
-        const newId = data?.user?.id ?? null;
+        const newId = session?.user?.id ?? null;
         const oldId = current?.isAuthenticated() ? current.id : null;
         if (newId === oldId) return;
 
-        if (!data?.user) {
+        if (!session?.user) {
           set({ user: UserFactory.createGuest() });
           return;
         }
         try {
-          const resolved = await UserFactory.resolveUser(supabase, data.user);
+          const resolved = await UserFactory.resolveUser(
+            supabase,
+            session.user,
+          );
           set({ user: resolved });
         } catch {
           /* keep current */
         }
-      });
+      }, VISIBILITY_DEBOUNCE_MS);
     };
     document.addEventListener("visibilitychange", visibilityHandler);
   },
