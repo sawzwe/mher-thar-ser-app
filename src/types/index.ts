@@ -42,6 +42,8 @@ export interface Deal {
 
 export interface Restaurant {
   id: string;
+  /** URL-friendly identifier; prefer over id for public links */
+  slug?: string | null;
   name: string;
   description: string;
   /** Area = neighbourhood (Silom, Sukhumvit, etc.) */
@@ -60,6 +62,22 @@ export interface Restaurant {
   openingHours: DayHours[];
   openTime: string;
   closeTime: string;
+  phone?: string;
+  website?: string;
+  email?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  twitterUrl?: string;
+  tiktokUrl?: string;
+  postalCode?: string;
+  logoUrl?: string;
+  streetViewUrl?: string;
+  restaurantType?: string;
+  attributes?: Record<string, Record<string, boolean>>;
+  googlePlaceId?: string;
+  googleMapsUrl?: string;
+  googleRating?: number;
+  googleReviewCount?: number;
 }
 
 export interface Slot {

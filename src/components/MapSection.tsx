@@ -24,11 +24,11 @@ export function MapSection({ geo, address, name }: MapSectionProps) {
 
   return (
     <section>
-      <h2 className="font-serif text-[24px] font-bold text-text-primary tracking-[-0.5px] mb-3">Location</h2>
-      <div className="rounded-[var(--radius-lg)] overflow-hidden border border-border">
-        <iframe title={`Map of ${name}`} width="100%" height="250" src={osmUrl} className="border-0" loading="lazy" />
+      <h2 className="text-[18px] font-semibold text-text-primary mb-3">Location</h2>
+      <div className="rounded-[var(--radius-md)] overflow-hidden border border-border">
+        <iframe title={`Map of ${name}`} width="100%" height="220" src={osmUrl} className="border-0" loading="lazy" />
       </div>
-      <p className="text-[13px] text-text-muted mt-3">{address}</p>
+      <p className="text-[13px] text-text-secondary mt-2">{address}</p>
       <div className="flex flex-wrap gap-2 mt-3">
         <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="ghost" size="sm">

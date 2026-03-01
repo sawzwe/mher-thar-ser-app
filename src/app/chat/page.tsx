@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRestaurantStore } from "@/stores/restaurantStore";
+import { getRestaurantPath } from "@/lib/restaurants/url";
 import { cn } from "@/lib/utils";
 
 interface ChatMessage {
@@ -449,7 +450,7 @@ function RecCardComponent({ rec }: { rec: RecCard }) {
 
   return (
     <Link
-      href={`/restaurant/${rec.id}`}
+      href={`/restaurant/${r ? getRestaurantPath(r) : rec.id}`}
       className="flex items-stretch bg-surface border border-border-strong rounded-[14px] overflow-hidden transition-all duration-[var(--dur-base)] hover:border-brand hover:translate-x-[3px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)] no-underline group"
     >
       <div className="w-[90px] shrink-0 overflow-hidden relative">

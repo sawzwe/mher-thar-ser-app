@@ -252,6 +252,11 @@ export const AREAS = [
   "Asok",
   "Phrom Phong",
   "Ekkamai",
+  "Sathorn",
+  "Ratchada",
+  "On Nut",
+  "Khao San",
+  "Pratunam",
 ] as const;
 
 /**
@@ -264,9 +269,15 @@ export const CUISINES = [
   "Indian",
   "Chinese",
   "Korean",
+  "Japanese",
   "Seafood",
   "Vegetarian",
   "Asian",
+  "Italian",
+  "French",
+  "American",
+  "Mexican",
+  "BBQ",
 ] as const;
 
 export type Province = (typeof PROVINCES)[number];

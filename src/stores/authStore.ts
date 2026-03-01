@@ -1,7 +1,20 @@
 import { create } from "zustand";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { UserFactory } from "@/lib/auth/UserFactory";
+import { getSessionWithTimeout } from "@/lib/auth/supabaseAuth";
 import type { IUser } from "@/lib/auth/types";
+
+// getSession() reads from localStorage — no Navigator lock needed.
+// getUser() makes a server round-trip and ACQUIRES the Navigator lock.
+// We use getSession() on init so that multiple open tabs don't block each other.
+
+let authSubscription: { unsubscribe: () => void } | null = null;
+let visibilityHandler: (() => void) | null = null;
+let visibilityDebounceId: ReturnType<typeof setTimeout> | null = null;
+let initializePromise: Promise<void> | null = null;
+
+const VISIBILITY_DEBOUNCE_MS = 500;
 
 interface AuthState {
   user: IUser | null;
@@ -9,49 +22,120 @@ interface AuthState {
   initialized: boolean;
 
   initialize: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ error?: string; code?: string }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ error?: string; code?: string }>;
   signUp: (
     email: string,
     password: string,
-    name: string
+    name: string,
   ) => Promise<{ error?: string; code?: string }>;
   signOut: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   loading: false,
   initialized: false,
 
   initialize: async () => {
-    set({ loading: true });
-    const supabase = createClient();
+    if (get().initialized) return;
+    if (initializePromise) return initializePromise;
 
-    // Resolve initial user
-    const user = await UserFactory.fromSupabase(supabase);
-    set({ user, loading: false, initialized: true });
+    initializePromise = (async () => {
+      set({ loading: true });
+      const supabase = createClient();
 
-    // Listen for auth state changes (sign in, sign out, token refresh)
-    supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        set({ loading: true });
-        const resolved = await UserFactory.fromSupabase(supabase);
-        set({ user: resolved, loading: false });
-      } else {
-        set({ user: UserFactory.createGuest(), loading: false });
+      // getSession() is lock-free: reads the stored session without contacting the server.
+      // The middleware already validates the JWT server-side on every request.
+      const {
+        data: { session: initialSession },
+      } = await supabase.auth.getSession();
+      const user = initialSession?.user
+        ? await UserFactory.resolveUser(supabase, initialSession.user)
+        : UserFactory.createGuest();
+      set({ user, loading: false, initialized: true });
+
+      if (authSubscription) {
+        authSubscription.unsubscribe();
       }
-    });
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(
+        (event: AuthChangeEvent, session: Session | null) => {
+          if (event === "SIGNED_OUT" || !session?.user) {
+            set({ user: UserFactory.createGuest(), loading: false });
+            return;
+          }
+
+          set({ loading: true });
+          void (async () => {
+            try {
+              const resolved = await UserFactory.resolveUser(
+                supabase,
+                session.user,
+              );
+              set({ user: resolved, loading: false });
+            } catch {
+              set({ user: UserFactory.createGuest(), loading: false });
+            }
+          })();
+        },
+      );
+      authSubscription = subscription;
+
+      if (visibilityHandler) {
+        document.removeEventListener("visibilitychange", visibilityHandler);
+      }
+      visibilityHandler = () => {
+        if (document.visibilityState !== "visible") return;
+        if (visibilityDebounceId) clearTimeout(visibilityDebounceId);
+        visibilityDebounceId = setTimeout(async () => {
+          visibilityDebounceId = null;
+          const session = await getSessionWithTimeout(supabase);
+          const current = get().user;
+          const newId = session?.user?.id ?? null;
+          const oldId = current?.isAuthenticated() ? current.id : null;
+          if (newId === oldId) return;
+
+          if (!session?.user) {
+            set({ user: UserFactory.createGuest() });
+            return;
+          }
+          try {
+            const resolved = await UserFactory.resolveUser(
+              supabase,
+              session.user,
+            );
+            set({ user: resolved });
+          } catch {
+            /* keep current */
+          }
+        }, VISIBILITY_DEBOUNCE_MS);
+      };
+      document.addEventListener("visibilitychange", visibilityHandler);
+    })();
+
+    try {
+      await initializePromise;
+    } finally {
+      initializePromise = null;
+    }
   },
 
   signIn: async (email, password) => {
     set({ loading: true });
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) {
       set({ loading: false });
       return { error: error.message, code: error.code };
     }
-    // onAuthStateChange will update the user
     return {};
   },
 

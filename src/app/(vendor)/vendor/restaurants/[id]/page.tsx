@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
+import { VendorContactForm } from "@/components/vendor/VendorContactForm";
 
 export default async function RestaurantEditorPage({
   params,
@@ -112,11 +113,23 @@ export default async function RestaurantEditorPage({
             </dd>
           </div>
         </dl>
-        <p className="mt-4 text-xs text-text-muted">
-          Full editor form coming in Phase 2. For now, use the Deals and
-          Bookings tabs.
-        </p>
       </div>
+
+      <VendorContactForm
+        restaurantId={id}
+        slug={restaurant.slug ?? id}
+        initial={{
+          phone: restaurant.phone ?? "",
+          website: restaurant.website ?? "",
+          email: restaurant.email ?? "",
+          facebook_url: restaurant.facebook_url ?? "",
+          instagram_url: restaurant.instagram_url ?? "",
+          twitter_url: restaurant.twitter_url ?? "",
+          tiktok_url: restaurant.tiktok_url ?? "",
+          logo_url: restaurant.logo_url ?? "",
+          restaurant_type: restaurant.restaurant_type ?? "",
+        }}
+      />
     </div>
   );
 }

@@ -17,13 +17,13 @@ export function MenuSection({ menu }: MenuSectionProps) {
 
   return (
     <section>
-      <h2 className="font-serif text-[24px] font-bold text-text-primary tracking-[-0.5px] mb-3">Menu</h2>
+      <h2 className="text-[18px] font-semibold text-text-primary mb-3">Menu</h2>
       <div className="space-y-2">
         {menu.map((cat) => {
           const isOpen = openCategories.has(cat.name);
           return (
             <div key={cat.name} className="border border-border rounded-[var(--radius-lg)] overflow-hidden bg-surface">
-              <button onClick={() => toggle(cat.name)} className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-card transition-colors duration-[var(--dur-fast)] cursor-pointer">
+              <button onClick={() => toggle(cat.name)} className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-card transition-colors duration-[var(--dur-fast)] cursor-pointer">
                 <span className="font-semibold text-[13px] text-text-primary">{cat.name}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-[12px] text-text-muted">{cat.items.length} item{cat.items.length !== 1 && "s"}</span>

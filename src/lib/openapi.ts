@@ -46,6 +46,20 @@ export const openApiSpec = {
           open_time: { type: "string", nullable: true },
           close_time: { type: "string", nullable: true },
           status: { type: "string", enum: ["draft", "active", "paused", "archived"] },
+          phone: { type: "string", nullable: true },
+          website: { type: "string", nullable: true },
+          email: { type: "string", nullable: true },
+          facebook_url: { type: "string", nullable: true },
+          instagram_url: { type: "string", nullable: true },
+          postal_code: { type: "string", nullable: true },
+          logo_url: { type: "string", nullable: true },
+          street_view_url: { type: "string", nullable: true },
+          restaurant_type: { type: "string", nullable: true },
+          attributes: { type: "object", nullable: true },
+          google_place_id: { type: "string", nullable: true },
+          google_maps_url: { type: "string", nullable: true },
+          google_rating: { type: "number", nullable: true },
+          google_review_count: { type: "integer", nullable: true },
         },
       },
       Deal: {
@@ -547,6 +561,15 @@ export const openApiSpec = {
                   open_time: { type: "string" },
                   close_time: { type: "string" },
                   status: { type: "string", enum: ["draft", "active", "paused", "archived"] },
+                  phone: { type: "string" },
+                  website: { type: "string" },
+                  email: { type: "string" },
+                  facebook_url: { type: "string" },
+                  instagram_url: { type: "string" },
+                  postal_code: { type: "string" },
+                  logo_url: { type: "string" },
+                  street_view_url: { type: "string" },
+                  restaurant_type: { type: "string" },
                 },
               },
             },
@@ -555,6 +578,47 @@ export const openApiSpec = {
         responses: {
           "200": { description: "Created restaurant (id, name, slug, area, status)" },
           "400": { description: "Name required" },
+        },
+      },
+    },
+    "/api/admin/restaurants/import": {
+      post: {
+        tags: ["Admin"],
+        summary: "Import restaurants from CSV/XLSX",
+        description: "Upload a CSV or XLSX file to bulk import restaurants. Rows are validated then upserted (by slug). Returns imported count, skipped count, and errors.",
+        security: [{ cookieAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["file"],
+                properties: {
+                  file: { type: "string", format: "binary", description: "CSV, XLSX, or XLS file" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Import result",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    imported: { type: "integer" },
+                    skipped: { type: "integer" },
+                    errors: { type: "array", items: { type: "object", properties: { row: { type: "integer" }, field: { type: "string" }, message: { type: "string" } } } },
+                  },
+                },
+              },
+            },
+          },
+          "400": { description: "No file uploaded or empty" },
+          "422": { description: "Validation errors (all rows failed)" },
         },
       },
     },

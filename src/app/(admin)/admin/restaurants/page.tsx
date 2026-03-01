@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, UploadSimple } from "@phosphor-icons/react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
@@ -35,13 +35,22 @@ export default function AdminRestaurantsPage() {
         title="Restaurants"
         subtitle="All restaurants. Change status via API."
         action={
-          <Link
-            href="/admin/restaurants/new"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-brand text-white hover:bg-brand-hover transition-colors"
-          >
-            <Plus size={16} weight="bold" />
-            Add restaurant
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/restaurants/import"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-surface border border-border text-text-primary hover:bg-card transition-colors"
+            >
+              <UploadSimple size={16} weight="bold" />
+              Import
+            </Link>
+            <Link
+              href="/admin/restaurants/new"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-brand text-white hover:bg-brand-hover transition-colors"
+            >
+              <Plus size={16} weight="bold" />
+              Add restaurant
+            </Link>
+          </div>
         }
       />
 
