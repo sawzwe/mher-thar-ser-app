@@ -50,8 +50,10 @@ function formatRelativeTime(iso: string): string {
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
-  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+  if (diffMins < 60)
+    return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
   return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
 }
 
@@ -69,7 +71,9 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="p-8 animate-admin-enter">
-        <p className="text-danger">Failed to load: {(error as Error).message}</p>
+        <p className="text-danger">
+          Failed to load: {(error as Error).message}
+        </p>
       </div>
     );
   }
@@ -216,9 +220,12 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[12.5px] text-text-secondary leading-snug">
-                      <strong className="text-text-primary">New vendor claim</strong>
+                      <strong className="text-text-primary">
+                        New vendor claim
+                      </strong>
                       {" — "}
-                      {a.company_name || a.email || "Unknown"} requested verification
+                      {a.company_name || a.email || "Unknown"} requested
+                      verification
                     </div>
                     <div className="text-[11px] text-text-disabled mt-1">
                       {formatRelativeTime(a.created_at)} · Pending approval
@@ -282,7 +289,10 @@ export default function AdminDashboard() {
                     className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-brand to-brand-light"
                     style={
                       r.image_url
-                        ? { backgroundImage: `url(${r.image_url})`, backgroundSize: "cover" }
+                        ? {
+                            backgroundImage: `url(${r.image_url})`,
+                            backgroundSize: "cover",
+                          }
                         : {}
                     }
                   >
@@ -408,19 +418,26 @@ export default function AdminDashboard() {
               First 10 restaurants
             </div>
             <div className="text-[11px] text-text-secondary mb-3">
-              Add {Math.max(0, 10 - (data?.restaurantCount ?? 0))} more to grow your catalog
+              Add {Math.max(0, 10 - (data?.restaurantCount ?? 0))} more to grow
+              your catalog
             </div>
             <div className="h-1.5 bg-black/30 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(100, ((data?.restaurantCount ?? 0) / 10) * 100)}%` }}
+                style={{
+                  width: `${Math.min(100, ((data?.restaurantCount ?? 0) / 10) * 100)}%`,
+                }}
               />
             </div>
             <div className="flex justify-between text-[10px] text-text-muted mt-1.5">
+              <span>{data?.restaurantCount ?? 0} / 10 restaurants</span>
               <span>
-                {data?.restaurantCount ?? 0} / 10 restaurants
+                {Math.min(
+                  100,
+                  Math.round(((data?.restaurantCount ?? 0) / 10) * 100),
+                )}
+                %
               </span>
-              <span>{Math.min(100, Math.round(((data?.restaurantCount ?? 0) / 10) * 100))}%</span>
             </div>
           </div>
         </div>
@@ -522,7 +539,11 @@ function StatCard({
       <div className="text-[11px] text-text-muted mb-3">{sub}</div>
       {/* Sparkline placeholder */}
       <div className="h-9 -mb-1">
-        <svg viewBox="0 0 100 36" className="w-full h-full" preserveAspectRatio="none">
+        <svg
+          viewBox="0 0 100 36"
+          className="w-full h-full"
+          preserveAspectRatio="none"
+        >
           <defs>
             <linearGradient
               id={`spark-${color}-${label.replace(/\s/g, "-")}`}

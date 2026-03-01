@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireVendor } from "@/lib/auth/apiGuard";
+import type { VendorUser } from "@/lib/auth/users/VendorUser";
 
 export async function GET() {
   try {
     const { user, supabase } = await requireVendor();
-    const ids = user.restaurantIds;
+
+    if (user.type === "admin") {
+      const { data, error } = await supabase
+        .from("restaurants")
+        .select("*")
+        .order("name");
+      if (error) throw error;
+      return NextResponse.json(data ?? []);
+    }
+
+    const ids = (user as VendorUser).restaurantIds;
     if (ids.length === 0) {
       return NextResponse.json([]);
     }
