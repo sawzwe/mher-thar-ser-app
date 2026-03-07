@@ -5,33 +5,72 @@
    Restaurant Booking · Bangkok · EN + MY (Burmese)
 ═══════════════════════════════════════════════════════════════════ */
 
-:root {
-  /* ── BRAND ── */
-  --brand: #e8421a;
-  --brand-hover: #d63a14;
-  --brand-light: #ff6b47;
-  --brand-dim: rgba(232, 66, 26, 0.12);
-  --brand-dim-hover: rgba(232, 66, 26, 0.2);
-  --brand-border: rgba(232, 66, 26, 0.3);
+/* Light mode (default) */
+:root,
+[data-theme="light"] {
+  /* ── BRAND (from logo: bright red #D32424, darker red #B21818) ── */
+  --brand: #d32424;
+  --brand-hover: #b21818;
+  --brand-light: #e84040;
+  --brand-dim: rgba(211, 36, 36, 0.1);
+  --brand-dim-hover: rgba(211, 36, 36, 0.16);
+  --brand-border: rgba(211, 36, 36, 0.3);
 
   /* ── NEUTRALS ── */
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --card: #f5f4ef;
+  --card-hover: #eeece8;
+  --card-active: #e6e4dd;
+
+  /* ── BORDERS ── */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+
+  /* ── TEXT ── */
+  --text-primary: #0a0a08;
+  --text-secondary: #3a3933;
+  --text-muted: #5c5b54;
+  --text-disabled: #8a8982;
+  --text-inverse: #ffffff;
+
+  /* ── SHADOWS (light mode) ── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.14);
+  --shadow-brand: 0 4px 16px rgba(211, 36, 36, 0.2);
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --brand-dim: rgba(211, 36, 36, 0.12);
+  --brand-dim-hover: rgba(211, 36, 36, 0.2);
+
   --bg: #0a0a08;
   --surface: #111110;
   --card: #1a1a16;
   --card-hover: #212119;
   --card-active: #272724;
 
-  /* ── BORDERS ── */
   --border: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.12);
 
-  /* ── TEXT ── */
   --text-primary: #f5f4ef;
   --text-secondary: #a09f97;
   --text-muted: #5c5b54;
   --text-disabled: #3a3933;
   --text-inverse: #0a0a08;
 
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.7);
+  --shadow-brand: 0 4px 20px rgba(211, 36, 36, 0.3);
+}
+
+/* Shared tokens (same for both themes) */
+:root {
   /* ── SEMANTIC ── */
   --success: #3daa6e;
   --success-dim: rgba(61, 170, 110, 0.14);
@@ -49,14 +88,14 @@
   --info-dim: rgba(74, 159, 212, 0.14);
   --info-border: rgba(74, 159, 212, 0.28);
 
-  /* ── LIGHT SURFACES (deprecated - app is dark-first) ── */
-  --light-bg: #0a0a08;
-  --light-surface: #1a1a16;
-  --light-border: rgba(255, 255, 255, 0.07);
-
   /* ── ACCENT ── */
   --gold: #d4a853;
   --gold-dim: rgba(212, 168, 83, 0.14);
+
+  /* ── LEGACY (alias to current theme) ── */
+  --light-bg: var(--bg);
+  --light-surface: var(--surface);
+  --light-border: var(--border);
 
   /* ── RADIUS ── */
   --radius-sm: 6px;
@@ -65,13 +104,6 @@
   --radius-xl: 20px;
   --radius-2xl: 28px;
   --radius-full: 9999px;
-
-  /* ── SHADOWS ── */
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.7);
-  --shadow-brand: 0 4px 20px rgba(232, 66, 26, 0.3);
 
   /* ── TRANSITIONS ── */
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -151,6 +183,154 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Restaurant hero (universal dark gradient, always white text) ── */
+.restaurant-hero {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .restaurant-hero {
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme="dark"] .restaurant-hero {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(1.05) contrast(1.08) saturate(1.1);
+  transition: filter 0.3s ease;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.45) 35%,
+    rgba(0, 0, 0, 0.15) 65%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 32px 36px;
+}
+
+.hero-content h1 {
+  font-family: var(--font-sans), serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+  margin: 0 0 10px 0;
+}
+
+.hero-meta {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hero-meta .sep {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hero-meta .rating-star {
+  color: #e09b2d;
+}
+
+.hero-meta .status-open {
+  background: rgba(61, 170, 110, 0.25);
+  color: #6ddba0;
+  border: 1px solid rgba(61, 170, 110, 0.3);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero-meta .status-closed {
+  background: rgba(232, 64, 64, 0.25);
+  color: #ff8080;
+  border: 1px solid rgba(232, 64, 64, 0.3);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero-meta .price-tag {
+  color: #d4a853;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .restaurant-hero {
+    height: 260px;
+    border-radius: 0;
+    margin: 0 -16px 32px -16px;
+  }
+  .hero-content {
+    padding: 20px 16px;
+  }
+  .hero-content h1 {
+    font-size: 26px;
+  }
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 16px 0;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--dur-fast);
+}
+
+.breadcrumb-link:hover {
+  color: var(--text-primary);
+}
+
+.breadcrumb-sep {
+  color: var(--text-disabled);
+  margin: 0 8px;
+}
+
+.breadcrumb-current {
+  color: var(--text-primary);
 }
 
 /* ── Burmese text ── */
@@ -330,7 +510,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 /* ── Hero section (full width, centered) ── */
 .hero {
-  background: #0a0a08;
+  background: var(--bg);
   padding: 80px 20px 40px;
   text-align: center;
 }
@@ -351,15 +531,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(232, 66, 26, 0.12);
-  border: 1px solid rgba(232, 66, 26, 0.3);
+  background: var(--brand-dim);
+  border: 1px solid var(--brand-border);
   border-radius: 100px;
   padding: 5px 14px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #e8421a;
+  color: var(--brand);
   margin-bottom: 24px;
   width: fit-content;
 }
@@ -367,7 +547,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #e8421a;
+  background: var(--brand);
   animation: blink 2s ease-in-out infinite;
 }
 @keyframes blink {
@@ -384,7 +564,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-size: clamp(32px, 5.5vw, 48px);
   font-weight: 700;
   letter-spacing: -1px;
-  color: #f5f4ef;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 .hero-h1 {
@@ -393,16 +573,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-weight: 900;
   line-height: 1.02;
   letter-spacing: -2px;
-  color: #f5f4ef;
+  color: var(--text-primary);
   margin-bottom: 16px;
 }
 .hero-h1 em {
   font-style: italic;
-  color: #e8421a;
+  color: var(--brand);
 }
 .hero-sub {
   font-size: 16px;
-  color: #a09f97;
+  color: var(--text-secondary);
   line-height: 1.65;
   max-width: 480px;
   margin-bottom: 32px;
@@ -412,8 +592,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   max-width: 520px;
   display: flex;
   align-items: center;
-  background: #111110;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 100px;
   padding: 6px 6px 6px 18px;
   margin-bottom: 20px;
@@ -422,8 +602,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     box-shadow 220ms;
 }
 .search-bar:focus-within {
-  border-color: rgba(232, 66, 26, 0.4);
-  box-shadow: 0 0 0 3px rgba(232, 66, 26, 0.1);
+  border-color: rgba(211, 36, 36, 0.4);
+  box-shadow: 0 0 0 3px var(--brand-dim);
 }
 .search-bar input {
   flex: 1;
@@ -432,14 +612,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background: none;
   font-family: var(--font-dm-sans), sans-serif;
   font-size: 14px;
-  color: #f5f4ef;
+  color: var(--text-primary);
   min-width: 0;
 }
 .search-bar input::placeholder {
-  color: #5c5b54;
+  color: var(--text-muted);
 }
 .search-bar .search-icon {
-  color: #5c5b54;
+  color: var(--text-muted);
   margin-right: 12px;
   flex-shrink: 0;
 }
@@ -458,7 +638,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
 }
 .search-bar .search-btn {
-  background: #e8421a;
+  background: #d32424;
   color: white;
   border: none;
   border-radius: 100px;
@@ -504,9 +684,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   min-height: 44px;
 }
 .fpill.active {
-  background: #e8421a;
+  background: #d32424;
   color: white;
-  border-color: #e8421a;
+  border-color: #d32424;
 }
 .fpill:not(.active):hover {
   background: #212119;
@@ -553,8 +733,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .discovery-panel {
   display: flex;
   height: 600px;
-  background: #0a0a08;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
 }
 .map-col {
   flex: 0 0 55%;
@@ -571,13 +751,30 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 8, 0.4);
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
   z-index: 400;
 }
 .map-loading-spinner {
   width: 40px;
   height: 40px;
-  border: 2px solid white;
+  border: 2px solid var(--text-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.map-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  z-index: 400;
+}
+.map-loading-overlay-spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--text-primary);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -596,7 +793,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: flex;
   gap: 3px;
   padding: 4px;
-  background: rgba(10, 10, 8, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
   border-radius: 100px;
   pointer-events: all;
@@ -610,16 +807,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-family: var(--font-dm-sans), "DM Sans", sans-serif;
   font-size: 12px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 150ms;
 }
 .ropt.active {
-  background: #e8421a;
+  background: var(--brand);
   color: white;
 }
 .ropt:not(.active):hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
 }
 .found-badge {
   position: absolute;
@@ -629,9 +826,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(10, 10, 8, 0.9);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--border);
   border-radius: 100px;
   padding: 9px 18px;
   pointer-events: all;
@@ -641,7 +838,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #3daa6e;
+  background: var(--success);
   animation: blink 1.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -649,11 +846,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-family: var(--font-dm-sans), sans-serif;
   font-size: 12px;
   font-weight: 700;
-  color: #f5f4ef;
+  color: var(--text-primary);
 }
 .found-sub {
   font-size: 12px;
-  color: #5c5b54;
+  color: var(--text-muted);
 }
 .list-col {
   flex: 0 0 45%;
@@ -664,16 +861,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-direction: column;
   gap: 10px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
-  background: #0a0a08;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  scrollbar-color: var(--border) transparent;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
 }
 .list-card {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  background: #1a1a16;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px;
   cursor: pointer;
@@ -682,12 +879,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     border-color 150ms;
 }
 .list-card:hover {
-  background: #212119;
-  border-color: rgba(232, 66, 26, 0.25);
+  background: var(--card-hover);
+  border-color: var(--brand-border);
 }
 .list-card.active {
-  border-color: #e8421a;
-  background: rgba(232, 66, 26, 0.06);
+  border-color: var(--brand);
+  background: var(--brand-dim);
 }
 .lc-img {
   width: 64px;
@@ -699,7 +896,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  background: #252520;
+  background: var(--surface);
   position: relative;
 }
 .lc-img img {
@@ -721,7 +918,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #f5f4ef;
+  color: var(--text-primary);
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -731,13 +928,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .lc-rating {
   font-size: 12px;
   font-weight: 700;
-  color: #e09b2d;
+  color: var(--gold);
   flex-shrink: 0;
   margin-left: 6px;
 }
 .lc-meta {
   font-size: 11px;
-  color: #5c5b54;
+  color: var(--text-muted);
   margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -757,19 +954,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   text-transform: uppercase;
 }
 .lc-status.open {
-  background: rgba(61, 170, 110, 0.14);
-  color: #3daa6e;
+  background: var(--success-dim);
+  color: var(--success);
 }
 .lc-status.busy {
-  background: rgba(224, 155, 45, 0.14);
-  color: #e09b2d;
+  background: var(--warning-dim);
+  color: var(--warning);
 }
 .lc-status.closed {
-  background: rgba(232, 64, 64, 0.14);
-  color: #e84040;
+  background: var(--danger-dim);
+  color: var(--danger);
 }
 .lc-btn {
-  background: #e8421a;
+  background: var(--brand);
   color: white;
   border: none;
   border-radius: 100px;
@@ -783,7 +980,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: inline-block;
 }
 .lc-btn:hover {
-  background: #d63a14;
+  background: var(--brand-hover);
 }
 @media (max-width: 767px) {
   .discovery-panel {
@@ -798,7 +995,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     flex: none;
     overflow-y: visible;
     border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 1px solid var(--border);
     padding: 12px;
     flex-direction: row;
     overflow-x: auto;
@@ -827,15 +1024,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   transform: translateZ(0); /* create stacking context */
 }
 
-/* Leaflet map popup overrides (dark theme) */
+/* Leaflet map popup overrides (theme-aware) */
 .leaflet-popup-tip-container {
   display: none !important;
 }
 .leaflet-popup-content-wrapper {
-  background: #1a1a16 !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  background: var(--card) !important;
+  border: 1px solid var(--border-strong) !important;
   border-radius: 16px !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: var(--shadow-lg) !important;
   padding: 0 !important;
   overflow: hidden;
 }
@@ -843,7 +1040,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin: 0 !important;
 }
 .leaflet-container a.leaflet-popup-close-button {
-  color: #5c5b54 !important;
+  color: var(--text-muted) !important;
   top: 10px !important;
   right: 10px !important;
 }
@@ -852,8 +1049,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .card-skeleton {
   border-radius: 16px;
   overflow: hidden;
-  background: #1a1a16;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--card);
+  border: 1px solid var(--border);
 }
 .skeleton-img {
   height: 130px;
@@ -932,8 +1129,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 32px;
   line-height: 32px;
   text-align: center;
-  background: rgba(232, 66, 26, 0.2);
-  color: #e8421a;
+  background: rgba(211, 36, 36, 0.2);
+  color: #d32424;
   font-size: 14px;
   font-weight: 700;
   border-radius: 50%;
@@ -973,7 +1170,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .cta-btn {
   display: inline-block;
-  background: #e8421a;
+  background: #d32424;
   color: white;
   padding: 14px 28px;
   border-radius: 100px;

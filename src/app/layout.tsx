@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var v=localStorage.getItem("mher_thar_ser:lang");if(v==="my"||v==="en")document.documentElement.lang=v;}catch(e){}`,
+            __html: `try{var l=localStorage.getItem("mher_thar_ser:lang");if(l==="my"||l==="en")document.documentElement.lang=l;var t=localStorage.getItem("mher_thar_ser:theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);else document.documentElement.setAttribute("data-theme","light");}catch(e){}`,
           }}
         />
         <link

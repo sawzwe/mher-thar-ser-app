@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 import {
   ChartLine,
   Storefront,
@@ -155,7 +156,7 @@ export function AdminShell({
           className="absolute top-0 left-0 right-0 h-52 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 100% 100% at 50% 0%, rgba(232,66,26,0.08), transparent)",
+              "radial-gradient(ellipse 100% 100% at 50% 0%, rgba(211,36,36,0.08), transparent)",
           }}
         />
         <div className="relative p-4 pb-3 border-b border-border">
@@ -238,6 +239,7 @@ export function AdminShell({
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-14 shrink-0 border-b border-border flex items-center justify-between px-7 bg-bg/60 backdrop-blur-xl">
           <div className="flex items-center gap-3">
+            <Logo size={22} />
             <span className="text-sm font-semibold text-text-secondary">
               Mher Thar Ser
             </span>

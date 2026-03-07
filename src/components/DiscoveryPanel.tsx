@@ -3,19 +3,19 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import type { Map, Marker, Circle } from "leaflet";
+import type { Map, Marker, Circle, TileLayer } from "leaflet";
 import type { Restaurant } from "@/types";
 import { useLanguageStore } from "@/stores/languageStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { t } from "@/lib/i18n/translations";
 import { isOpenNow } from "@/lib/hours";
 import { getRestaurantPath } from "@/lib/restaurants/url";
 import { getPinColor, getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
+import { getTileUrl } from "@/lib/map/tiles";
 
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
 const RADIUS_OPTIONS = [1, 3, 5, 10, 20] as const;
-const DARK_TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png";
 const BANGKOK_BOUNDS = { sw: [13.45, 100.25] as [number, number], ne: [14.0, 100.95] as [number, number] };
 
 const STATUS_STYLES = {
@@ -47,8 +47,10 @@ export function DiscoveryPanel({
   onRadiusChange,
 }: DiscoveryPanelProps) {
   const lang = useLanguageStore((s) => s.lang);
+  const theme = useThemeStore((s) => s.theme);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const circleRef = useRef<Circle | null>(null);
   const userMarkerRef = useRef<Marker | null>(null);
   const markersRef = useRef<Record<string, Marker>>({});
@@ -70,6 +72,11 @@ export function DiscoveryPanel({
   const initMap = useCallback(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
     const L = require("leaflet");
+    const stored = useThemeStore.getState().theme;
+    const docTheme = document.documentElement.getAttribute("data-theme");
+    const currentTheme = (docTheme === "dark" || docTheme === "light" ? docTheme : stored) as "light" | "dark";
+    const tileUrl = getTileUrl(currentTheme);
+
     const map = L.map(containerRef.current, {
       zoomControl: false,
       minZoom: 11,
@@ -83,9 +90,10 @@ export function DiscoveryPanel({
     map.setMaxBounds(bounds);
     map.options.maxBoundsViscosity = 1.0;
 
-    L.tileLayer(DARK_TILE_URL, {
+    const tileLayer = L.tileLayer(tileUrl, {
       attribution: "© OpenStreetMap contributors © CARTO",
     }).addTo(map);
+    tileLayerRef.current = tileLayer;
 
     L.control.zoom({ position: "bottomright" }).addTo(map);
     mapRef.current = map;
@@ -97,11 +105,27 @@ export function DiscoveryPanel({
     return () => {
       mapRef.current?.remove();
       mapRef.current = null;
+      tileLayerRef.current = null;
       circleRef.current = null;
       userMarkerRef.current = null;
       markersRef.current = {};
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = typeof window !== "undefined" ? require("leaflet") : null;
+    if (!map || !L || !mapReady) return;
+
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+      tileLayerRef.current = null;
+    }
+    const tileLayer = L.tileLayer(getTileUrl(theme), {
+      attribution: "© OpenStreetMap contributors © CARTO",
+    }).addTo(map);
+    tileLayerRef.current = tileLayer;
+  }, [theme, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -140,10 +164,10 @@ export function DiscoveryPanel({
       circleRef.current = null;
     }
     const circle = L.circle([centerLat, centerLng], {
-      color: "#E8421A",
+      color: "#D32424",
       weight: 1.5,
       dashArray: "8 5",
-      fillColor: "#E8421A",
+      fillColor: "#D32424",
       fillOpacity: 0.05,
       radius: radiusKm * 1000,
     }).addTo(map);
@@ -187,7 +211,7 @@ export function DiscoveryPanel({
           <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#111110;color:#A09F97;">${formatDistance(dist)} ${t(lang, "away")}</span>
           <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${statusStyle.bg};color:${statusStyle.color};">${t(lang, status)}</span>
         </div>
-        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#E8421A;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>
+        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#D32424;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>
       `;
 
       const marker = L.marker([r.geo.lat, r.geo.lng], { icon })

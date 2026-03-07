@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRestaurantStore } from "@/stores/restaurantStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { t } from "@/lib/i18n/translations";
+import { Logo } from "@/components/Logo";
 import { getDistanceKm } from "@/lib/map/distance";
 import { DiscoveryPanel } from "@/components/DiscoveryPanel";
 import type { Restaurant } from "@/types";
@@ -155,7 +156,8 @@ export function HomePageClient() {
 
       {/* Footer */}
       <footer className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between bg-bg">
-        <div>
+        <div className="flex items-center gap-2">
+          <Logo size={24} />
           <span className="font-sans text-[15px] font-bold text-text-primary">
             Mher Thar Ser
           </span>

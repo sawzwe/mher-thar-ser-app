@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown, Sun, Moon } from "@phosphor-icons/react";
 import { useRestaurantStore } from "@/stores/restaurantStore";
 import { useBookingStore } from "@/stores/bookingStore";
 import { useReviewStore } from "@/stores/reviewStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useLanguageStore } from "@/stores/languageStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { initializeSlotsIfNeeded } from "@/lib/slots";
 import { runMigrations } from "@/lib/storage";
 import { t } from "@/lib/i18n/translations";
+import { Logo } from "@/components/Logo";
 import { Toast } from "./Toast";
 import { AuthModal } from "./AuthModal";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const lang = useLanguageStore((s) => s.lang);
   const setLang = useLanguageStore((s) => s.setLang);
   const hydrate = useLanguageStore((s) => s.hydrate);
+  const theme = useThemeStore((s) => s.theme);
+  const setTheme = useThemeStore((s) => s.setTheme);
+  const hydrateTheme = useThemeStore((s) => s.hydrate);
 
   const [authModal, setAuthModal] = useState<"sign-in" | "sign-up" | null>(
     null,
@@ -44,13 +49,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     hydrate();
-  }, [hydrate]);
+    hydrateTheme();
+  }, [hydrate, hydrateTheme]);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.documentElement.lang = lang;
     }
   }, [lang]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, [theme]);
 
   useEffect(() => {
     runMigrations();
@@ -95,10 +107,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="fixed top-4 left-4 right-4 md:left-8 md:right-8 z-[var(--z-nav)] flex items-center justify-between px-5 md:px-6 h-14 rounded-2xl bg-surface/95 backdrop-blur-xl backdrop-saturate-150 border border-brand/20 shadow-[var(--shadow-lg)] shrink-0">
         <Link href="/" className="flex items-center gap-2.5">
           <div
-            className="w-[30px] h-[30px] rounded-[7px] bg-brand flex items-center justify-center font-sans text-[13px] font-bold text-white"
-            style={isHome ? { width: 30, height: 30, borderRadius: 7 } : {}}
+            className={cn(
+              "shrink-0 flex items-center justify-center overflow-hidden",
+              isHome ? "w-[30px] h-[30px] rounded-[7px]" : "w-[30px] h-[30px] rounded-[7px]",
+            )}
           >
-            H
+            <Logo size={30} />
           </div>
           <span
             className={cn(
@@ -111,6 +125,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
 
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            className="flex items-center justify-center w-9 h-9 rounded-[var(--radius-full)] border border-border-strong text-text-muted hover:text-text-primary hover:border-brand transition-all bg-transparent cursor-pointer shrink-0"
+            title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+          >
+            {theme === "light" ? <Moon size={18} weight="regular" /> : <Sun size={18} weight="regular" />}
+          </button>
           <div className="relative mr-2 md:mr-3">
             <button
               type="button"
@@ -314,7 +336,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {!isChat && !isHome && (
         <footer className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between">
-          <div>
+          <div className="flex items-center gap-2">
+            <Logo size={24} />
             <span className="font-sans text-[15px] font-bold text-text-primary">
               Mher Thar Ser
             </span>

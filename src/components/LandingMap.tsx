@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { Map, Marker, Circle } from "leaflet";
+import type { Map, Marker, Circle, TileLayer } from "leaflet";
 import type { Restaurant } from "@/types";
 import { isOpenNow } from "@/lib/hours";
 import { getRestaurantPath } from "@/lib/restaurants/url";
 import { getPinColor, getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
+import { getTileUrl } from "@/lib/map/tiles";
+import { useThemeStore } from "@/stores/themeStore";
+
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
 const RADIUS_OPTIONS = [1, 3, 5, 10, 20] as const;
-
-const DARK_TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png";
 const BANGKOK_BOUNDS = {
   sw: [13.45, 100.25] as [number, number],
   ne: [14.0, 100.95] as [number, number],
@@ -47,8 +47,10 @@ export function LandingMap({
   onRadiusChange,
   onLocationUpdate,
 }: LandingMapProps) {
+  const theme = useThemeStore((s) => s.theme);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const circleRef = useRef<Circle | null>(null);
   const userMarkerRef = useRef<Marker | null>(null);
   const restaurantMarkersRef = useRef<Marker[]>([]);
@@ -68,6 +70,10 @@ export function LandingMap({
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const L = require("leaflet");
+    const stored = useThemeStore.getState().theme;
+    const docTheme = document.documentElement.getAttribute("data-theme");
+    const currentTheme = (docTheme === "dark" || docTheme === "light" ? docTheme : stored) as "light" | "dark";
+    const tileUrl = getTileUrl(currentTheme);
 
     const map = L.map(containerRef.current, {
       zoomControl: false,
@@ -82,9 +88,10 @@ export function LandingMap({
     map.setMaxBounds(bounds);
     map.options.maxBoundsViscosity = 1.0;
 
-    L.tileLayer(DARK_TILE_URL, {
+    const tileLayer = L.tileLayer(tileUrl, {
       attribution: "© OpenStreetMap contributors © CARTO",
     }).addTo(map);
+    tileLayerRef.current = tileLayer;
 
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
@@ -97,11 +104,28 @@ export function LandingMap({
     return () => {
       mapRef.current?.remove();
       mapRef.current = null;
+      tileLayerRef.current = null;
       circleRef.current = null;
       userMarkerRef.current = null;
       restaurantMarkersRef.current = [];
     };
   }, []);
+
+  // Swap tile layer when theme changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = typeof window !== "undefined" ? require("leaflet") : null;
+    if (!map || !L || !mapReady) return;
+
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+      tileLayerRef.current = null;
+    }
+    const tileLayer = L.tileLayer(getTileUrl(theme), {
+      attribution: "© OpenStreetMap contributors © CARTO",
+    }).addTo(map);
+    tileLayerRef.current = tileLayer;
+  }, [theme, mapReady]);
 
   // Update center when user location changes (initial load)
   useEffect(() => {
@@ -149,10 +173,10 @@ export function LandingMap({
     }
 
     const circle = L.circle([centerLat, centerLng], {
-      color: "#E8421A",
+      color: "#D32424",
       weight: 1.5,
       dashArray: "8 5",
-      fillColor: "#E8421A",
+      fillColor: "#D32424",
       fillOpacity: 0.05,
       radius: radiusKm * 1000,
     }).addTo(map);
@@ -194,23 +218,25 @@ export function LandingMap({
       const displayRating = r.googleRating ?? r.rating;
 
       const popupContent = document.createElement("div");
+      popupContent.className = "map-popup-content";
       popupContent.style.cssText = `
-        font-family:'DM Sans',sans-serif;
-        padding:14px 16px;
-        min-width:200px;
-        border-radius:16px;
+        font-family: var(--font-sans), sans-serif;
+        padding: 14px 16px;
+        min-width: 200px;
+        border-radius: 16px;
+        color: var(--text-primary);
       `;
       popupContent.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
-          <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:700;color:#0A0A08;">${r.name}</div>
-          <div style="font-size:12px;font-weight:700;color:#E09B2D;">★ ${displayRating.toFixed(1)}</div>
+          <div style="font-family:var(--font-sans),system-ui,sans-serif;font-size:15px;font-weight:700;color:var(--text-primary);">${r.name}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--gold);">★ ${displayRating.toFixed(1)}</div>
         </div>
-        <div style="font-size:11px;color:#8A8880;margin-bottom:10px;">${r.cuisineTags.join(", ") || r.area}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">${r.cuisineTags.join(", ") || r.area}</div>
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
-          <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#111110;color:#A09F97;">${formatDistance(dist)} away</span>
+          <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--card);color:var(--text-secondary);">${formatDistance(dist)} away</span>
           <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${statusStyle.bg};color:${statusStyle.color};">${status}</span>
         </div>
-        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#E8421A;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">View Details →</a>
+        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:var(--brand);color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">View Details →</a>
       `;
 
       marker.bindPopup(popupContent);
@@ -222,8 +248,8 @@ export function LandingMap({
     <div className="landing-map-wrapper relative w-full h-full min-h-[380px] rounded-t-[20px] md:rounded-none overflow-hidden">
       <div ref={containerRef} className="w-full h-full" />
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[rgba(10,10,8,0.4)] z-[400]">
-          <div className="w-10 h-10 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        <div className="map-loading-overlay">
+          <div className="map-loading-overlay-spinner" />
         </div>
       )}
 

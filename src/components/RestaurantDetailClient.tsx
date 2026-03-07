@@ -26,7 +26,7 @@ import {
   XLogo,
   TiktokLogo,
 } from "@phosphor-icons/react";
-import { Badge, BadgeDot } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
@@ -118,34 +118,29 @@ export function RestaurantDetailClient({
 
   return (
     <div className="max-w-5xl mx-auto px-6 md:px-12 py-8">
-      <nav className="text-[13px] text-text-muted mb-4">
-        <Link
-          href="/"
-          className="hover:text-brand-light transition-colors duration-[var(--dur-fast)]"
-        >
+      <nav className="breadcrumb">
+        <Link href="/" className="breadcrumb-link">
           {t(lang, "home")}
         </Link>
-        <span className="mx-2 text-border-strong">/</span>
-        <span className="text-text-primary">{r.name}</span>
+        <span className="breadcrumb-sep">/</span>
+        <span className="breadcrumb-current">{r.name}</span>
       </nav>
 
       {/* Hero image */}
-      <div className="relative h-64 md:h-80 rounded-[var(--radius-xl)] overflow-hidden mb-8">
+      <div className="restaurant-hero">
         <Image
           src={r.imageUrl}
           alt={r.name}
           fill
-          className="object-cover"
+          className="hero-img"
           sizes="(max-width: 1024px) 100vw, 960px"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,10,8,0.85)] via-[rgba(10,10,8,0.3)] to-transparent" />
-        <div className="absolute bottom-0 left-0 p-8 space-y-3">
-          <h1 className="font-sans text-3xl md:text-4xl font-bold text-text-primary drop-shadow-lg tracking-[-1px]">
-            {r.name}
-          </h1>
-          <div className="flex flex-wrap items-center gap-3 text-[13px] text-[rgba(245,244,239,0.8)]">
-            <span className="text-gold font-semibold">★ {ratingInfo.avg}</span>
+        <div className="hero-overlay" aria-hidden="true" />
+        <div className="hero-content">
+          <h1>{r.name}</h1>
+          <div className="hero-meta">
+            <span className="rating-star font-semibold">★ {ratingInfo.avg}</span>
             <span>
               (
               {ratingInfo.count > 0
@@ -153,15 +148,14 @@ export function RestaurantDetailClient({
                 : `${r.reviewCount} ${t(lang, "reviews")}`}
               )
             </span>
-            <span className="w-[3px] h-[3px] rounded-full bg-text-muted" />
+            <span className="sep" aria-hidden="true">•</span>
             <span>{r.area}</span>
-            <span className="w-[3px] h-[3px] rounded-full bg-text-muted" />
-            <span className="text-gold">{priceLabel[r.priceTier]}</span>
-            <span className="w-[3px] h-[3px] rounded-full bg-text-muted" />
-            <Badge variant={openStatus.open ? "success" : "danger"}>
-              <BadgeDot />
+            <span className="sep" aria-hidden="true">•</span>
+            <span className="price-tag">{priceLabel[r.priceTier]}</span>
+            <span className="sep" aria-hidden="true">•</span>
+            <span className={openStatus.open ? "status-open" : "status-closed"}>
               {openStatus.open ? t(lang, "open") : t(lang, "closed")}
-            </Badge>
+            </span>
           </div>
         </div>
       </div>

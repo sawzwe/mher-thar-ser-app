@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Map, TileLayer } from "leaflet";
 import { Geo } from "@/types";
 import { Button } from "@/components/ui/button";
 import type { Lang } from "@/stores/languageStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { t } from "@/lib/i18n/translations";
-
-const DARK_TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png";
+import { getTileUrl } from "@/lib/map/tiles";
 
 interface MapSectionProps { geo: Geo; address: string; name: string; lang: Lang; }
 
 export function MapSection({ geo, address, name, lang }: MapSectionProps) {
+  const theme = useThemeStore((s) => s.theme);
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<unknown>(null);
+  const mapRef = useRef<Map | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const [copied, setCopied] = useState(false);
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${geo.lat},${geo.lng}`;
 
@@ -23,6 +25,10 @@ export function MapSection({ geo, address, name, lang }: MapSectionProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const L = require("leaflet");
+    const stored = useThemeStore.getState().theme;
+    const docTheme = document.documentElement.getAttribute("data-theme");
+    const currentTheme = (docTheme === "dark" || docTheme === "light" ? docTheme : stored) as "light" | "dark";
+    const tileUrl = getTileUrl(currentTheme);
 
     const map = L.map(containerRef.current, {
       zoomControl: true,
@@ -33,13 +39,14 @@ export function MapSection({ geo, address, name, lang }: MapSectionProps) {
       keyboard: false,
     }).setView([geo.lat, geo.lng], 16);
 
-    L.tileLayer(DARK_TILE_URL, {
+    const tileLayer = L.tileLayer(tileUrl, {
       attribution: "© OpenStreetMap contributors © CARTO",
     }).addTo(map);
+    tileLayerRef.current = tileLayer;
 
     const icon = L.divIcon({
       className: "restaurant-pin",
-      html: `<div style="width:34px;height:34px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:#E8421A;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.35);"></div><span style="position:absolute;font-size:14px;">📍</span></div>`,
+      html: `<div style="width:34px;height:34px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:#D32424;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.35);"></div><span style="position:absolute;font-size:14px;">📍</span></div>`,
       iconSize: [34, 34],
       iconAnchor: [17, 30],
     });
@@ -50,11 +57,27 @@ export function MapSection({ geo, address, name, lang }: MapSectionProps) {
 
     return () => {
       if (mapRef.current) {
-        (mapRef.current as { remove: () => void }).remove();
+        mapRef.current.remove();
         mapRef.current = null;
+        tileLayerRef.current = null;
       }
     };
   }, [geo.lat, geo.lng]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = typeof window !== "undefined" ? require("leaflet") : null;
+    if (!map || !L) return;
+
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+      tileLayerRef.current = null;
+    }
+    const tileLayer = L.tileLayer(getTileUrl(theme), {
+      attribution: "© OpenStreetMap contributors © CARTO",
+    }).addTo(map);
+    tileLayerRef.current = tileLayer;
+  }, [theme]);
 
   const handleCopyAddress = async () => {
     try {

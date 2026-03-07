@@ -53,9 +53,9 @@ export function LandingRestaurantCard({
           />
         ) : (
           <div
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center bg-surface"
             style={{
-              background: "linear-gradient(135deg, #1A1A16, #252520)",
+              background: "linear-gradient(135deg, var(--surface), var(--card))",
             }}
           >
             <span className="text-5xl">{emoji}</span>
@@ -64,8 +64,8 @@ export function LandingRestaurantCard({
         <span
           className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-[100px] text-[11px] font-bold"
           style={{
-            background: "rgba(224,155,45,0.15)",
-            color: "#E09B2D",
+            background: "var(--warning-dim)",
+            color: "var(--warning)",
           }}
         >
           <Star weight="fill" size={12} />
@@ -85,11 +85,7 @@ export function LandingRestaurantCard({
         <div className="flex items-center justify-between gap-2 mb-2 text-[12px] text-text-muted">
           <span>{r.cuisineTags[0] || r.area}</span>
           <span
-            className="px-2 py-0.5 rounded-[100px] text-[11px] font-semibold"
-            style={{
-              background: "#111110",
-              color: "#A09F97",
-            }}
+            className="px-2 py-0.5 rounded-[100px] text-[11px] font-semibold bg-card text-text-secondary"
           >
             {formatDistance(dist)}
           </span>
