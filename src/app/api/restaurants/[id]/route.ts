@@ -41,7 +41,7 @@ export async function GET(
       supabase
         .from("menu_categories")
         .select(
-          "id, name, sort_order, menu_items(id, name, description, price, sort_order)",
+          "id, name, sort_order, menu_items(id, name, description, price, image_url, sort_order)",
         )
         .eq("restaurant_id", restaurantId)
         .order("sort_order"),
@@ -70,6 +70,7 @@ export async function GET(
         name: string;
         description?: string;
         price: number;
+        image_url?: string;
         sort_order: number;
       }[];
     }[];
@@ -85,6 +86,7 @@ export async function GET(
             name: item.name,
             description: item.description ?? undefined,
             price: item.price,
+            image_url: item.image_url ?? undefined,
           })),
       }));
 

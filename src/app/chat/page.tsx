@@ -273,7 +273,7 @@ export default function ChatPage() {
         <div
           className="absolute -top-[100px] -right-[100px] w-[500px] h-[500px] rounded-full pointer-events-none z-0"
           style={{
-            background: "radial-gradient(circle, rgba(232,66,26,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(211,36,36,0.06) 0%, transparent 70%)",
           }}
         />
 
@@ -309,7 +309,7 @@ export default function ChatPage() {
 
         {/* Input area */}
         <div className="px-8 max-md:px-4 pt-4 pb-5 border-t border-border bg-[rgba(10,10,8,0.7)] backdrop-blur-[12px] relative z-10">
-          <div className="flex items-end gap-2.5 bg-card border border-border-strong rounded-[var(--radius-lg)] p-2.5 pl-[18px] transition-[border-color,box-shadow] duration-[var(--dur-fast)] focus-within:border-brand focus-within:shadow-[0_0_0_3px_rgba(232,66,26,0.08)]">
+          <div className="flex items-end gap-2.5 bg-card border border-border-strong rounded-[var(--radius-lg)] p-2.5 pl-[18px] transition-[border-color,box-shadow] duration-[var(--dur-fast)] focus-within:border-brand focus-within:shadow-[0_0_0_3px_rgba(211,36,36,0.08)]">
             <textarea
               ref={inputRef}
               value={input}
@@ -404,7 +404,7 @@ function MessageRow({ msg }: { msg: ChatMessage }) {
           "w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm mt-0.5",
           isUser
             ? "bg-card-hover border border-border-strong text-base"
-            : "bg-brand font-serif font-bold text-white text-[12px]"
+            : "bg-brand font-sans font-bold text-white text-[12px]"
         )}
       >
         {isUser ? "🙂" : "H"}

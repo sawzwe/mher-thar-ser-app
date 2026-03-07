@@ -41,6 +41,7 @@ export default async function RestaurantEditorPage({
 
   const tabs = [
     { href: `/vendor/restaurants/${id}`, label: "Info" },
+    { href: `/vendor/restaurants/${id}/menu`, label: "Menu" },
     { href: `/vendor/restaurants/${id}/deals`, label: "Deals" },
     { href: `/vendor/restaurants/${id}/slots`, label: "Availability" },
     { href: `/vendor/restaurants/${id}/bookings`, label: "Bookings" },

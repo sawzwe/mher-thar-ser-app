@@ -5,8 +5,18 @@ function getApiBase(): string {
   return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 }
 
-export async function fetchRestaurants(): Promise<Restaurant[]> {
-  const res = await fetch(`${getApiBase()}/api/restaurants`);
+export async function fetchRestaurants(opts?: {
+  lat?: number;
+  lng?: number;
+  radius?: number;
+}): Promise<Restaurant[]> {
+  const params = new URLSearchParams();
+  if (opts?.lat != null) params.set("lat", String(opts.lat));
+  if (opts?.lng != null) params.set("lng", String(opts.lng));
+  if (opts?.radius != null) params.set("radius", String(opts.radius));
+  const qs = params.toString();
+  const url = `${getApiBase()}/api/restaurants${qs ? `?${qs}` : ""}`;
+  const res = await fetch(url);
   if (!res.ok) {
     const body = await res.text();
     let msg = `Failed to fetch restaurants (${res.status})`;
@@ -19,6 +29,14 @@ export async function fetchRestaurants(): Promise<Restaurant[]> {
     throw new Error(msg);
   }
   return res.json();
+}
+
+export async function fetchRestaurantsForMap(
+  lat: number,
+  lng: number,
+  radiusKm: number
+): Promise<Restaurant[]> {
+  return fetchRestaurants({ lat, lng, radius: radiusKm });
 }
 
 export async function fetchRestaurantById(id: string): Promise<Restaurant | null> {

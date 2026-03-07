@@ -17,6 +17,7 @@ export interface MenuItem {
   name: string;
   description?: string;
   price: number;
+  image_url?: string;
 }
 
 export interface MenuCategory {

@@ -17,7 +17,9 @@ import {
   Phone,
   Plus,
   Trash,
+  ForkKnife,
 } from "@phosphor-icons/react";
+import { MenuEditor } from "@/components/admin/MenuEditor";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import {
@@ -37,6 +39,7 @@ const TABS = [
   { id: "core", label: "Core & Details", Icon: House },
   { id: "media", label: "Media", Icon: ImageIcon },
   { id: "contact", label: "Contact & Socials", Icon: EnvelopeSimple },
+  { id: "menu", label: "Menu", Icon: ForkKnife },
 ];
 
 const DAYS = [
@@ -774,6 +777,13 @@ export default function AdminRestaurantEditPage() {
     core: <CoreDetailsTab />,
     media: <MediaTab />,
     contact: <ContactTab />,
+    menu: (
+      <MenuEditor
+        restaurantId={id}
+        restaurantSlug={restaurant?.slug ?? id}
+        apiPath={`/api/admin/restaurants/${id}/menu`}
+      />
+    ),
   };
 
   return (
@@ -826,20 +836,22 @@ export default function AdminRestaurantEditPage() {
           {/* Tab content */}
           <div className="p-7">{tabContent[activeTab]}</div>
 
-          {/* Footer actions */}
-          <div className="px-7 py-4 border-t border-border bg-surface flex gap-3 items-center">
-            {error && <p className="text-sm text-danger flex-1">{error}</p>}
-            <div className="flex gap-3 ml-auto">
-              <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? "Saving…" : "Save changes"}
-              </Button>
-              <Link href="/admin/restaurants">
-                <Button type="button" variant="ghost">
-                  Cancel
+          {/* Footer actions — hidden on menu tab (has own save) */}
+          {activeTab !== "menu" && (
+            <div className="px-7 py-4 border-t border-border bg-surface flex gap-3 items-center">
+              {error && <p className="text-sm text-danger flex-1">{error}</p>}
+              <div className="flex gap-3 ml-auto">
+                <Button type="submit" disabled={mutation.isPending}>
+                  {mutation.isPending ? "Saving…" : "Save changes"}
                 </Button>
-              </Link>
+                <Link href="/admin/restaurants">
+                  <Button type="button" variant="ghost">
+                    Cancel
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </form>
 

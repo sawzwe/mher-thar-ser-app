@@ -50,7 +50,7 @@ export function ReviewsSection({ restaurant }: { restaurant: Restaurant }) {
 
   return (
     <section>
-      <h2 className="font-serif text-[24px] font-bold text-text-primary tracking-[-0.5px] mb-4">Reviews</h2>
+      <h2 className="font-sans text-[24px] font-bold text-text-primary tracking-[-0.5px] mb-4">Reviews</h2>
 
       <div className="flex flex-col sm:flex-row gap-6 mb-6 p-5 bg-surface rounded-[var(--radius-lg)] border border-border">
         <div className="text-center sm:text-left shrink-0">

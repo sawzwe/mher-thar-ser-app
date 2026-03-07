@@ -1,14 +1,21 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus, UploadSimple } from "@phosphor-icons/react";
+import { Plus, UploadSimple, CaretDown } from "@phosphor-icons/react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
 type Restaurant = { id: string; name: string; slug: string | null; area: string; status: string };
 
 export default function AdminRestaurantsPage() {
+  const queryClient = useQueryClient();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkError, setBulkError] = useState<string | null>(null);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-restaurants"],
     queryFn: async () => {
@@ -20,6 +27,42 @@ export default function AdminRestaurantsPage() {
   });
 
   const restaurants = data?.restaurants ?? [];
+  const selectedCount = selected.size;
+  const allSelected = restaurants.length > 0 && selectedCount === restaurants.length;
+
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(restaurants.map((r) => r.id)));
+  };
+
+  const toggleOne = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelected(next);
+  };
+
+  const runBulk = async (action: "status" | "delete", status?: string) => {
+    if (selectedCount === 0) return;
+    setBulkLoading(true);
+    setBulkError(null);
+    try {
+      const res = await fetch("/api/admin/restaurants/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, ids: Array.from(selected), status }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed");
+      setSelected(new Set());
+      setBulkOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
+    } catch (e) {
+      setBulkError((e as Error).message);
+    } finally {
+      setBulkLoading(false);
+    }
+  };
 
   if (error) {
     return (
@@ -33,7 +76,7 @@ export default function AdminRestaurantsPage() {
     <div className="p-8 animate-admin-enter">
       <AdminPageHeader
         title="Restaurants"
-        subtitle="All restaurants. Change status via API."
+        subtitle="All restaurants. Bulk actions available when rows are selected."
         action={
           <div className="flex items-center gap-2">
             <Link
@@ -54,6 +97,71 @@ export default function AdminRestaurantsPage() {
         }
       />
 
+      {selectedCount > 0 && (
+        <div className="mb-4 flex items-center gap-3">
+          <span className="text-sm text-text-secondary">
+            {selectedCount} selected
+          </span>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setBulkOpen((o) => !o)}
+              disabled={bulkLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface border border-border text-text-primary hover:bg-card disabled:opacity-50"
+            >
+              Bulk actions
+              <CaretDown size={14} weight="bold" />
+            </button>
+            {bulkOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setBulkOpen(false)}
+                  aria-hidden
+                />
+                <div className="absolute left-0 top-full mt-1 z-20 min-w-[180px] py-1 bg-card border border-border rounded-lg shadow-lg">
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-text-muted uppercase">
+                    Set status
+                  </div>
+                  {(["active", "paused", "archived", "draft"] as const).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => runBulk("status", s)}
+                      className="w-full text-left px-3 py-2 text-xs font-medium text-text-primary hover:bg-surface capitalize"
+                    >
+                      Set to {s}
+                    </button>
+                  ))}
+                  <div className="border-t border-border my-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Delete ${selectedCount} restaurant(s)? This cannot be undone.`)) {
+                        runBulk("delete");
+                      }
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs font-medium text-danger hover:bg-danger-dim"
+                  >
+                    Delete selected
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setSelected(new Set())}
+            className="text-xs text-text-muted hover:text-text-primary"
+          >
+            Clear selection
+          </button>
+          {bulkError && (
+            <span className="text-xs text-danger">{bulkError}</span>
+          )}
+        </div>
+      )}
+
       {isLoading ? (
         <TableSkeleton rows={8} cols={4} />
       ) : !restaurants.length ? (
@@ -65,6 +173,14 @@ export default function AdminRestaurantsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-surface border-b border-border">
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={toggleAll}
+                    className="rounded border-border"
+                  />
+                </th>
                 <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
                   Name
                 </th>
@@ -85,6 +201,14 @@ export default function AdminRestaurantsPage() {
                   key={r.id}
                   className="border-b border-border last:border-b-0 hover:bg-card"
                 >
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(r.id)}
+                      onChange={() => toggleOne(r.id)}
+                      className="rounded border-border"
+                    />
+                  </td>
                   <td className="px-4 py-3 font-medium text-text-primary">
                     {r.name}
                   </td>

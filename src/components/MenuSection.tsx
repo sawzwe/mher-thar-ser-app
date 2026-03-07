@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { MenuCategory } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -35,8 +36,13 @@ export function MenuSection({ menu }: MenuSectionProps) {
               {isOpen && (
                 <div className="border-t border-border divide-y divide-border">
                   {cat.items.map((item) => (
-                    <div key={item.name} className="px-4 py-3 flex items-start justify-between gap-4 transition-colors duration-[var(--dur-fast)] hover:bg-card">
-                      <div className="min-w-0">
+                    <div key={item.name} className="px-4 py-3 flex items-start gap-4 transition-colors duration-[var(--dur-fast)] hover:bg-card">
+                      {item.image_url && (
+                        <div className="relative w-20 h-20 shrink-0 rounded-[var(--radius-md)] overflow-hidden bg-card border border-border">
+                          <Image src={item.image_url} alt={item.name} fill className="object-cover" sizes="80px" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
                         <p className="text-[13px] font-medium text-text-primary">{item.name}</p>
                         {item.description && <p className="text-[12px] text-text-muted mt-0.5 line-clamp-2">{item.description}</p>}
                       </div>

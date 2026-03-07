@@ -1,8 +1,30 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { transformDbRestaurant } from "@/lib/restaurants/transform";
+import type { Restaurant } from "@/types";
 
-export async function GET() {
+function getDistanceKm(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const lat = searchParams.get("lat");
+  const lng = searchParams.get("lng");
+  const radiusParam = searchParams.get("radius");
   try {
     const supabase = await createClient();
 
@@ -31,7 +53,7 @@ export async function GET() {
 
     if (!rows) throw new Error("No data returned from Supabase");
 
-    const restaurants = rows.map((row) => {
+    let restaurants: Restaurant[] = rows.map((row) => {
       const deals = (row.deals ?? []) as {
         id: string;
         title: string;
@@ -49,6 +71,31 @@ export async function GET() {
         },
       );
     });
+
+    // Filter by lat/lng/radius when provided
+    const centerLat = lat ? parseFloat(lat) : null;
+    const centerLng = lng ? parseFloat(lng) : null;
+    const radiusKm = radiusParam ? parseFloat(radiusParam) : null;
+
+    if (
+      centerLat != null &&
+      !Number.isNaN(centerLat) &&
+      centerLng != null &&
+      !Number.isNaN(centerLng) &&
+      radiusKm != null &&
+      !Number.isNaN(radiusKm) &&
+      radiusKm > 0
+    ) {
+      restaurants = restaurants.filter((r) => {
+        const d = getDistanceKm(
+          centerLat,
+          centerLng,
+          r.geo.lat,
+          r.geo.lng
+        );
+        return d <= radiusKm;
+      });
+    }
 
     return NextResponse.json(restaurants);
   } catch (err) {

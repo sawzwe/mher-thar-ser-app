@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { TransitStop, Geo, TransitType } from "@/types";
 import { haversineDistance, formatDistance } from "@/lib/geo";
 import { Badge } from "@/components/ui/badge";
+import type { Lang } from "@/stores/languageStore";
+import { t } from "@/lib/i18n/translations";
 
 const transitBadge: Record<TransitType, "bts" | "mrt" | "arl"> = {
   BTS: "bts",
@@ -19,11 +21,13 @@ const transitIcon: Record<TransitType, string> = {
 interface TransitSectionProps {
   transitNearby: TransitStop[];
   restaurantGeo: Geo;
+  lang: Lang;
 }
 
 export function TransitSection({
   transitNearby,
   restaurantGeo,
+  lang,
 }: TransitSectionProps) {
   const [geoStatus, setGeoStatus] = useState<
     "idle" | "loading" | "granted" | "denied"
@@ -50,7 +54,7 @@ export function TransitSection({
   return (
     <section>
       <h2 className="text-[18px] font-semibold text-text-primary mb-3">
-        Nearby Transit
+        {t(lang, "nearbyTransit")}
       </h2>
       {geoStatus === "granted" && distanceKm !== null && (
         <div className="mb-3 px-3 py-2 bg-brand-dim border border-brand-border rounded-[var(--radius-md)] text-[13px] text-brand-light flex items-center gap-2">
@@ -74,21 +78,21 @@ export function TransitSection({
             />
           </svg>
           <span>
-            {formatDistance(distanceKm)} from your location{" "}
+            {formatDistance(distanceKm)} {t(lang, "fromYourLocation")}{" "}
             <span className="text-brand-light/70 text-[11px]">
-              (straight-line)
+              {t(lang, "straightLine")}
             </span>
           </span>
         </div>
       )}
       {geoStatus === "loading" && (
         <p className="text-[11px] text-text-muted mb-3">
-          Checking your location...
+          {t(lang, "checkingLocation")}
         </p>
       )}
       {geoStatus === "denied" && (
         <p className="text-[12px] text-text-muted mb-3 italic">
-          Allow location access to see distance from you.
+          {t(lang, "allowLocation")}
         </p>
       )}
       <div className="space-y-2">
@@ -103,7 +107,7 @@ export function TransitSection({
               </Badge>
             </div>
             <span className="text-[12px] text-text-muted">
-              {stop.walkingMinutes} min walk
+              {stop.walkingMinutes} {t(lang, "minWalk")}
             </span>
           </div>
         ))}

@@ -392,7 +392,7 @@ export default function AdminDashboard() {
               href="/admin/restaurants"
               className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[rgba(232,66,26,0.10)] border border-[rgba(232,66,26,0.22)] flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-[rgba(211,36,36,0.10)] border border-[rgba(211,36,36,0.22)] flex items-center justify-center shrink-0">
                 <StoreIcon size={16} weight="regular" />
               </div>
               <div className="flex-1 min-w-0">
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Next milestone */}
-          <div className="mx-4 mb-4 p-4 rounded-[10px] bg-gradient-to-br from-[rgba(232,66,26,0.08)] to-[rgba(139,108,245,0.08)] border border-[rgba(232,66,26,0.22)]">
+          <div className="mx-4 mb-4 p-4 rounded-[10px] bg-gradient-to-br from-[rgba(211,36,36,0.08)] to-[rgba(139,108,245,0.08)] border border-[rgba(211,36,36,0.22)]">
             <div className="text-[10px] font-extrabold text-brand-light uppercase tracking-wider mb-1.5">
               Next milestone
             </div>
@@ -514,9 +514,9 @@ function StatCard({
       stroke: "#8B6CF5",
     },
     brand: {
-      bg: "bg-[rgba(232,66,26,0.10)]",
-      border: "border-[rgba(232,66,26,0.22)]",
-      stroke: "#E8421A",
+      bg: "bg-[rgba(211,36,36,0.10)]",
+      border: "border-[rgba(211,36,36,0.22)]",
+      stroke: "#D32424",
     },
   };
   const c = colors[color];
