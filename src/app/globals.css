@@ -164,11 +164,11 @@
   --color-info-dim: var(--info-dim);
   --color-info-border: var(--info-border);
 
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-walone);
   --font-serif: var(--font-sans);
   --font-my: var(--font-noto-myanmar);
 
-  /* Typography: DM Sans used consistently throughout the app. */
+  /* Typography: Walone used consistently throughout the app. */
 }
 
 body {
@@ -610,7 +610,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   outline: none;
   background: none;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 14px;
   color: var(--text-primary);
   min-width: 0;
@@ -643,7 +643,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   border-radius: 100px;
   padding: 10px 22px;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -804,7 +804,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 100px;
   border: none;
   background: none;
-  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
@@ -843,7 +843,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
 }
 .found-n {
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
@@ -971,7 +971,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   border-radius: 100px;
   padding: 6px 14px;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
