@@ -45,7 +45,7 @@ export function MapSection({ geo, address, name, lang }: MapSectionProps) {
 
     const icon = L.divIcon({
       className: "restaurant-pin",
-      html: `<div style="width:34px;height:34px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:#D32424;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.35);"></div><span style="position:absolute;font-size:14px;">📍</span></div>`,
+      html: `<div style="width:34px;height:34px;position:relative;display:flex;align-items:center;justify-content:center;"><div style="width:30px;height:30px;background:#E0052D;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.35);"></div><span style="position:absolute;font-size:14px;">📍</span></div>`,
       iconSize: [34, 34],
       iconAnchor: [17, 30],
     });

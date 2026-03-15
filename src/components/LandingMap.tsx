@@ -172,10 +172,10 @@ export function LandingMap({
     }
 
     const circle = L.circle([centerLat, centerLng], {
-      color: "#D32424",
+      color: "#E0052D",
       weight: 1.5,
       dashArray: "8 5",
-      fillColor: "#D32424",
+      fillColor: "#E0052D",
       fillOpacity: 0.05,
       radius: radiusKm * 1000,
     }).addTo(map);

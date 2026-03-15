@@ -516,7 +516,7 @@ function StatCard({
     brand: {
       bg: "bg-[rgba(211,36,36,0.10)]",
       border: "border-[rgba(211,36,36,0.22)]",
-      stroke: "#D32424",
+      stroke: "#E0052D",
     },
   };
   const c = colors[color];

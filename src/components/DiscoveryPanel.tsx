@@ -175,10 +175,10 @@ export function DiscoveryPanel({
       circleRef.current = null;
     }
     const circle = L.circle([centerLat, centerLng], {
-      color: "#D32424",
+      color: "#E0052D",
       weight: 1.5,
       dashArray: "8 5",
-      fillColor: "#D32424",
+      fillColor: "#E0052D",
       fillOpacity: 0.05,
       radius: radiusKm * 1000,
     }).addTo(map);
@@ -219,10 +219,10 @@ export function DiscoveryPanel({
         </div>
         <div style="font-size:11px;color:#5C5B54;margin-bottom:10px;">${r.cuisineTags.join(", ") || r.area}</div>
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
-          <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#111110;color:#A09F97;">${formatDistance(dist)} ${t(lang, "away")}</span>
+          <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#1a1a1a;color:#A09F97;">${formatDistance(dist)} ${t(lang, "away")}</span>
           <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${statusStyle.bg};color:${statusStyle.color};">${t(lang, status)}</span>
         </div>
-        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#D32424;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>
+        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#E0052D;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>
       `;
 
       const marker = L.marker([r.geo.lat, r.geo.lng], { icon })
