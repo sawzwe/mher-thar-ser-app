@@ -5,23 +5,23 @@
    Restaurant Booking · Bangkok · EN + MY (Burmese)
 ═══════════════════════════════════════════════════════════════════ */
 
-/* Light mode (default) */
+/* Light mode (default) — Arctic Ice */
 :root,
 [data-theme="light"] {
-  /* ── BRAND (from logo: bright red #D32424, darker red #B21818) ── */
-  --brand: #d32424;
-  --brand-hover: #b21818;
-  --brand-light: #e84040;
-  --brand-dim: rgba(211, 36, 36, 0.1);
-  --brand-dim-hover: rgba(211, 36, 36, 0.16);
-  --brand-border: rgba(211, 36, 36, 0.3);
+  /* ── BRAND (Vibrant Red #E0052D) ── */
+  --brand: #e0052d;
+  --brand-hover: #c00528;
+  --brand-light: #ff1a45;
+  --brand-dim: rgba(224, 5, 45, 0.1);
+  --brand-dim-hover: rgba(224, 5, 45, 0.16);
+  --brand-border: rgba(224, 5, 45, 0.3);
 
-  /* ── NEUTRALS ── */
-  --bg: #fafaf9;
+  /* ── NEUTRALS (Arctic Ice primary) ── */
+  --bg: #f5fbff;
   --surface: #ffffff;
-  --card: #f5f4ef;
-  --card-hover: #eeece8;
-  --card-active: #e6e4dd;
+  --card: #eef8ff;
+  --card-hover: #e4f4ff;
+  --card-active: #daeffd;
 
   /* ── BORDERS ── */
   --border: rgba(0, 0, 0, 0.08);
@@ -39,19 +39,19 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.14);
-  --shadow-brand: 0 4px 16px rgba(211, 36, 36, 0.2);
+  --shadow-brand: 0 4px 16px rgba(224, 5, 45, 0.2);
 }
 
-/* Dark mode */
+/* Dark mode — Ferie Black */
 [data-theme="dark"] {
-  --brand-dim: rgba(211, 36, 36, 0.12);
-  --brand-dim-hover: rgba(211, 36, 36, 0.2);
+  --brand-dim: rgba(224, 5, 45, 0.12);
+  --brand-dim-hover: rgba(224, 5, 45, 0.2);
 
-  --bg: #0a0a08;
-  --surface: #111110;
-  --card: #1a1a16;
-  --card-hover: #212119;
-  --card-active: #272724;
+  --bg: #1a1a1a;
+  --surface: #222222;
+  --card: #242424;
+  --card-hover: #2a2a2a;
+  --card-active: #2e2e2e;
 
   --border: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.12);
@@ -60,13 +60,13 @@
   --text-secondary: #a09f97;
   --text-muted: #5c5b54;
   --text-disabled: #3a3933;
-  --text-inverse: #0a0a08;
+  --text-inverse: #1a1a1a;
 
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
   --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.7);
-  --shadow-brand: 0 4px 20px rgba(211, 36, 36, 0.3);
+  --shadow-brand: 0 4px 20px rgba(224, 5, 45, 0.3);
 }
 
 /* Shared tokens (same for both themes) */
@@ -164,11 +164,11 @@
   --color-info-dim: var(--info-dim);
   --color-info-border: var(--info-border);
 
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-walone);
   --font-serif: var(--font-sans);
   --font-my: var(--font-noto-myanmar);
 
-  /* Typography: DM Sans used consistently throughout the app. */
+  /* Typography: Walone used consistently throughout the app. */
 }
 
 body {
@@ -602,7 +602,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     box-shadow 220ms;
 }
 .search-bar:focus-within {
-  border-color: rgba(211, 36, 36, 0.4);
+  border-color: rgba(224, 5, 45, 0.4);
   box-shadow: 0 0 0 3px var(--brand-dim);
 }
 .search-bar input {
@@ -610,7 +610,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   outline: none;
   background: none;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 14px;
   color: var(--text-primary);
   min-width: 0;
@@ -638,12 +638,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
 }
 .search-bar .search-btn {
-  background: #d32424;
+  background: var(--brand);
   color: white;
   border: none;
   border-radius: 100px;
   padding: 10px 22px;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -653,7 +653,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   min-height: 44px;
 }
 .search-bar .search-btn:hover {
-  background: #d63a14;
+  background: var(--brand-hover);
 }
 .filter-row {
   display: flex;
@@ -676,7 +676,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-size: 13px;
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  background: #1a1a16;
+  background: #1a1a1a;
   color: #a09f97;
   cursor: pointer;
   white-space: nowrap;
@@ -684,12 +684,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   min-height: 44px;
 }
 .fpill.active {
-  background: #d32424;
+  background: var(--brand);
   color: white;
-  border-color: #d32424;
+  border-color: var(--brand);
 }
 .fpill:not(.active):hover {
-  background: #212119;
+  background: #2a2a2a;
   color: #f5f4ef;
 }
 .stats-row {
@@ -804,7 +804,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 100px;
   border: none;
   background: none;
-  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
@@ -843,7 +843,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
 }
 .found-n {
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
@@ -971,7 +971,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   border-radius: 100px;
   padding: 6px 14px;
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -1093,7 +1093,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 /* ── How It Works ── */
 .how-it-works {
-  background: #0a0a08;
+  background: #1a1a1a;
   padding: 60px 20px 80px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
@@ -1129,8 +1129,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 32px;
   line-height: 32px;
   text-align: center;
-  background: rgba(211, 36, 36, 0.2);
-  color: #d32424;
+  background: rgba(224, 5, 45, 0.2);
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
   border-radius: 50%;
@@ -1151,7 +1151,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 /* ── CTA Section ── */
 .cta-section {
-  background: #0a0a08;
+  background: #1a1a1a;
   padding: 60px 20px 80px;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -1170,7 +1170,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .cta-btn {
   display: inline-block;
-  background: #d32424;
+  background: var(--brand);
   color: white;
   padding: 14px 28px;
   border-radius: 100px;
@@ -1181,7 +1181,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   transition: background 150ms;
 }
 .cta-btn:hover {
-  background: #d63a14;
+  background: var(--brand-hover);
 }
 
 /* ═══════════════════════════════════════════════════════════════════

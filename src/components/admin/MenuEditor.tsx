@@ -37,7 +37,7 @@ interface MenuEditorProps {
 }
 
 const CATEGORY_COLORS = [
-  "#D32424", "#E09B2D", "#3DAA6E", "#4A9FD4", "#8B6CF5",
+  "#E0052D", "#E09B2D", "#3DAA6E", "#4A9FD4", "#8B6CF5",
   "#E84040", "#4ABBA0", "#D4A853", "#E87040", "#6C8CF5",
 ];
 

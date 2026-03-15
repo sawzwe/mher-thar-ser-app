@@ -2,13 +2,13 @@
  * Pin color and emoji by cuisine type for map markers.
  */
 export const CUISINE_PIN_COLORS: Record<string, string> = {
-  burmese: "#D32424",
-  mohinga: "#D32424",
+  burmese: "#E0052D",
+  mohinga: "#E0052D",
   curries: "#3DAA6E",
   "tea shops": "#4A9FD4",
   "street food": "#E09B2D",
   salads: "#9B59B6",
-  noodles: "#D32424",
+  noodles: "#E0052D",
   thai: "#5C5B54",
   default: "#5C5B54",
 };

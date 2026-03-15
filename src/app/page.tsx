@@ -26,13 +26,17 @@ async function getLandingSeo(): Promise<SeoRow> {
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getLandingSeo();
 
-  const title = seo.title ?? "Mher Thar Ser — Find Myanmar Restaurants in Bangkok";
-  const description = seo.description ?? "Discover authentic Myanmar restaurants in Bangkok, Thailand. Menus, prices, promotions, and table booking in one place.";
+  const title =
+    seo.title ?? "Mher Thar Ser — Find Myanmar Restaurants in Bangkok";
+  const description =
+    seo.description ??
+    "Discover authentic Myanmar restaurants in Bangkok, Thailand. Menus, prices, promotions, and table booking in one place.";
 
   return {
     title,
     description,
-    keywords: seo.keywords ?? "myanmar restaurant, burmese food, bangkok, thailand",
+    keywords:
+      seo.keywords ?? "myanmar restaurant, burmese food, bangkok, thailand",
     openGraph: {
       title: seo.og_title ?? title,
       description: seo.og_description ?? description,

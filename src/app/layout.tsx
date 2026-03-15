@@ -1,12 +1,29 @@
 import type { Metadata } from "next";
-import { DM_Sans, Noto_Sans_Myanmar } from "next/font/google";
+import localFont from "next/font/local";
+import { Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+const walone = localFont({
+  src: [
+    {
+      path: "../../public/fonts/walone/Z06-Walone Thin.ttf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/walone/Z06-Walone Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/walone/Z06-Walone Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-walone",
+  display: "swap",
 });
 
 const notoMyanmar = Noto_Sans_Myanmar({
@@ -41,7 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${dmSans.variable} ${notoMyanmar.variable} antialiased`}
+        className={`${walone.variable} ${notoMyanmar.variable} antialiased`}
       >
         <AppShell>{children}</AppShell>
       </body>
