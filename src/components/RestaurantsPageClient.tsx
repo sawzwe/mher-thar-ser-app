@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useRestaurantStore, SortOption } from "@/stores/restaurantStore";
 import { useLanguageStore } from "@/stores/languageStore";
@@ -37,7 +36,7 @@ function FilterPill({
 
 export function RestaurantsPageClient() {
   const lang = useLanguageStore((s) => s.lang);
-  const { restaurants, loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants, loadRestaurants } =
+  const { loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants, loadRestaurants } =
     useRestaurantStore();
 
   useEffect(() => {

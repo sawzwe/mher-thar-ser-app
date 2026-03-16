@@ -227,7 +227,8 @@ export default function AdminRestaurantEditPage() {
       restaurant.open_time,
       restaurant.close_time,
     );
-    setForm({
+    queueMicrotask(() =>
+      setForm({
       name: restaurant.name ?? "",
       slug: restaurant.slug ?? "",
       description: restaurant.description ?? "",
@@ -262,7 +263,8 @@ export default function AdminRestaurantEditPage() {
         restaurant.attributes && typeof restaurant.attributes === "object"
           ? restaurant.attributes
           : {},
-    });
+    })
+    );
   }, [restaurant]);
 
   const mutation = useMutation({
@@ -374,7 +376,7 @@ export default function AdminRestaurantEditPage() {
     );
   }
 
-  const CoreDetailsTab = () => (
+  const renderCoreTab = () => (
     <div className="flex flex-col gap-5">
       <SectionLabel>Identity</SectionLabel>
       <Input
@@ -607,7 +609,7 @@ export default function AdminRestaurantEditPage() {
     </div>
   );
 
-  const MediaTab = () => (
+  const renderMediaTab = () => (
     <div className="flex flex-col gap-5">
       <SectionLabel>Restaurant Image</SectionLabel>
       <ImageUpload
@@ -703,7 +705,7 @@ export default function AdminRestaurantEditPage() {
     },
   ];
 
-  const ContactTab = () => (
+  const renderContactTab = () => (
     <div className="flex flex-col gap-5">
       <SectionLabel>Contact</SectionLabel>
       <div className="grid grid-cols-3 gap-4">
@@ -774,9 +776,9 @@ export default function AdminRestaurantEditPage() {
   );
 
   const tabContent: Record<string, React.ReactNode> = {
-    core: <CoreDetailsTab />,
-    media: <MediaTab />,
-    contact: <ContactTab />,
+    core: renderCoreTab(),
+    media: renderMediaTab(),
+    contact: renderContactTab(),
     menu: (
       <MenuEditor
         restaurantId={id}

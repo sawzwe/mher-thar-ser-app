@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export const LOGO_SRC = "/assets/logo/mher_that_ser_logo.png";
 
 export interface LogoProps {
@@ -13,7 +15,7 @@ export interface LogoProps {
 
 export function Logo({ size = 30, className, objectFit = "contain" }: LogoProps) {
   return (
-    <img
+    <Image
       src={LOGO_SRC}
       alt="Mher Thar Ser"
       width={size}

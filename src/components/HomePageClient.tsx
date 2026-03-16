@@ -13,7 +13,7 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 import type { Restaurant } from "@/types";
 
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
-const AREA_FILTERS = [
+const _AREA_FILTERS = [
   "All",
   "Sukhumvit",
   "Silom",
@@ -30,10 +30,10 @@ export function HomePageClient() {
   const [userLng, setUserLng] = useState<number | null>(null);
   const [locationLoading, setLocationLoading] = useState(true);
   const [radiusKm, setRadiusKm] = useState(10);
-  const [areaFilter, setAreaFilter] = useState("All");
+  const [areaFilter, _setAreaFilter] = useState("All");
 
-  const centerLat = userLat ?? BANGKOK.lat;
-  const centerLng = userLng ?? BANGKOK.lng;
+  const _centerLat = userLat ?? BANGKOK.lat;
+  const _centerLng = userLng ?? BANGKOK.lng;
 
   useEffect(() => {
     loadRestaurants().then(() => {
@@ -44,7 +44,7 @@ export function HomePageClient() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setLocationLoading(true);
+    queueMicrotask(() => setLocationLoading(true));
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserLat(pos.coords.latitude);
@@ -67,12 +67,12 @@ export function HomePageClient() {
             ),
         );
 
-  const totalRestaurants = restaurants.length;
-  const totalReviews = restaurants.reduce(
+  const _totalRestaurants = restaurants.length;
+  const _totalReviews = restaurants.reduce(
     (sum, r) => sum + (r.reviewCount ?? r.googleReviewCount ?? 0),
     0,
   );
-  const uniqueAreas = new Set(restaurants.map((r) => r.area)).size;
+  const _uniqueAreas = new Set(restaurants.map((r) => r.area)).size;
 
   const mobileHomeView = useMobileHomeViewStore((s) => s.view);
 
@@ -144,11 +144,11 @@ export function HomePageClient() {
           </div> */}
 
           {/* <div className="filter-row">
-            {AREA_FILTERS.map((f) => (
+            {_AREA_FILTERS.map((f) => (
               <button
                 key={f}
                 type="button"
-                onClick={() => setAreaFilter(f)}
+                onClick={() => _setAreaFilter(f)}
                 className={`fpill ${areaFilter === f ? "active" : ""}`}
               >
                 {f}
@@ -158,19 +158,19 @@ export function HomePageClient() {
 
           {/* <div className="stats-row">
             <div className="stat">
-              <div className="stat-n">{totalRestaurants}+</div>
+              <div className="stat-n">{_totalRestaurants}+</div>
               <div className="stat-l">Restaurants</div>
             </div>
             <div className="stat">
               <div className="stat-n">
-                {totalReviews >= 1000
-                  ? `${(totalReviews / 1000).toFixed(0)}k`
-                  : totalReviews}
+                {_totalReviews >= 1000
+                  ? `${(_totalReviews / 1000).toFixed(0)}k`
+                  : _totalReviews}
               </div>
               <div className="stat-l">Reviews</div>
             </div>
             <div className="stat">
-              <div className="stat-n">{uniqueAreas}</div>
+              <div className="stat-n">{_uniqueAreas}</div>
               <div className="stat-l">Thai Cities</div>
             </div>
           </div> */}

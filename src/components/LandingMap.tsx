@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-require-imports -- Leaflet loaded dynamically for SSR */
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Map, Marker, Circle, TileLayer } from "leaflet";
 import type { Restaurant } from "@/types";
@@ -45,7 +46,7 @@ export function LandingMap({
   restaurants,
   radiusKm,
   onRadiusChange,
-  onLocationUpdate,
+  onLocationUpdate: _onLocationUpdate,
 }: LandingMapProps) {
   const theme = useThemeStore((s) => s.theme);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,7 +69,6 @@ export function LandingMap({
   const initMap = useCallback(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const L = require("leaflet");
     const stored = useThemeStore.getState().theme;
     const docTheme = document.documentElement.getAttribute("data-theme");
@@ -97,7 +97,7 @@ export function LandingMap({
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
     mapRef.current = map;
-    setMapReady(true);
+    queueMicrotask(() => setMapReady(true));
   }, []);
 
   useEffect(() => {
@@ -110,6 +110,7 @@ export function LandingMap({
       userMarkerRef.current = null;
       restaurantMarkersRef.current = [];
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- initMap is stable
   }, []);
 
   // Swap tile layer when theme changes

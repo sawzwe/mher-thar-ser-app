@@ -214,7 +214,7 @@ function ItemFormModal({
 }
 
 // ─── Main MenuEditor ────────────────────────────────────────────────────────────
-export function MenuEditor({ restaurantId, restaurantSlug, apiPath }: MenuEditorProps) {
+export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPath }: MenuEditorProps) {
   const [categories, setCategories] = useState<MenuCategoryDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -252,7 +252,8 @@ export function MenuEditor({ restaurantId, restaurantSlug, apiPath }: MenuEditor
   const toggleCollapse = (idx: number) =>
     setCollapsedCats((prev) => {
       const next = new Set(prev);
-      next.has(idx) ? next.delete(idx) : next.add(idx);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
       return next;
     });
 
