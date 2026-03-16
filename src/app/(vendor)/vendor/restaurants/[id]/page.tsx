@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
 import { VendorContactForm } from "@/components/vendor/VendorContactForm";
+import { VendorRestaurantTabs } from "@/components/vendor/VendorRestaurantTabs";
 
 export default async function RestaurantEditorPage({
   params,
@@ -39,14 +40,6 @@ export default async function RestaurantEditorPage({
     redirect("/vendor");
   }
 
-  const tabs = [
-    { href: `/vendor/restaurants/${id}`, label: "Info" },
-    { href: `/vendor/restaurants/${id}/menu`, label: "Menu" },
-    { href: `/vendor/restaurants/${id}/deals`, label: "Deals" },
-    { href: `/vendor/restaurants/${id}/slots`, label: "Availability" },
-    { href: `/vendor/restaurants/${id}/bookings`, label: "Bookings" },
-  ];
-
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-6">
@@ -61,17 +54,7 @@ export default async function RestaurantEditorPage({
         {restaurant.name}
       </h1>
 
-      <nav className="flex gap-1 border-b border-border mb-8">
-        {tabs.map((tab) => (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary border-b-2 border-transparent -mb-px hover:border-brand"
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
+      <VendorRestaurantTabs restaurantId={id} />
 
       <div className="bg-card border border-border rounded-[var(--radius-lg)] p-6">
         <h2 className="font-semibold text-text-primary mb-4">

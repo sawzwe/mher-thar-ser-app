@@ -17,7 +17,7 @@ const statusVariant: Record<string, "success" | "danger" | "gold" | "warning"> =
 };
 
 export default function BookingsPage() {
-  const { bookings, loading, loadBookings, cancel } = useBookingStore();
+  const { bookings, loading, cancel } = useBookingStore();
   const restaurants = useRestaurantStore((s) => s.restaurants);
 
   const getRestaurantName = (id: string) =>
@@ -26,11 +26,14 @@ export default function BookingsPage() {
     const r = restaurants.find((x) => x.id === id);
     return r ? getRestaurantPath(r) : id;
   };
-  const { entries: waitlistEntries, loadWaitlist, remove: removeWaitlist } = useWaitlistStore();
+  const { entries: waitlistEntries, remove: removeWaitlist } = useWaitlistStore();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
 
-  useEffect(() => { loadBookings(); loadWaitlist(); }, [loadBookings, loadWaitlist]);
+  useEffect(() => {
+    useBookingStore.getState().loadBookings();
+    useWaitlistStore.getState().loadWaitlist();
+  }, []);
 
   const handleCancel = async (id: string) => {
     if (!confirm("Are you sure you want to cancel this booking?")) return;
@@ -134,7 +137,7 @@ export default function BookingsPage() {
       )}
 
       {rescheduleBooking && (
-        <RescheduleModal booking={rescheduleBooking} onClose={() => setRescheduleBooking(null)} onSuccess={() => { setRescheduleBooking(null); loadBookings(); }} />
+        <RescheduleModal booking={rescheduleBooking} onClose={() => setRescheduleBooking(null)} onSuccess={() => { setRescheduleBooking(null); useBookingStore.getState().loadBookings(); }} />
       )}
     </div>
   );

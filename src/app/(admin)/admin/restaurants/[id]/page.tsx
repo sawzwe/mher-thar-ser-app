@@ -229,41 +229,41 @@ export default function AdminRestaurantEditPage() {
     );
     queueMicrotask(() =>
       setForm({
-      name: restaurant.name ?? "",
-      slug: restaurant.slug ?? "",
-      description: restaurant.description ?? "",
-      area: restaurant.area ?? "Sukhumvit",
-      address: restaurant.address ?? "",
-      province: restaurant.province ?? "Bangkok",
-      district: restaurant.district ?? "",
-      subdistrict: restaurant.subdistrict ?? "",
-      lat: String(restaurant.lat ?? "13.7563"),
-      lng: String(restaurant.lng ?? "100.5018"),
-      postal_code: restaurant.postal_code ?? "",
-      cuisine_tags: Array.isArray(restaurant.cuisine_tags)
-        ? restaurant.cuisine_tags
-        : [],
-      price_tier: String(restaurant.price_tier ?? 2),
-      restaurant_type: restaurant.restaurant_type ?? "",
-      image_url: restaurant.image_url ?? "",
-      open_time: restaurant.open_time?.slice(0, 5) ?? "11:00",
-      close_time: restaurant.close_time?.slice(0, 5) ?? "22:00",
-      opening_hours: openingHours,
-      status: restaurant.status ?? "active",
-      phone: restaurant.phone ?? "",
-      website: restaurant.website ?? "",
-      email: restaurant.email ?? "",
-      facebook_url: restaurant.facebook_url ?? "",
-      instagram_url: restaurant.instagram_url ?? "",
-      twitter_url: restaurant.twitter_url ?? "",
-      tiktok_url: restaurant.tiktok_url ?? "",
-      logo_url: restaurant.logo_url ?? "",
-      street_view_url: restaurant.street_view_url ?? "",
-      attributes:
-        restaurant.attributes && typeof restaurant.attributes === "object"
-          ? restaurant.attributes
-          : {},
-    })
+        name: restaurant.name ?? "",
+        slug: restaurant.slug ?? "",
+        description: restaurant.description ?? "",
+        area: restaurant.area ?? "Sukhumvit",
+        address: restaurant.address ?? "",
+        province: restaurant.province ?? "Bangkok",
+        district: restaurant.district ?? "",
+        subdistrict: restaurant.subdistrict ?? "",
+        lat: String(restaurant.lat ?? "13.7563"),
+        lng: String(restaurant.lng ?? "100.5018"),
+        postal_code: restaurant.postal_code ?? "",
+        cuisine_tags: Array.isArray(restaurant.cuisine_tags)
+          ? restaurant.cuisine_tags
+          : [],
+        price_tier: String(restaurant.price_tier ?? 2),
+        restaurant_type: restaurant.restaurant_type ?? "",
+        image_url: restaurant.image_url ?? "",
+        open_time: restaurant.open_time?.slice(0, 5) ?? "11:00",
+        close_time: restaurant.close_time?.slice(0, 5) ?? "22:00",
+        opening_hours: openingHours,
+        status: restaurant.status ?? "active",
+        phone: restaurant.phone ?? "",
+        website: restaurant.website ?? "",
+        email: restaurant.email ?? "",
+        facebook_url: restaurant.facebook_url ?? "",
+        instagram_url: restaurant.instagram_url ?? "",
+        twitter_url: restaurant.twitter_url ?? "",
+        tiktok_url: restaurant.tiktok_url ?? "",
+        logo_url: restaurant.logo_url ?? "",
+        street_view_url: restaurant.street_view_url ?? "",
+        attributes:
+          restaurant.attributes && typeof restaurant.attributes === "object"
+            ? restaurant.attributes
+            : {},
+      }),
     );
   }, [restaurant]);
 
@@ -862,9 +862,9 @@ export default function AdminRestaurantEditPage() {
           Availability by date
         </h2>
         <p className="text-sm text-text-muted mb-4">
-          Booking slots are set per date, not by a single schedule. Vendors
-          manage which dates and times are available under the{" "}
-          <strong>Availability</strong> tab in the vendor dashboard.
+          Booking slots are set per date. Generate slots for the next 60 days
+          using the restaurant&apos;s open/close times. Vendors can also manage
+          slots from the vendor dashboard.
         </p>
         <SlotDatesSummary restaurantId={id} />
       </div>
@@ -882,10 +882,14 @@ export default function AdminRestaurantEditPage() {
 }
 
 function SlotDatesSummary({ restaurantId }: { restaurantId: string }) {
-  const { data: slots } = useQuery({
+  const queryClient = useQueryClient();
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+
+  const { data: slots, isLoading } = useQuery({
     queryKey: ["admin-restaurant-slot-dates", restaurantId],
     queryFn: async () => {
-      const res = await fetch(`/api/vendor/restaurants/${restaurantId}/slots`);
+      const res = await fetch(`/api/admin/restaurants/${restaurantId}/slots`);
       if (!res.ok) return [];
       const json = await res.json();
       return json as {
@@ -896,22 +900,63 @@ function SlotDatesSummary({ restaurantId }: { restaurantId: string }) {
       }[];
     },
   });
+
+  const handleGenerate = async () => {
+    setGenerateError(null);
+    setGenerating(true);
+    try {
+      const res = await fetch(
+        `/api/admin/restaurants/${restaurantId}/slots/generate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        },
+      );
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to generate");
+      queryClient.invalidateQueries({
+        queryKey: ["admin-restaurant-slot-dates", restaurantId],
+      });
+    } catch (err) {
+      setGenerateError((err as Error).message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const dates = slots?.length
     ? [...new Set(slots.map((s) => s.date))].sort().slice(0, 14)
     : [];
+
   return (
-    <div className="bg-surface border border-border rounded-[var(--radius-lg)] p-4">
-      {dates.length === 0 ? (
-        <p className="text-sm text-text-muted">
-          No slots configured yet. Vendors can generate slots from the
-          Availability tab.
-        </p>
-      ) : (
-        <p className="text-sm text-text-secondary">
-          Slots configured for <strong>{dates.length}</strong> date
-          {dates.length !== 1 ? "s" : ""} (e.g. {dates.slice(0, 3).join(", ")}).
-        </p>
-      )}
+    <div className="space-y-4">
+      <div className="bg-surface border border-border rounded-[var(--radius-lg)] p-4">
+        {isLoading ? (
+          <p className="text-sm text-text-muted">Loading…</p>
+        ) : dates.length === 0 ? (
+          <p className="text-sm text-text-muted">
+            No slots configured yet. Generate slots for the next 60 days using
+            the restaurant&apos;s open/close times.
+          </p>
+        ) : (
+          <p className="text-sm text-text-secondary">
+            Slots configured for <strong>{dates.length}</strong> date
+            {dates.length !== 1 ? "s" : ""} (e.g. {dates.slice(0, 3).join(", ")}
+            ).
+          </p>
+        )}
+      </div>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        onClick={handleGenerate}
+        disabled={generating}
+      >
+        {generating ? "Generating…" : "Generate slots (60 days)"}
+      </Button>
+      {generateError && <p className="text-sm text-danger">{generateError}</p>}
     </div>
   );
 }

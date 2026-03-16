@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
 import { MenuEditorClient } from "./MenuEditorClient";
+import { VendorRestaurantTabs } from "@/components/vendor/VendorRestaurantTabs";
 
 export default async function VendorMenuPage({
   params,
@@ -34,14 +35,6 @@ export default async function VendorMenuPage({
 
   if (!restaurant) redirect("/vendor");
 
-  const tabs = [
-    { href: `/vendor/restaurants/${id}`, label: "Info" },
-    { href: `/vendor/restaurants/${id}/menu`, label: "Menu" },
-    { href: `/vendor/restaurants/${id}/deals`, label: "Deals" },
-    { href: `/vendor/restaurants/${id}/slots`, label: "Availability" },
-    { href: `/vendor/restaurants/${id}/bookings`, label: "Bookings" },
-  ];
-
   return (
     <div className="p-8">
       <Link
@@ -53,21 +46,7 @@ export default async function VendorMenuPage({
       <h1 className="text-2xl font-bold text-text-primary mb-1">{restaurant.name}</h1>
       <p className="text-sm text-text-muted mb-6">Edit your menu. Changes are saved instantly.</p>
 
-      <nav className="flex gap-1 border-b border-border mb-8">
-        {tabs.map((tab) => (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-              tab.href === `/vendor/restaurants/${id}/menu`
-                ? "border-brand text-text-primary"
-                : "border-transparent text-text-secondary hover:text-text-primary hover:border-brand"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
+      <VendorRestaurantTabs restaurantId={id} />
 
       <MenuEditorClient
         restaurantId={id}

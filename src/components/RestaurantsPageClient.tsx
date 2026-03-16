@@ -36,12 +36,12 @@ function FilterPill({
 
 export function RestaurantsPageClient() {
   const lang = useLanguageStore((s) => s.lang);
-  const { loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants, loadRestaurants } =
+  const { loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants } =
     useRestaurantStore();
 
   useEffect(() => {
-    loadRestaurants();
-  }, [loadRestaurants]);
+    useRestaurantStore.getState().loadRestaurants();
+  }, []);
 
   const results = filteredRestaurants();
   const hasActiveFilters =

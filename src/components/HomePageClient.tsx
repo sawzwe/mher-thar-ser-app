@@ -23,7 +23,6 @@ const _AREA_FILTERS = [
 ] as const;
 
 export function HomePageClient() {
-  const { loadRestaurants } = useRestaurantStore();
   const lang = useLanguageStore((s) => s.lang);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [userLat, setUserLat] = useState<number | null>(null);
@@ -36,11 +35,11 @@ export function HomePageClient() {
   const _centerLng = userLng ?? BANGKOK.lng;
 
   useEffect(() => {
-    loadRestaurants().then(() => {
+    useRestaurantStore.getState().loadRestaurants().then(() => {
       const { restaurants: r } = useRestaurantStore.getState();
       setRestaurants(r);
     });
-  }, [loadRestaurants]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -21,14 +21,11 @@ import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const loadRestaurants = useRestaurantStore((s) => s.loadRestaurants);
-  const loadAllReviews = useReviewStore((s) => s.loadAllReviews);
   const pendingOffer = useBookingStore((s) => s.pendingOffer);
   const clearOffer = useBookingStore((s) => s.clearOffer);
 
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
-  const initialize = useAuthStore((s) => s.initialize);
   const lang = useLanguageStore((s) => s.lang);
   const setLang = useLanguageStore((s) => s.setLang);
   const hydrate = useLanguageStore((s) => s.hydrate);
@@ -67,9 +64,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     runMigrations();
-    loadAllReviews();
-    initialize();
-    loadRestaurants().then(() => {
+    useReviewStore.getState().loadAllReviews();
+    useAuthStore.getState().initialize();
+    useRestaurantStore.getState().loadRestaurants().then(() => {
       const { restaurants } = useRestaurantStore.getState();
       if (restaurants.length > 0) {
         initializeSlotsIfNeeded(
@@ -81,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         );
       }
     });
-  }, [loadRestaurants, loadAllReviews, initialize]);
+  }, []);
 
   const navItems = [
     { href: "/", label: t(lang, "discover") },

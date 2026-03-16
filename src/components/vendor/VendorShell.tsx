@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Lightning, Storefront, FileText } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 export type VendorShellUser = {
@@ -14,9 +15,9 @@ export type VendorShellUser = {
 };
 
 const NAV_ITEMS = [
-  { href: "/vendor", label: "Dashboard", icon: "⚡" },
-  { href: "/vendor/restaurants", label: "Restaurants", icon: "🏪" },
-  { href: "/claim", label: "Claim Restaurant", icon: "📋" },
+  { href: "/vendor", label: "Dashboard", Icon: Lightning },
+  { href: "/vendor/restaurants", label: "Restaurants", Icon: Storefront },
+  { href: "/claim", label: "Claim Restaurant", Icon: FileText },
 ];
 
 export function VendorShell({
@@ -51,6 +52,7 @@ export function VendorShell({
         </div>
         <nav className="flex-1 p-2 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
+            const Icon = item.Icon;
             const isActive =
               path === item.href ||
               (item.href !== "/vendor" && path?.startsWith(item.href));
@@ -65,7 +67,7 @@ export function VendorShell({
                     : "text-text-secondary hover:bg-card hover:text-text-primary",
                 )}
               >
-                <span>{item.icon}</span>
+                <Icon size={18} weight="regular" />
                 {item.label}
               </Link>
             );

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
+import { VendorRestaurantTabs } from "@/components/vendor/VendorRestaurantTabs";
 
 export default async function DealsPage({
   params,
@@ -39,9 +40,10 @@ export default async function DealsPage({
       <h1 className="text-2xl font-bold text-text-primary mb-2">
         Deals
       </h1>
-      <p className="text-sm text-text-muted mb-8">
+      <p className="text-sm text-text-muted mb-6">
         Create and manage deals for this restaurant.
       </p>
+      <VendorRestaurantTabs restaurantId={id} />
       {!deals?.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
           No deals yet. Add your first deal via the API or DealForm component.

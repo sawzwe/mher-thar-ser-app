@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
+import { VendorRestaurantTabs } from "@/components/vendor/VendorRestaurantTabs";
 
 export default async function BookingsPage({
   params,
@@ -52,9 +53,10 @@ export default async function BookingsPage({
       <h1 className="text-2xl font-bold text-text-primary mb-2">
         Bookings
       </h1>
-      <p className="text-sm text-text-muted mb-8">
+      <p className="text-sm text-text-muted mb-6">
         View and manage bookings for this restaurant.
       </p>
+      <VendorRestaurantTabs restaurantId={id} />
       {!bookings?.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
           No bookings yet.
@@ -82,28 +84,31 @@ export default async function BookingsPage({
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
-                <tr
-                  key={b.id}
-                  className="border-b border-border last:border-b-0 hover:bg-card"
-                >
-                  <td className="px-4 py-3 font-mono text-sm text-brand-light">
-                    {b.booking_ref}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-text-primary">
-                      {b.customer_name}
-                    </div>
-                    <div className="text-xs text-text-muted">
-                      {b.contact ? `****${String(b.contact).slice(-4)}` : "—"}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-text-secondary">
-                    {b.date} {b.time}
-                  </td>
-                  <td className="px-4 py-3 text-text-primary">
-                    {b.party_size}
-                  </td>
+              {bookings.map((b) => {
+                const timeStr =
+                  typeof b.time === "string" ? b.time.slice(0, 5) : b.time;
+                return (
+                  <tr
+                    key={b.id}
+                    className="border-b border-border last:border-b-0 hover:bg-card"
+                  >
+                    <td className="px-4 py-3 font-mono text-sm text-brand-light">
+                      {b.booking_ref}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-text-primary">
+                        {b.customer_name}
+                      </div>
+                      <div className="text-xs text-text-muted mt-0.5">
+                        {b.contact ? `****${String(b.contact).slice(-4)}` : "—"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-text-secondary">
+                      {b.date} {timeStr}
+                    </td>
+                    <td className="px-4 py-3 text-text-primary">
+                      {b.party_size}
+                    </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -113,14 +118,17 @@ export default async function BookingsPage({
                             ? "bg-info-dim text-info"
                             : b.status === "cancelled"
                               ? "bg-danger-dim text-danger"
-                              : "bg-[rgba(255,255,255,0.05)] text-text-muted"
+                              : b.status === "no_show"
+                                ? "bg-warning-dim text-warning"
+                                : "bg-[rgba(255,255,255,0.05)] text-text-muted"
                       }`}
                     >
                       {b.status}
                     </span>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

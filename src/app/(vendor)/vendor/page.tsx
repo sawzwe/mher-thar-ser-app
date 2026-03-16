@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
-
 export default async function VendorDashboard() {
   const supabase = await createClient();
   const user = (await UserFactory.fromSupabase(supabase)) as VendorUser;

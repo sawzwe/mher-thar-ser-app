@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Restaurant, Deal } from "@/types";
-import { getSlotsForDate } from "@/lib/slots";
 import { useBookingStore } from "@/stores/bookingStore";
 import { useWaitlistStore } from "@/stores/waitlistStore";
 import { format, addDays } from "date-fns";
@@ -10,6 +9,13 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/moda
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+interface AvailabilitySlot {
+  date: string;
+  time: string;
+  capacity: number;
+  remaining: number;
+}
 
 interface BookingModalProps {
   restaurant: Restaurant;
@@ -35,11 +41,25 @@ export function BookingModal({ restaurant, preselectedDeal, onClose, onSuccess }
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [waitlistJoined, setWaitlistJoined] = useState(false);
+  const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
-  const slots = useMemo(
-    () => getSlotsForDate(restaurant.id, date),
-    [restaurant.id, date]
-  );
+  const fetchSlots = useCallback(async (d: string) => {
+    setSlotsLoading(true);
+    try {
+      const res = await fetch(`/api/restaurants/${restaurant.id}/availability?date=${d}`);
+      if (res.ok) {
+        const json = await res.json() as { slots: AvailabilitySlot[] };
+        setSlots(json.slots ?? []);
+      }
+    } finally {
+      setSlotsLoading(false);
+    }
+  }, [restaurant.id]);
+
+  useEffect(() => {
+    fetchSlots(date);
+  }, [date, fetchSlots]);
 
   const availableDates = Array.from({ length: 14 }, (_, i) => { const d = addDays(new Date(), i); return { value: format(d, "yyyy-MM-dd"), label: format(d, "EEE, MMM d") }; });
   const selectedSlot = slots.find((s) => s.time === time);
@@ -106,7 +126,7 @@ export function BookingModal({ restaurant, preselectedDeal, onClose, onSuccess }
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <Select label="Date" labelMy="/ ရက်" value={date} onChange={(e) => { setDate(e.target.value); setTime(""); }} className="w-full">
+              <Select label="Date" labelMy="/ ရက်" value={date} onChange={(e) => { setDate(e.target.value); setTime(""); setSlots([]); }} className="w-full">
                 {availableDates.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
               </Select>
 
@@ -126,7 +146,7 @@ export function BookingModal({ restaurant, preselectedDeal, onClose, onSuccess }
               <label className="text-[13px] font-semibold text-text-secondary mb-2 block flex items-center gap-2">
                 Select a time <span className="font-my text-[12px] text-text-muted">/ အချိန်</span>
               </label>
-              {slots.length === 0 ? <p className="text-[13px] text-text-muted">No slots available for this date.</p> : (
+              {slotsLoading ? <p className="text-[13px] text-text-muted">Loading available times…</p> : slots.length === 0 ? <p className="text-[13px] text-text-muted">No slots available for this date.</p> : (
                 <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
                   {slots.map((slot) => {
                     const full = slot.remaining < partySize;
