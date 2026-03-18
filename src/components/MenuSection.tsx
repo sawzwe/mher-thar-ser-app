@@ -7,6 +7,15 @@ import { cn } from "@/lib/utils";
 
 interface MenuSectionProps { menu: MenuCategory[]; }
 
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function MenuSection({ menu }: MenuSectionProps) {
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set(menu.length > 0 ? [menu[0].name] : []));
 
@@ -35,9 +44,12 @@ export function MenuSection({ menu }: MenuSectionProps) {
               </button>
               {isOpen && (
                 <div className="border-t border-border divide-y divide-border">
-                  {cat.items.map((item) => (
-                    <div key={item.name} className="px-4 py-3 flex items-start gap-4 transition-colors duration-[var(--dur-fast)] hover:bg-card">
-                      {item.image_url && (
+                  {cat.items.map((item, idx) => (
+                    <div
+                      key={`${item.name}-${idx}`}
+                      className="px-4 py-3 flex items-start gap-4 transition-colors duration-[var(--dur-fast)] hover:bg-card"
+                    >
+                      {item.image_url && isValidHttpUrl(item.image_url) && (
                         <div className="relative w-20 h-20 shrink-0 rounded-[var(--radius-md)] overflow-hidden bg-card border border-border">
                           <Image src={item.image_url} alt={item.name} fill className="object-cover" sizes="80px" />
                         </div>

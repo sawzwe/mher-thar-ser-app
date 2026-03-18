@@ -13,6 +13,7 @@ import {
   PencilSimple,
   X,
   ForkKnife,
+  UploadSimple,
 } from "@phosphor-icons/react";
 import { uploadRestaurantImage } from "@/lib/image/upload";
 
@@ -43,6 +44,15 @@ const CATEGORY_COLORS = [
 
 function getCategoryColor(index: number) {
   return CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+}
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 const emptyItem = (): MenuItemDraft => ({
@@ -113,7 +123,7 @@ function ItemFormModal({
           {/* Image upload */}
           <div>
             <label className="text-[13px] font-semibold text-text-secondary block mb-2">Photo</label>
-            {form.image_url ? (
+            {form.image_url && isValidHttpUrl(form.image_url) ? (
               <div className="relative group rounded-[var(--radius-md)] overflow-hidden border border-border aspect-[4/3] w-40">
                 <Image src={form.image_url} alt="" fill className="object-cover" sizes="160px" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -213,6 +223,17 @@ function ItemFormModal({
   );
 }
 
+type ImportResult = {
+  imported: number;
+  category: string;
+  errors: { row: number; field: string; message: string }[];
+};
+
+type ImportProgress =
+  | { phase: "parsing" }
+  | { phase: "images"; current: number; total: number; item: string }
+  | { phase: "saving" };
+
 // ─── Main MenuEditor ────────────────────────────────────────────────────────────
 export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPath }: MenuEditorProps) {
   const [categories, setCategories] = useState<MenuCategoryDraft[]>([]);
@@ -224,6 +245,14 @@ export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPat
   const [editingItem, setEditingItem] = useState<{ catIdx: number; itemIdx: number | null } | null>(null);
   const [newCatName, setNewCatName] = useState("");
   const [addingCat, setAddingCat] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [reuploadImages, setReuploadImages] = useState(true);
+  const [importCategoryName, setImportCategoryName] = useState("Menu");
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   // Load
   useEffect(() => {
@@ -349,6 +378,99 @@ export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPat
     }
   };
 
+  const reloadMenu = useCallback(async () => {
+    const menuRes = await fetch(apiPath);
+    const menuJson = await menuRes.json();
+    if (menuJson.menu) {
+      const cats = menuJson.menu as { id?: string; name: string; items: { id?: string; name: string; description?: string; price: number; image_url?: string }[] }[];
+      setCategories(
+        cats.map((c) => ({
+          id: c.id,
+          name: c.name,
+          items: c.items.map((i) => ({
+            id: i.id,
+            name: i.name,
+            description: i.description ?? "",
+            price: String(i.price),
+            image_url: i.image_url ?? "",
+          })),
+        })),
+      );
+    }
+  }, [apiPath]);
+
+  const handleImport = async () => {
+    if (!importFile) return;
+    setImporting(true);
+    setImportResult(null);
+    setImportError(null);
+    setImportProgress({ phase: "parsing" });
+
+    try {
+      const formData = new FormData();
+      formData.append("file", importFile);
+      formData.append("reupload_images", reuploadImages ? "true" : "false");
+      formData.append("category_name", importCategoryName.trim() || "Menu");
+
+      const res = await fetch(`${apiPath}/import`, { method: "POST", body: formData });
+      if (!res.body) throw new Error("No response body");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process all complete SSE lines
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const event = JSON.parse(line.slice(6)) as {
+              type: string;
+              total?: number;
+              current?: number;
+              item?: string;
+              imported?: number;
+              category?: string;
+              message?: string;
+              errors?: { row: number; field: string; message: string }[];
+            };
+
+            if (event.type === "parsed") {
+              setImportProgress({ phase: "images", current: 0, total: event.total ?? 0, item: "" });
+            } else if (event.type === "progress" && event.current != null && event.total != null) {
+              setImportProgress({ phase: "images", current: event.current, total: event.total, item: event.item ?? "" });
+            } else if (event.type === "saving") {
+              setImportProgress({ phase: "saving" });
+            } else if (event.type === "done") {
+              setImportResult({ imported: event.imported ?? 0, category: event.category ?? "", errors: [] });
+              setImportFile(null);
+              if (importInputRef.current) importInputRef.current.value = "";
+              await reloadMenu();
+            } else if (event.type === "validation_errors") {
+              setImportResult({ imported: 0, category: "", errors: event.errors ?? [] });
+            } else if (event.type === "error") {
+              setImportError(event.message ?? "Import failed");
+            }
+          } catch {
+            // ignore malformed SSE lines
+          }
+        }
+      }
+    } catch (e) {
+      setImportError((e as Error).message);
+    } finally {
+      setImporting(false);
+      setImportProgress(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-3 animate-pulse py-4">
@@ -361,6 +483,134 @@ export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPat
 
   return (
     <div className="space-y-4">
+      {/* Import from CSV */}
+      <div className="rounded-[var(--radius-xl)] border border-border bg-card p-4">
+        <div className="text-[11px] font-bold text-brand uppercase tracking-[0.15em] mb-3">
+          Import from CSV
+        </div>
+        <p className="text-[12px] text-text-muted mb-3">
+          Upload a CSV or XLSX with columns: <strong>Name</strong>, <strong>Price</strong>, <strong>Description</strong>, <strong>Image URL</strong>. Images are downloaded and saved to your storage.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-[var(--radius-md)] cursor-pointer hover:border-brand transition-colors text-[12px] font-medium">
+            <UploadSimple size={16} weight="bold" className="text-brand" />
+            Choose file
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              className="hidden"
+              onChange={(e) => {
+              const f = e.target.files?.[0];
+              setImportFile(f ?? null);
+              setImportResult(null);
+              setImportError(null);
+            }}
+            />
+          </label>
+          {importFile && (
+            <span className="text-[12px] text-text-secondary">{importFile.name}</span>
+          )}
+          <input
+            type="text"
+            value={importCategoryName}
+            onChange={(e) => setImportCategoryName(e.target.value)}
+            placeholder="Category name"
+            className="w-32 h-9 px-3 text-[13px] bg-surface border border-border rounded-[var(--radius-md)] text-text-primary placeholder:text-text-muted outline-none focus:border-brand"
+          />
+          <label className="flex items-center gap-2 text-[12px] text-text-secondary cursor-pointer">
+            <input
+              type="checkbox"
+              checked={reuploadImages}
+              onChange={(e) => setReuploadImages(e.target.checked)}
+              className="rounded border-border"
+            />
+            Download & save images
+          </label>
+          <button
+            type="button"
+            disabled={!importFile || importing}
+            onClick={handleImport}
+            className="flex items-center gap-2 px-4 py-2 bg-brand text-white text-[13px] font-semibold rounded-[var(--radius-md)] hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+          >
+            {importing && <SpinnerGap size={14} weight="bold" className="animate-spin" />}
+            {importing ? "Importing…" : "Import"}
+          </button>
+        </div>
+
+        {/* Live progress */}
+        {importing && importProgress && (
+          <div className="mt-4 space-y-2">
+            {importProgress.phase === "parsing" && (
+              <div className="flex items-center gap-2 text-[12px] text-text-muted">
+                <SpinnerGap size={13} weight="bold" className="animate-spin text-brand" />
+                Parsing file…
+              </div>
+            )}
+            {importProgress.phase === "images" && (
+              <>
+                <div className="flex items-center justify-between text-[12px] text-text-secondary">
+                  <span>
+                    {importProgress.total === 0
+                      ? "No images to download"
+                      : `Downloading images — ${importProgress.current} / ${importProgress.total}`}
+                  </span>
+                  {importProgress.total > 0 && (
+                    <span className="text-text-muted">
+                      {Math.round((importProgress.current / importProgress.total) * 100)}%
+                    </span>
+                  )}
+                </div>
+                {importProgress.total > 0 && (
+                  <div className="h-1.5 w-full rounded-full bg-surface overflow-hidden">
+                    <div
+                      className="h-full bg-brand rounded-full transition-all duration-300"
+                      style={{ width: `${Math.round((importProgress.current / importProgress.total) * 100)}%` }}
+                    />
+                  </div>
+                )}
+                {importProgress.item && (
+                  <div className="text-[11px] text-text-muted truncate">
+                    {importProgress.item}
+                  </div>
+                )}
+              </>
+            )}
+            {importProgress.phase === "saving" && (
+              <div className="flex items-center gap-2 text-[12px] text-text-muted">
+                <SpinnerGap size={13} weight="bold" className="animate-spin text-brand" />
+                Saving menu to database…
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Result */}
+        {!importing && importResult && (
+          <div className="mt-3 text-[13px]">
+            {importResult.imported > 0 ? (
+              <span className="flex items-center gap-1.5 text-success font-medium">
+                <CheckCircle size={15} weight="fill" />
+                Imported {importResult.imported} item{importResult.imported !== 1 ? "s" : ""} into &quot;{importResult.category}&quot;
+              </span>
+            ) : null}
+            {importResult.errors?.length ? (
+              <ul className="mt-1 text-danger text-[12px] list-disc list-inside">
+                {importResult.errors.slice(0, 5).map((e, i) => (
+                  <li key={i}>Row {e.row}: {e.message}</li>
+                ))}
+                {importResult.errors.length > 5 && (
+                  <li>…and {importResult.errors.length - 5} more</li>
+                )}
+              </ul>
+            ) : null}
+          </div>
+        )}
+        {importError && (
+          <div className="mt-3 text-[13px] text-danger">{importError}</div>
+        )}
+      </div>
+
       {/* Categories */}
       {categories.length === 0 ? (
         <div className="rounded-[var(--radius-xl)] border-2 border-dashed border-border p-10 text-center">
@@ -425,7 +675,7 @@ export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPat
                         >
                           {/* Image thumbnail */}
                           <div className="w-[72px] h-[72px] shrink-0 rounded-[var(--radius-md)] overflow-hidden bg-card border border-border flex items-center justify-center">
-                            {item.image_url ? (
+                            {item.image_url && isValidHttpUrl(item.image_url) ? (
                               <div className="relative w-full h-full">
                                 <Image src={item.image_url} alt={item.name} fill className="object-cover" sizes="72px" />
                               </div>
