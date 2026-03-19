@@ -32,7 +32,7 @@ export function OpeningHoursEditor({ value, onChange }: OpeningHoursEditorProps)
     );
   });
 
-  const updateDay = (dayIndex: number, updates: Partial<DayHours>) => {
+  const _updateDay = (dayIndex: number, updates: Partial<DayHours>) => {
     const next = [...hours];
     next[dayIndex] = { ...next[dayIndex], ...updates };
     onChange(next);

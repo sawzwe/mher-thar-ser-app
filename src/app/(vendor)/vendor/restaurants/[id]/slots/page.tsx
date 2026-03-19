@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import type { VendorUser } from "@/lib/auth/users/VendorUser";
+import { VendorRestaurantTabs } from "@/components/vendor/VendorRestaurantTabs";
 
 export default async function SlotsPage({
   params,
@@ -12,9 +13,15 @@ export default async function SlotsPage({
   const { id } = await params;
   const supabase = await createClient();
   const user = await UserFactory.fromSupabase(supabase);
-  if (user.type !== "vendor") redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/vendor/restaurants/${id}`);
+  if (user.type !== "vendor")
+    redirect(
+      user.isAuthenticated() ? "/" : `/sign-in?next=/vendor/restaurants/${id}`,
+    );
   const vendor = user as VendorUser;
-  const owns = typeof vendor.ownsRestaurant === "function" ? vendor.ownsRestaurant(id) : (vendor.restaurantIds ?? []).includes(id);
+  const owns =
+    typeof vendor.ownsRestaurant === "function"
+      ? vendor.ownsRestaurant(id)
+      : (vendor.restaurantIds ?? []).includes(id);
   if (!owns) redirect("/vendor");
 
   const { data: restaurant } = await supabase
@@ -26,14 +33,28 @@ export default async function SlotsPage({
   if (!restaurant) redirect("/vendor");
 
   const today = new Date().toISOString().split("T")[0];
-  const { data: slots } = await supabase
-    .from("slots")
-    .select("date, time, capacity, remaining")
-    .eq("restaurant_id", id)
-    .gte("date", today)
-    .order("date")
-    .order("time")
-    .limit(50);
+  const [slotsRes, upcomingBookingsRes] = await Promise.all([
+    supabase
+      .from("slots")
+      .select("date, time, capacity, remaining")
+      .eq("restaurant_id", id)
+      .gte("date", today)
+      .order("date")
+      .order("time")
+      .limit(50),
+    supabase
+      .from("bookings")
+      .select("id, booking_ref, customer_name, date, time, party_size, status")
+      .eq("restaurant_id", id)
+      .gte("date", today)
+      .eq("status", "confirmed")
+      .order("date")
+      .order("time")
+      .limit(10),
+  ]);
+
+  const slots = slotsRes.data ?? [];
+  const upcomingBookings = upcomingBookingsRes.data ?? [];
 
   return (
     <div className="p-8">
@@ -46,14 +67,81 @@ export default async function SlotsPage({
       <h1 className="text-2xl font-bold text-text-primary mb-2">
         Availability
       </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Set capacity by date and time. Use the SlotEditor component for weekly
-        template.
+      <p className="text-sm text-text-muted mb-6">
+        Set capacity by date and time. Generate slots from the admin panel or
+        vendor API.
       </p>
-      {!slots?.length ? (
+      <VendorRestaurantTabs restaurantId={id} />
+
+      {/* Upcoming Bookings */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-text-primary">
+            Upcoming Bookings
+          </h2>
+          <Link
+            href={`/vendor/restaurants/${id}/bookings`}
+            className="text-sm font-medium text-brand-light hover:text-brand"
+          >
+            View all →
+          </Link>
+        </div>
+        {upcomingBookings.length === 0 ? (
+          <div className="bg-card border border-border rounded-[var(--radius-lg)] p-6 text-center text-text-muted text-sm">
+            No upcoming confirmed bookings.
+          </div>
+        ) : (
+          <div className="border border-border rounded-[var(--radius-lg)] overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-surface border-b border-border">
+                  <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
+                    Ref
+                  </th>
+                  <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
+                    Guest
+                  </th>
+                  <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
+                    Date / Time
+                  </th>
+                  <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
+                    Party
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingBookings.map((b) => (
+                  <tr
+                    key={b.id}
+                    className="border-b border-border last:border-b-0 hover:bg-card"
+                  >
+                    <td className="px-4 py-3 font-mono text-sm text-brand-light">
+                      {b.booking_ref}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-text-primary">
+                      {b.customer_name}
+                    </td>
+                    <td className="px-4 py-3 text-text-secondary">
+                      {b.date}{" "}
+                      {typeof b.time === "string" ? b.time.slice(0, 5) : b.time}
+                    </td>
+                    <td className="px-4 py-3 text-text-primary">
+                      {b.party_size}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Slots */}
+      <h2 className="font-semibold text-text-primary mb-4">Slots</h2>
+      {!slots.length ? (
         <div className="bg-card border border-border rounded-[var(--radius-lg)] p-8 text-center text-text-muted text-sm">
-          No slots generated. Use the generate API to create slots from a weekly
-          template.
+          No slots generated. Use the admin panel or generate API to create slots
+          from a weekly template.
         </div>
       ) : (
         <div className="border border-border rounded-[var(--radius-lg)] overflow-hidden">

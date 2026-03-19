@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-require-imports -- Leaflet loaded dynamically for SSR */
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,7 +54,7 @@ export function DiscoveryPanel({
   restaurants,
   radiusKm,
   onRadiusChange,
-  mobile = false,
+  mobile: _mobile = false,
   onMarkerClick,
   selectedId: externalSelectedId,
   onCardSelect,
@@ -109,7 +110,7 @@ export function DiscoveryPanel({
 
     L.control.zoom({ position: "bottomright" }).addTo(map);
     mapRef.current = map;
-    setMapReady(true);
+    queueMicrotask(() => setMapReady(true));
   }, []);
 
   useEffect(() => {
@@ -122,6 +123,7 @@ export function DiscoveryPanel({
       userMarkerRef.current = null;
       markersRef.current = {};
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- initMap is stable
   }, []);
 
   useEffect(() => {
@@ -237,7 +239,7 @@ export function DiscoveryPanel({
 
       markersRef.current[r.id] = marker;
     });
-  }, [filteredRestaurants, centerLat, centerLng, mapReady, lang]);
+  }, [filteredRestaurants, centerLat, centerLng, mapReady, lang, onMarkerClick]);
 
   // When external selectedId changes (e.g. from bottom sheet card), pan and open popup
   useEffect(() => {
@@ -302,7 +304,6 @@ export function DiscoveryPanel({
       <div ref={listRef} className="list-col" id="restaurant-list">
         {filteredRestaurants.map((r) => {
           const status = getStatus(r);
-          const statusStyle = STATUS_STYLES[status];
           const dist = getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng);
           const displayRating = r.googleRating ?? r.rating;
           const emoji = getPinEmoji(r.cuisineTags, r.cuisineTags[0]);

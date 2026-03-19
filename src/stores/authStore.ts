@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { UserFactory } from "@/lib/auth/UserFactory";
 import { getSessionWithTimeout } from "@/lib/auth/supabaseAuth";
 import type { IUser } from "@/lib/auth/types";
+import { authConfig, type AuthProvider } from "@/lib/auth/config";
 
 // getSession() reads from localStorage — no Navigator lock needed.
 // getUser() makes a server round-trip and ACQUIRES the Navigator lock.
@@ -31,6 +32,10 @@ interface AuthState {
     password: string,
     name: string,
   ) => Promise<{ error?: string; code?: string }>;
+  signInWithOAuth: (
+    provider: AuthProvider,
+    redirectTo?: string,
+  ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -152,6 +157,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (error) {
       set({ loading: false });
       return { error: error.message, code: error.code };
+    }
+    return {};
+  },
+
+  signInWithOAuth: async (provider, redirectTo) => {
+    if (!authConfig.providers[provider]) {
+      return { error: "Provider disabled" };
+    }
+    const callbackUrl = `${authConfig.siteUrl}${authConfig.callbackPath}?next=${encodeURIComponent(redirectTo || "/")}`;
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: callbackUrl },
+    });
+    if (error) {
+      return { error: error.message };
     }
     return {};
   },

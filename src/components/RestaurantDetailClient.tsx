@@ -58,7 +58,7 @@ export function RestaurantDetailClient({
     format(new Date(), "yyyy-MM-dd"),
   );
   const [previewPartySize, setPreviewPartySize] = useState(2);
-  const { getAverageRating, loadAllReviews } = useReviewStore();
+  const { getAverageRating } = useReviewStore();
   const lang = useLanguageStore((s) => s.lang);
 
   const previewSlots = useMemo(
@@ -71,8 +71,8 @@ export function RestaurantDetailClient({
       setRestaurant(r);
       setLoading(false);
     });
-    loadAllReviews();
-  }, [id, loadAllReviews]);
+    useReviewStore.getState().loadAllReviews();
+  }, [id]);
 
   if (loading) {
     return (

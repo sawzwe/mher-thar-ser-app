@@ -25,8 +25,8 @@ function RatingBar({ label, count, total }: { label: string; count: number; tota
 }
 
 export function ReviewsSection({ restaurant }: { restaurant: Restaurant }) {
-  const { reviews, loading, loadReviews, addReview } = useReviewStore();
-  const { bookings, loadBookings } = useBookingStore();
+  const { reviews, loading, addReview } = useReviewStore();
+  const { bookings } = useBookingStore();
   const [showForm, setShowForm] = useState(false);
   const [formRating, setFormRating] = useState(5);
   const [formComment, setFormComment] = useState("");
@@ -34,7 +34,10 @@ export function ReviewsSection({ restaurant }: { restaurant: Restaurant }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => { loadReviews(restaurant.id); loadBookings(); }, [restaurant.id, loadReviews, loadBookings]);
+  useEffect(() => {
+    useReviewStore.getState().loadReviews(restaurant.id);
+    useBookingStore.getState().loadBookings();
+  }, [restaurant.id]);
 
   const eligibility = canReview(restaurant.id, bookings, reviews);
   const { avg, count: reviewCount } = computeAverageRating(reviews, restaurant.rating);

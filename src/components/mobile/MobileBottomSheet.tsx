@@ -44,7 +44,7 @@ export function MobileBottomSheet({
   onSnapChange,
   selectedId,
   onCardSelect,
-  onMapClick,
+  onMapClick: _onMapClick,
   sheetRef,
   cardsRef,
 }: MobileBottomSheetProps) {

@@ -42,14 +42,16 @@ export function MobileTopBar() {
 
   useLayoutEffect(() => {
     if (!menuOpen) {
-      setMenuStyle(null);
+      queueMicrotask(() => setMenuStyle(null));
       return;
     }
     if (typeof document === "undefined") return;
     const btn = menuBtnRef.current;
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
-    setMenuStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    queueMicrotask(() =>
+      setMenuStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+    );
   }, [menuOpen]);
 
   return (

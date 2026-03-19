@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-require-imports -- Leaflet loaded dynamically for SSR */
 import { useEffect, useRef, useState } from "react";
 import type { Map, TileLayer } from "leaflet";
 import { Geo } from "@/types";
@@ -23,7 +24,6 @@ export function MapSection({ geo, address, name, lang }: MapSectionProps) {
     if (typeof window === "undefined" || !containerRef.current) return;
     if (mapRef.current) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const L = require("leaflet");
     const stored = useThemeStore.getState().theme;
     const docTheme = document.documentElement.getAttribute("data-theme");

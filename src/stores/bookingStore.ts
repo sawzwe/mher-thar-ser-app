@@ -1,15 +1,5 @@
 import { create } from "zustand";
 import { Booking } from "@/types";
-import {
-  createBooking,
-  fetchBookings,
-  cancelBooking as apiCancelBooking,
-  rescheduleBooking as apiRescheduleBooking,
-} from "@/lib/mockApi/bookings";
-import {
-  getEarliestWaitlistEntry,
-  markWaitlistNotified,
-} from "@/lib/mockApi/waitlist";
 
 interface BookingState {
   bookings: Booking[];
@@ -44,49 +34,71 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   loadBookings: async () => {
     set({ loading: true });
-    const data = await fetchBookings();
-    set({ bookings: data, loading: false });
+    try {
+      const res = await fetch("/api/bookings");
+      if (!res.ok) throw new Error("Failed to load bookings");
+      const json = await res.json() as { bookings: Booking[] };
+      set({ bookings: json.bookings, loading: false });
+    } catch {
+      set({ loading: false });
+    }
   },
 
   book: async (params) => {
-    const result = await createBooking(params);
-    if (result.success) {
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurant_id: params.restaurantId,
+          date: params.date,
+          time: params.time,
+          party_size: params.partySize,
+          customer_name: params.customerName,
+          contact: params.contact,
+          notes: params.notes,
+          deal_id: params.dealId,
+        }),
+      });
+      const json = await res.json() as { booking?: Booking; error?: string };
+      if (!res.ok) return { success: false, error: json.error ?? "Booking failed" };
       await get().loadBookings();
+      return { success: true, booking: json.booking! };
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
     }
-    return result;
   },
 
   cancel: async (id) => {
-    const result = await apiCancelBooking(id);
-    if (result.success) {
+    try {
+      const res = await fetch(`/api/bookings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "cancel" }),
+      });
+      const json = await res.json() as { booking?: Booking; error?: string };
+      if (!res.ok) return { success: false, error: json.error ?? "Cancel failed" };
       await get().loadBookings();
-
-      // Check waitlist for auto-offer
-      const { restaurantId, date, time } = result.booking;
-      const entry = await getEarliestWaitlistEntry(restaurantId, date, time);
-      if (entry) {
-        await markWaitlistNotified(entry.id);
-        set({
-          pendingOffer: {
-            waitlistEntryId: entry.id,
-            restaurantId: entry.restaurantId,
-            date: entry.date,
-            time: entry.time,
-            partySize: entry.partySize,
-            name: entry.name,
-          },
-        });
-      }
+      return { success: true, booking: json.booking! };
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
     }
-    return result;
   },
 
   reschedule: async (id, newDate, newTime) => {
-    const result = await apiRescheduleBooking(id, newDate, newTime);
-    if (result.success) {
+    try {
+      const res = await fetch(`/api/bookings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reschedule", new_date: newDate, new_time: newTime }),
+      });
+      const json = await res.json() as { booking?: Booking; error?: string };
+      if (!res.ok) return { success: false, error: json.error ?? "Reschedule failed" };
       await get().loadBookings();
+      return { success: true, booking: json.booking! };
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
     }
-    return result;
   },
 
   clearOffer: () => set({ pendingOffer: null }),
