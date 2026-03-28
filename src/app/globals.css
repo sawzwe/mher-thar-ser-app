@@ -1341,11 +1341,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   min-width: 0;
   flex: 1;
 }
-/* Horizontal wordmark: wide intrinsic ratio so it stays readable on mobile */
+/* Vertical wordmark in mobile top bar — tall asset, cap height to fit bar */
 .topbar-logo-wordmark-img {
-  height: 48px;
+  height: 40px;
   width: auto;
-  max-width: min(220px, 58vw);
+  max-width: min(96px, 28vw);
   object-fit: contain;
   object-position: left center;
   display: block;

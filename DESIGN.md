@@ -170,10 +170,9 @@ Utility classes: `.animate-fade-in · .animate-slide-up · .animate-slide-down �
 
 | Asset | File | Placement |
 |-------|------|-----------|
-| **Vertical wordmark** | `logo_mascot_text_vertical.png` | Shown with horizontal on desktop/laptop nav & footers (`LOGO_VERTICAL_SRC`) |
-| **Horizontal wordmark** | `logo_mascot_text_horizontal.png` | Shown with vertical on desktop/laptop; mobile top bar only (`LOGO_HORIZONTAL_SRC`) |
+| **Vertical wordmark** | `logo_mascot_text_vertical.png` | All in-app wordmarks: desktop nav, mobile top bar, footers (`LOGO_VERTICAL_SRC` / `LOGO_SRC`) |
 | Circle | `logo_mascot_circle.png` | Optional icon-only / favicon (`LOGO_CIRCLE_SRC`) |
-| Other marks | `logo_mascot_text_horizontal.png`, `logo_macot.png`, `logo_text.png` | Available if needed for marketing |
+| Other marks | `logo_macot.png`, `logo_text.png` | Marketing / illustrations only |
 
 **Rules:**
 - Never place a logo PNG on a coloured background container — the assets have correct transparent backgrounds.

@@ -130,8 +130,7 @@ Base unit **4px**. Use multiples: `4 8 12 16 20 24 32 40 48 64 80`.
 
 | Asset | File | Use |
 |-------|------|-----|
-| **Vertical wordmark** | `logo_mascot_text_vertical.png` | Desktop/laptop nav + footer, paired with horizontal (`LOGO_VERTICAL_SRC` / `LOGO_SRC`) |
-| **Horizontal wordmark** | `logo_mascot_text_horizontal.png` | Same pairing on desktop/laptop; mobile top bar alone (`LOGO_HORIZONTAL_SRC`) |
+| **Vertical wordmark** | `logo_mascot_text_vertical.png` | Nav, mobile top bar, footers — single wordmark everywhere (`LOGO_VERTICAL_SRC` / `LOGO_SRC`) |
 | Circle | `logo_mascot_circle.png` | Optional icon-only (`LOGO_CIRCLE_SRC`) |
 
 **Never** place the PNG inside a container with a background colour, border ring, or `overflow: hidden`.
@@ -222,7 +221,7 @@ Never hardcode tokens, duplicate existing variables, or use `!important` without
 AppShell
 ├── <nav class="desktop-nav">       hidden on mobile, z-nav (400)
 ├── <div class="mobile-topbar-wrapper">   only on mobile
-│     └── <MobileTopBar>           horizontal wordmark + controls
+│     └── <MobileTopBar>           vertical wordmark + controls
 └── <main class="pt-20 main-with-nav">
       {children}
 ```

@@ -43,7 +43,7 @@ src/
 ├── types/
 │   └── index.ts            Core types: Restaurant, Deal, MenuItem, Booking, etc.
 public/
-├── assets/logo/            Logo PNGs (circle, horizontal, vertical, mascot, text)
+├── assets/logo/            Logo PNGs (vertical wordmark, circle, mascot, text; horizontal deprecated)
 ├── fonts/
 │   ├── walone/             Walone (legacy, no longer used)
 │   └── pogonia-modern-font/ Pogonia — active primary font (100–900, 9 weights)
@@ -96,6 +96,60 @@ Supabase DB
 - Public restaurant data is fetched server-side and cached (`revalidate: 60`).
 - Booking / review mutations go through API routes, not direct Supabase calls from the client.
 - Admin / Vendor routes use `apiGuard()` which checks the user's role from Supabase.
+
+---
+
+## Debug element IDs (`mts-*`)
+
+Stable **`id`** attributes are added on shell, home, and auth UI so you can reference a node in chat or DevTools without ambiguity.
+
+**Rules**
+
+- Prefix every id with **`mts-`** (Mher Thar Ser).
+- Use **kebab-case**: `mts-nav-theme-toggle`, not `mts_nav_theme`.
+- Prefer **role-based names** (`mts-nav-link-restaurants`) over copy that changes with locale.
+- When you add new interactive or layout landmarks in `AppShell`, `MobileTopBar`, `HomePageClient`, or global modals, **add an `id`** and extend the table below (or a short note) in this file.
+- **One id per document** — never duplicate the same id on two mounted nodes.
+
+**Common IDs**
+
+| id | Element |
+|----|---------|
+| `mts-app-root` | AppShell outer wrapper |
+| `mts-nav-desktop` | Desktop glass nav bar |
+| `mts-nav-brand` | Logo link to `/` |
+| `mts-nav-logo-vertical` | Vertical wordmark in desktop nav |
+| `mts-nav-actions` | Right cluster (theme, lang, links, user) |
+| `mts-nav-theme-toggle` | Light/dark toggle |
+| `mts-nav-lang` · `mts-nav-lang-toggle` · `mts-nav-lang-dropdown` | Language control |
+| `mts-nav-lang-backdrop` | Full-screen dismiss layer for lang menu |
+| `mts-nav-lang-option-en` · `mts-nav-lang-option-my` | Language menu rows |
+| `mts-nav-bookings-shortcut` | Home: bookings link (when signed in) |
+| `mts-nav-cta-restaurants` | Home: primary “see restaurants” CTA |
+| `mts-nav-sign-in` | Opens auth modal (home or non-home branch) |
+| `mts-nav-link-discover` · `mts-nav-link-restaurants` · `mts-nav-link-chat` · `mts-nav-link-bookings` | Non-home nav pills |
+| `mts-nav-user` · `mts-nav-user-menu-trigger` · `mts-nav-user-dropdown` · `mts-nav-user-backdrop` | Signed-in user menu |
+| `mts-nav-user-vendor` · `mts-nav-user-admin` · `mts-nav-user-claim` | Role links in user menu |
+| `mts-nav-sign-out` | Sign out control |
+| `mts-mobile-topbar-wrapper` | Wrapper around `MobileTopBar` |
+| `mts-mobile-topbar` | Mobile top bar root |
+| `mts-mobile-brand` · `mts-mobile-logo-vertical` | Mobile wordmark link / image |
+| `mts-mobile-topbar-actions` | Right side (tabs or quick icons + menu) |
+| `mts-mobile-home-tabs` · `mts-mobile-tab-map` · `mts-mobile-tab-list` | Home map/list switcher |
+| `mts-mobile-quick-map` · `mts-mobile-quick-restaurants` | Non-home quick links |
+| `mts-mobile-menu-anchor` · `mts-mobile-menu-trigger` | Overflow menu |
+| `mts-mobile-menu-backdrop` · `mts-mobile-menu` | Portal menu layers |
+| `mts-mobile-menu-lang-toggle` · `mts-mobile-menu-lang-sublist` | Mobile menu language |
+| `mts-mobile-lang-option-en` · `mts-mobile-lang-option-my` | Mobile language rows |
+| `mts-mobile-menu-bookings` · `mts-mobile-menu-theme` | Bookings link · theme row |
+| `mts-main` | Main content area |
+| `mts-footer` · `mts-footer-brand` · `mts-footer-logo-vertical` | AppShell footer (non-home) |
+| `mts-home` · `mts-home-mobile-landing` · `mts-home-mobile-list` | Home page regions |
+| `mts-home-hero` · `mts-home-hero-inner` · `mts-home-hero-cta-restaurants` | Desktop hero |
+| `mts-discovery` | Wrapper around desktop `DiscoveryPanel` |
+| `mts-discovery-panel` | Map + list section |
+| `mts-footer-home` · `mts-footer-home-brand` · `mts-footer-home-logo-vertical` | Home-only desktop footer |
+| `mts-auth-modal` | Auth modal backdrop root (`Modal`) |
 
 ---
 
@@ -167,11 +221,10 @@ const lang = useLanguageStore((s) => s.lang);
 
 ## Logo Rules
 
-- Always use `LOGO_VERTICAL_SRC` (or `LOGO_SRC`, same file) from `@/components/Logo` for the main wordmark.
+- Always use `LOGO_VERTICAL_SRC` (or `LOGO_SRC`, same file) from `@/components/Logo` for the wordmark — **desktop nav, mobile top bar, and footers** all use this vertical asset only.
 - **Never** place the PNG inside a container that has a background colour.
 - **Never** clip the logo with `overflow: hidden` or add a border ring around it.
-- **Desktop / laptop** (`desktop-nav` and desktop footers): show **both** the **vertical** and **horizontal** wordmarks side by side (`LOGO_VERTICAL_SRC` + `LOGO_HORIZONTAL_SRC`). Home link uses `aria-label="Mher Thar Ser"`.
-- **Mobile top bar**: **horizontal** only (`LOGO_HORIZONTAL_SRC`), with `z-index: 1100` above the map.
+- **Mobile top bar** uses the same vertical PNG with capped height (see `.topbar-logo-wordmark-img` in `globals.css`); bar `z-index` stays above the map (`1100`).
 
 ---
 

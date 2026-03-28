@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 
-/** Vertical wordmark + mascot — primary brand mark for desktop nav and footer. */
+/** Vertical wordmark + mascot — primary brand mark (nav, mobile top bar, footers). */
 export const LOGO_VERTICAL_SRC = "/assets/logo/logo_mascot_text_vertical.png";
-
-/** Horizontal wordmark — best for narrow mobile top bars (legible at small height). */
-export const LOGO_HORIZONTAL_SRC = "/assets/logo/logo_mascot_text_horizontal.png";
 
 /** Circle mascot mark — optional (favicons, compact icon-only slots). */
 export const LOGO_CIRCLE_SRC = "/assets/logo/logo_mascot_circle.png";

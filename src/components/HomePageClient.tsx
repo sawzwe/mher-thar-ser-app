@@ -7,7 +7,7 @@ import { useRestaurantStore } from "@/stores/restaurantStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
 import { t } from "@/lib/i18n/translations";
-import { LOGO_HORIZONTAL_SRC, LOGO_VERTICAL_SRC } from "@/components/Logo";
+import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { DiscoveryPanel } from "@/components/DiscoveryPanel";
 import { MobileLandingView } from "@/components/mobile/MobileLandingView";
 import { RestaurantCard } from "@/components/RestaurantCard";
@@ -77,9 +77,9 @@ export function HomePageClient() {
   const mobileHomeView = useMobileHomeViewStore((s) => s.view);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-bg">
+    <div id="mts-home" className="min-h-screen overflow-x-hidden bg-bg">
       {/* Mobile: map or list (interchangeable) */}
-      <div className="mobile-landing-wrapper">
+      <div id="mts-home-mobile-landing" className="mobile-landing-wrapper">
         {mobileHomeView === "map" ? (
           <MobileLandingView
             userLat={userLat}
@@ -90,7 +90,7 @@ export function HomePageClient() {
             onRadiusChange={setRadiusKm}
           />
         ) : (
-          <div className="mobile-restaurants-list">
+          <div id="mts-home-mobile-list" className="mobile-restaurants-list">
             <div className="mobile-restaurants-list-inner">
               {filteredByArea.map((r) => (
                 <RestaurantCard key={r.id} restaurant={r} />
@@ -101,8 +101,8 @@ export function HomePageClient() {
       </div>
 
       {/* Desktop: hero + discovery + footer */}
-      <section className="hero desktop-only">
-        <div className="hero-inner">
+      <section id="mts-home-hero" className="hero desktop-only">
+        <div id="mts-home-hero-inner" className="hero-inner">
           <div className="hero-badge">
             <span className="badge-dot" />
             {t(lang, "heroBadge")}
@@ -116,6 +116,7 @@ export function HomePageClient() {
           <p className="hero-sub">{t(lang, "heroSub")}</p>
 
           <Link
+            id="mts-home-hero-cta-restaurants"
             href="/restaurants"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-[100px] bg-brand text-white text-[15px] font-semibold hover:bg-brand-hover transition-all"
           >
@@ -178,7 +179,7 @@ export function HomePageClient() {
       </section>
 
       {/* Discovery panel - map + list */}
-      <div id="discovery" className="desktop-only">
+      <div id="mts-discovery" className="desktop-only">
         <DiscoveryPanel
           userLat={userLat}
           userLng={userLng}
@@ -190,21 +191,19 @@ export function HomePageClient() {
       </div>
 
       {/* Footer */}
-      <footer className="desktop-only border-t border-border py-6 px-6 md:px-8 flex items-center justify-between bg-bg">
-        <div className="flex items-center gap-3 flex-wrap" aria-label="Mher Thar Ser">
+      <footer id="mts-footer-home" className="desktop-only border-t border-border py-6 px-6 md:px-8 flex items-center justify-between bg-bg">
+        <div
+          id="mts-footer-home-brand"
+          className="flex items-center gap-3 flex-wrap"
+          aria-label="Mher Thar Ser"
+        >
           <Image
+            id="mts-footer-home-logo-vertical"
             src={LOGO_VERTICAL_SRC}
             alt=""
             width={1200}
             height={2400}
             className="h-10 w-auto max-w-[130px] object-contain object-left"
-          />
-          <Image
-            src={LOGO_HORIZONTAL_SRC}
-            alt=""
-            width={2400}
-            height={800}
-            className="h-9 w-auto max-w-[220px] object-contain object-left"
           />
           <span className="text-[12px] text-text-muted">
             &copy; {new Date().getFullYear()}

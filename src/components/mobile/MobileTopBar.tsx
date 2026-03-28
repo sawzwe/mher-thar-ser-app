@@ -15,7 +15,7 @@ import {
   CalendarBlank,
 } from "@phosphor-icons/react";
 import Image from "next/image";
-import { LOGO_HORIZONTAL_SRC } from "@/components/Logo";
+import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
@@ -56,24 +56,26 @@ export function MobileTopBar() {
   }, [menuOpen]);
 
   return (
-    <div className="mobile-topbar">
-      <Link href="/" className="topbar-left">
+    <div id="mts-mobile-topbar" className="mobile-topbar">
+      <Link id="mts-mobile-brand" href="/" className="topbar-left">
         <span className="topbar-logo-brand">
           <Image
-            src={LOGO_HORIZONTAL_SRC}
+            id="mts-mobile-logo-vertical"
+            src={LOGO_VERTICAL_SRC}
             alt="Mher Thar Ser"
-            width={2400}
-            height={800}
+            width={1200}
+            height={2400}
             className="topbar-logo-wordmark-img"
             priority
-            sizes="(max-width: 768px) 55vw, 240px"
+            sizes="(max-width: 768px) 28vw, 120px"
           />
         </span>
       </Link>
-      <div className="topbar-right">
+      <div id="mts-mobile-topbar-actions" className="topbar-right">
         {isHome ? (
-          <div className="topbar-segmented" role="tablist">
+          <div id="mts-mobile-home-tabs" className="topbar-segmented" role="tablist">
             <button
+              id="mts-mobile-tab-map"
               type="button"
               role="tab"
               aria-selected={homeView === "map"}
@@ -87,6 +89,7 @@ export function MobileTopBar() {
               <span>{t(lang, "map")}</span>
             </button>
             <button
+              id="mts-mobile-tab-list"
               type="button"
               role="tab"
               aria-selected={homeView === "list"}
@@ -103,6 +106,7 @@ export function MobileTopBar() {
         ) : (
           <>
             <Link
+              id="mts-mobile-quick-map"
               href="/"
               className="topbar-icon-btn"
               aria-label="Map"
@@ -110,6 +114,7 @@ export function MobileTopBar() {
               <MapPin size={20} weight="fill" />
             </Link>
             <Link
+              id="mts-mobile-quick-restaurants"
               href="/restaurants"
               className="topbar-icon-btn"
               aria-label={t(lang, "seeAllRestaurants")}
@@ -118,8 +123,9 @@ export function MobileTopBar() {
             </Link>
           </>
         )}
-        <div className="relative">
+        <div id="mts-mobile-menu-anchor" className="relative">
           <button
+            id="mts-mobile-menu-trigger"
             ref={menuBtnRef}
             type="button"
             onClick={() => {
@@ -136,10 +142,12 @@ export function MobileTopBar() {
             createPortal(
               <>
                 <div
+                  id="mts-mobile-menu-backdrop"
                   className="fixed inset-0 z-[1040]"
                   onClick={() => setMenuOpen(false)}
                 />
                 <div
+                  id="mts-mobile-menu"
                   className="mobile-topbar-menu"
                   style={{
                     position: "fixed",
@@ -150,6 +158,7 @@ export function MobileTopBar() {
                   }}
                 >
                 <button
+                  id="mts-mobile-menu-lang-toggle"
                   type="button"
                   onClick={() => setLangOpen((o) => !o)}
                   className="mobile-menu-item"
@@ -168,10 +177,11 @@ export function MobileTopBar() {
                   />
                 </button>
                 {langOpen && (
-                  <div className="mobile-menu-sublist">
+                  <div id="mts-mobile-menu-lang-sublist" className="mobile-menu-sublist">
                     {LANG_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
+                        id={`mts-mobile-lang-option-${opt.value}`}
                         type="button"
                         onClick={() => {
                           setLang(opt.value);
@@ -192,6 +202,7 @@ export function MobileTopBar() {
                   </div>
                 )}
                 <Link
+                  id="mts-mobile-menu-bookings"
                   href="/bookings"
                   className="mobile-menu-item"
                   onClick={() => setMenuOpen(false)}
@@ -202,6 +213,7 @@ export function MobileTopBar() {
                 <div className="mobile-menu-divider" />
                 <div className="mobile-menu-section">{t(lang, "settings")}</div>
                 <button
+                  id="mts-mobile-menu-theme"
                   type="button"
                   onClick={() => {
                     setTheme(theme === "light" ? "dark" : "light");

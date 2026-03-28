@@ -8,9 +8,11 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   className?: string;
+  /** Stable id for debugging / automation (e.g. `mts-auth-modal`). */
+  id?: string;
 }
 
-export function Modal({ isOpen, onClose, children, className }: ModalProps) {
+export function Modal({ isOpen, onClose, children, className, id }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -28,6 +30,7 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
 
   return (
     <div
+      id={id}
       className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 bg-black/65 backdrop-blur-[6px] animate-overlay"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();

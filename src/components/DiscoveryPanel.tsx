@@ -270,7 +270,7 @@ export function DiscoveryPanel({
   );
 
   return (
-    <section className="discovery-panel">
+    <section id="mts-discovery-panel" className="discovery-panel">
       <div className="map-col">
         <div ref={containerRef} className="map-inner" />
         {loading && (
