@@ -14,7 +14,8 @@ import {
   Globe,
   CalendarBlank,
 } from "@phosphor-icons/react";
-import { Logo } from "@/components/Logo";
+import Image from "next/image";
+import { LOGO_HORIZONTAL_SRC } from "@/components/Logo";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
@@ -57,10 +58,17 @@ export function MobileTopBar() {
   return (
     <div className="mobile-topbar">
       <Link href="/" className="topbar-left">
-        <div className="topbar-logo-icon">
-          <Logo size={26} objectFit="cover" />
-        </div>
-        <span className="topbar-logo-text">Mher Thar Ser</span>
+        <span className="topbar-logo-brand">
+          <Image
+            src={LOGO_HORIZONTAL_SRC}
+            alt="Mher Thar Ser"
+            width={2400}
+            height={800}
+            className="topbar-logo-wordmark-img"
+            priority
+            sizes="(max-width: 768px) 55vw, 240px"
+          />
+        </span>
       </Link>
       <div className="topbar-right">
         {isHome ? (
@@ -128,7 +136,7 @@ export function MobileTopBar() {
             createPortal(
               <>
                 <div
-                  className="fixed inset-0 z-[var(--z-overlay)]"
+                  className="fixed inset-0 z-[1040]"
                   onClick={() => setMenuOpen(false)}
                 />
                 <div
@@ -138,7 +146,7 @@ export function MobileTopBar() {
                     top: menuStyle?.top ?? 64,
                     right: menuStyle?.right ?? 16,
                     left: "auto",
-                    zIndex: 500,
+                    zIndex: 1150,
                   }}
                 >
                 <button

@@ -1,0 +1,247 @@
+---
+description: Complete design system, coding standards, and UI patterns for Mher Thar Ser.
+alwaysApply: true
+---
+
+# Mher Thar Ser — Design System & Coding Standards
+
+Restaurant discovery & booking platform · Bangkok · Bilingual EN + မြန်မာ
+
+---
+
+## Brand
+
+- **Red**: `--brand #E0052D` · hover `--brand-hover #C00528` · light `--brand-light #FF1A45`
+- **Gold**: `--gold #D4A853` — ratings, price tiers only
+- Brand dim/border companions: `--brand-dim`, `--brand-border` for ghost surfaces
+- Semantic: `--success #3DAA6E` · `--warning #E09B2D` · `--danger #E84040` · `--info #4A9FD4`
+  - Each has `-dim` (alpha bg) and `-border` (alpha border) variants
+
+---
+
+## Theming
+
+Theme toggled via `data-theme="light|dark"` on `<html>`. Never hardcode hex values that map to a token.
+
+```css
+/* ✅ always use tokens */
+color: var(--text-primary);
+background: var(--card);
+
+/* ❌ never hardcode */
+color: #0a0a08;
+background: #242424;
+```
+
+**Light — Arctic Ice**
+- `--bg #F5FBFF` · `--surface #FFF` · `--card #EEF8FF` · `--card-hover #E4F4FF`
+- `--text-primary #0A0A08` · `--text-secondary #3A3933` · `--text-muted #5C5B54`
+- `--border rgba(0,0,0,0.08)` · `--border-strong rgba(0,0,0,0.14)`
+
+**Dark — Ferie Black**
+- `--bg #1A1A1A` · `--surface #222` · `--card #242424` · `--card-hover #2A2A2A`
+- `--text-primary #F5F4EF` · `--text-secondary #A09F97` · `--text-muted #5C5B54`
+- `--border rgba(255,255,255,0.07)` · `--border-strong rgba(255,255,255,0.12)`
+
+Glassmorphism pattern (nav, sheets):
+```css
+background: color-mix(in srgb, var(--bg) 85%, transparent);
+backdrop-filter: blur(16px);
+border-bottom: 1px solid var(--border);
+```
+
+---
+
+## Typography
+
+| Font | Variable | Weights | Use |
+|------|----------|---------|-----|
+| **Pogonia** | `--font-sans` | 100–900 (9 weights) | All Latin text (primary font) |
+| Noto Sans Myanmar | `--font-my` | 400–700 | All Burmese text |
+
+Body default: `15px / 1.6`. Burmese text always gets `line-height: 1.9; letter-spacing: 0.01em` via the `.my` class.
+
+**Type scale**
+| Role | Size | Weight | Tracking |
+|------|------|--------|----------|
+| Hero H1 | `clamp(42px,7vw,72px)` | 900 | `-2px` |
+| Hero H2 | `clamp(32px,5.5vw,48px)` | 700 | `-1px` |
+| Card title | `15px` | 600–700 | `-0.2px` |
+| Body | `15px` | 400 | `0` |
+| Caption / meta | `12–13px` | 400–600 | `0` |
+| Badge / label | `11px` | 600–700 | `+0.02em` |
+| Burmese body | `15px` | 400 | `+0.01em` |
+
+---
+
+## Spacing
+
+Base unit **4px**. Use multiples: `4 8 12 16 20 24 32 40 48 64 80`.
+
+| Context | Value |
+|---------|-------|
+| Inline gap (icon + label) | 6–8px |
+| Component inner padding | 16px |
+| Card padding | 20px (`px-5 py-5`) |
+| Section gap | 24–32px |
+| Page horizontal (mobile) | 16px |
+| Page horizontal (desktop) | 24–32px |
+| Mobile top bar height | 56px |
+| Desktop nav height | 64px |
+
+---
+
+## Border Radius
+
+```
+--radius-sm   6px    tags, small chips, icon buttons
+--radius-md   10px   inputs, buttons, small cards
+--radius-lg   16px   cards, panels, modals
+--radius-xl   20px   large surfaces
+--radius-2xl  28px   bottom sheets, hero blocks
+--radius-full 9999px pills, avatars, badge chips
+```
+
+---
+
+## Shadows & Motion
+
+**Shadows:** `--shadow-sm` (micro) → `--shadow-md` (cards) → `--shadow-lg` (hover) → `--shadow-xl` (modals) → `--shadow-brand` (CTA hover)
+
+**Motion tokens:**
+```
+--dur-fast   150ms   colour, opacity
+--dur-base   220ms   card lift, border
+--dur-slow   350ms   page-level enter
+--ease-out   cubic-bezier(0.25,0.46,0.45,0.94)
+--ease-spring cubic-bezier(0.34,1.56,0.64,1)
+```
+
+**Animation utilities:** `.animate-fade-in` · `.animate-slide-up` · `.animate-slide-down` · `.animate-overlay` · `.animate-spin`
+
+**Z-index layers:**
+```
+--z-base 0 · --z-raised 10 · --z-overlay 100 · --z-modal 200 · --z-toast 300 · --z-nav 400
+```
+
+---
+
+## Logo
+
+| Asset | File | Use |
+|-------|------|-----|
+| **Vertical wordmark** | `logo_mascot_text_vertical.png` | Desktop/laptop nav + footer, paired with horizontal (`LOGO_VERTICAL_SRC` / `LOGO_SRC`) |
+| **Horizontal wordmark** | `logo_mascot_text_horizontal.png` | Same pairing on desktop/laptop; mobile top bar alone (`LOGO_HORIZONTAL_SRC`) |
+| Circle | `logo_mascot_circle.png` | Optional icon-only (`LOGO_CIRCLE_SRC`) |
+
+**Never** place the PNG inside a container with a background colour, border ring, or `overflow: hidden`.
+
+---
+
+## UI Components — use these, don't reinvent
+
+### Button
+```tsx
+<Button variant="primary" size="md">Book Now</Button>
+```
+Variants: `primary` · `secondary` · `ghost` · `brandGhost` · `danger`
+Sizes: `xs` · `sm` · `md` · `lg` · `xl` · `icon` · `icon-sm` · `icon-lg`
+Prop: `loading` — shows spinner, blocks click.
+
+### Card
+```tsx
+<Card interactive>
+  <CardHeader>Title</CardHeader>
+  <CardContent>Body</CardContent>
+  <CardFooter>Actions</CardFooter>
+</Card>
+```
+
+### Input / Select / Textarea
+```tsx
+<Input label="Name" labelMy="နာမည်" error="Required" hint="Full name" />
+<Select label="Cuisine"><option>Thai</option></Select>
+<Textarea label="Notes" />
+```
+
+### Badge
+```tsx
+<Badge variant="success"><BadgeDot /> Open</Badge>
+<Badge variant="brandSoft">3 Deals</Badge>
+```
+Variants: `default` · `brand` · `brandSoft` · `success` · `warning` · `danger` · `info` · `gold` · `bts` · `mrt` · `arl`
+
+---
+
+## Component Patterns (TSX)
+
+- Add `"use client"` for any component that uses hooks, events, or browser APIs.
+- Use **Tailwind utilities first**. Add a global CSS class in `globals.css` only when the pattern appears in ≥3 places or requires complex pseudo-selectors.
+- Use `cn()` from `@/lib/utils` for conditional classNames.
+- Use `cva` for variant-based primitives.
+
+**Icons:** Phosphor Icons (`@phosphor-icons/react`). Default weight `regular`, `fill` for active states. Sizes: 14 (inline), 16 (badge), 18 (nav), 20 (action), 24 (prominent).
+
+**Images:** Always `next/image` with explicit `width`/`height` and meaningful `alt`.
+
+**Interaction states:**
+```tsx
+// Card hover lift
+"hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] active:translate-y-0 active:shadow-[var(--shadow-sm)]"
+
+// Focus ring (keyboard)
+"focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+```
+
+---
+
+## Bilingual (EN / မြန်မာ)
+
+- Every user-visible string needs both English and Burmese.
+- Use `t(lang, "key")` from `@/lib/i18n/translations`.
+- Burmese text uses `.my` class or `font-my` Tailwind alias.
+- Inputs use `labelMy` prop.
+
+---
+
+## CSS Conventions (globals.css)
+
+Add a class to `globals.css` only when:
+- The same pattern appears in ≥3 places, **or**
+- It needs complex pseudo-selectors / child combinators, **or**
+- It is a layout wrapper with multiple responsive overrides.
+
+Naming: **kebab-case**, prefixed by feature (`topbar-*`, `hero-*`, `list-*`, `admin-*`).
+Never hardcode tokens, duplicate existing variables, or use `!important` without a comment.
+
+---
+
+## Layout Structure
+
+```
+AppShell
+├── <nav class="desktop-nav">       hidden on mobile, z-nav (400)
+├── <div class="mobile-topbar-wrapper">   only on mobile
+│     └── <MobileTopBar>           horizontal wordmark + controls
+└── <main class="pt-20 main-with-nav">
+      {children}
+```
+
+| Route pattern | Shell |
+|---------------|-------|
+| `/` · `/restaurants` · `/restaurant/[id]` · `/bookings` · `/chat` | AppShell |
+| `/admin/**` | AdminShell |
+| `/vendor/**` | VendorShell |
+
+Always add `env(safe-area-inset-bottom)` to elements at the bottom of the screen on mobile.
+
+---
+
+## Development Workflow
+
+1. **Token first** — new colour or spacing → add to `:root` in `globals.css`, not inline.
+2. **Component first** — check `src/components/ui/` before writing new markup.
+3. **Mobile** — test at 375px and 768px before desktop.
+4. **Dark mode** — toggle and verify contrast.
+5. **Burmese** — switch language, check font and line-height.
+6. **Build** — `npm run build` must pass before committing.

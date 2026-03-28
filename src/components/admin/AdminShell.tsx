@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/Logo";
+import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import {
   ChartLine,
   Storefront,
@@ -238,12 +239,15 @@ export function AdminShell({
       </aside>
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-14 shrink-0 border-b border-border flex items-center justify-between px-7 bg-bg/60 backdrop-blur-xl">
-          <div className="flex items-center gap-3">
-            <Logo size={22} />
-            <span className="text-sm font-semibold text-text-secondary">
-              Mher Thar Ser
-            </span>
-            <span className="text-text-disabled">/</span>
+          <div className="flex items-center gap-3 min-w-0">
+            <Image
+              src={LOGO_VERTICAL_SRC}
+              alt="Mher Thar Ser"
+              width={1200}
+              height={2400}
+              className="h-8 w-auto max-w-[100px] shrink-0 object-contain object-left"
+            />
+            <span className="text-text-disabled shrink-0">/</span>
             <span className="text-sm font-semibold text-text-primary">{pageTitle}</span>
           </div>
           <div className="flex items-center gap-2">

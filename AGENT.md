@@ -45,8 +45,8 @@ src/
 public/
 ├── assets/logo/            Logo PNGs (circle, horizontal, vertical, mascot, text)
 ├── fonts/
-│   ├── walone/             Walone Thin/Regular/Bold .ttf
-│   └── pogonia-modern-font/ Pogonia (Demo license — not for production)
+│   ├── walone/             Walone (legacy, no longer used)
+│   └── pogonia-modern-font/ Pogonia — active primary font (100–900, 9 weights)
 migrations/                 SQL migration files for Supabase
 ```
 
@@ -167,10 +167,11 @@ const lang = useLanguageStore((s) => s.lang);
 
 ## Logo Rules
 
-- Always use `LOGO_SRC` (circle) or `LOGO_HORIZONTAL_SRC` (horizontal) from `@/components/Logo`.
+- Always use `LOGO_VERTICAL_SRC` (or `LOGO_SRC`, same file) from `@/components/Logo` for the main wordmark.
 - **Never** place the PNG inside a container that has a background colour.
 - **Never** clip the logo with `overflow: hidden` or add a border ring around it.
-- Desktop nav → circle icon (`size={30}`). Mobile top bar → horizontal wordmark (`height: 36px, width: auto`).
+- **Desktop / laptop** (`desktop-nav` and desktop footers): show **both** the **vertical** and **horizontal** wordmarks side by side (`LOGO_VERTICAL_SRC` + `LOGO_HORIZONTAL_SRC`). Home link uses `aria-label="Mher Thar Ser"`.
+- **Mobile top bar**: **horizontal** only (`LOGO_HORIZONTAL_SRC`), with `z-index: 1100` above the map.
 
 ---
 
@@ -230,6 +231,6 @@ const lang = useLanguageStore((s) => s.lang);
 - Do not use `any` types without a comment explaining why.
 - Do not hardcode English strings — always use `t(lang, "key")`.
 - Do not add background colours or borders to logo containers.
-- Do not use Pogonia font in production (Demo license only).
+- Do not remove Pogonia from `layout.tsx` — it is the active primary font (`--font-sans`).
 - Do not call Supabase directly from a client component — go through an API route.
 - Do not skip the bilingual or dark mode checks before committing.

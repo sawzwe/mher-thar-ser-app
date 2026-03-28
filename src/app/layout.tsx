@@ -4,25 +4,55 @@ import { Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 
-const walone = localFont({
+const pogonia = localFont({
   src: [
     {
-      path: "../../public/fonts/walone/Z06-Walone Thin.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-thin.ttf",
       weight: "100",
       style: "normal",
     },
     {
-      path: "../../public/fonts/walone/Z06-Walone Regular.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-extralight.ttf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-regular.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../public/fonts/walone/Z06-Walone Bold.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-semibold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-bold.ttf",
       weight: "700",
       style: "normal",
     },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-extrabold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-black.ttf",
+      weight: "900",
+      style: "normal",
+    },
   ],
-  variable: "--font-walone",
+  variable: "--font-pogonia",
   display: "swap",
 });
 
@@ -58,7 +88,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${walone.variable} ${notoMyanmar.variable} antialiased`}
+        className={`${pogonia.variable} ${notoMyanmar.variable} antialiased`}
       >
         <AppShell>{children}</AppShell>
       </body>

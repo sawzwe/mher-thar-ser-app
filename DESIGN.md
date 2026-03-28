@@ -74,9 +74,8 @@ Two themes on `data-theme="light|dark"` attribute on `<html>`.
 
 | Font | CSS variable | Weights | Purpose |
 |------|-------------|---------|---------|
-| **Walone** | `--font-sans` | 100 · 400 · 700 | All Latin/English text (primary font) |
+| **Pogonia** | `--font-sans` | 100–900 (9 weights) | All Latin/English text (primary font) |
 | **Noto Sans Myanmar** | `--font-my` | 400–700 | All Burmese (မြန်မာ) text |
-| **Pogonia** | *(not wired)* | thin → black | Reserved — needs commercial license before production |
 
 Body defaults: `font-size: 15px; line-height: 1.6`.  
 Burmese text always gets `line-height: 1.9; letter-spacing: 0.01em` via the `.my` CSS class.
@@ -171,16 +170,15 @@ Utility classes: `.animate-fade-in · .animate-slide-up · .animate-slide-down �
 
 | Asset | File | Placement |
 |-------|------|-----------|
-| Circle wordmark | `logo_mascot_circle.png` | Desktop nav icon (30px), favicon |
-| Horizontal wordmark | `logo_mascot_text_horizontal.png` | Mobile top bar (`height: 36px`) |
-| Vertical wordmark | `logo_mascot_text_vertical.png` | Splash / landing hero |
-| Mascot only | `logo_macot.png` | Standalone illustrations |
-| Text only | `logo_text.png` | Text-only, monochrome placements |
+| **Vertical wordmark** | `logo_mascot_text_vertical.png` | Shown with horizontal on desktop/laptop nav & footers (`LOGO_VERTICAL_SRC`) |
+| **Horizontal wordmark** | `logo_mascot_text_horizontal.png` | Shown with vertical on desktop/laptop; mobile top bar only (`LOGO_HORIZONTAL_SRC`) |
+| Circle | `logo_mascot_circle.png` | Optional icon-only / favicon (`LOGO_CIRCLE_SRC`) |
+| Other marks | `logo_mascot_text_horizontal.png`, `logo_macot.png`, `logo_text.png` | Available if needed for marketing |
 
 **Rules:**
 - Never place a logo PNG on a coloured background container — the assets have correct transparent backgrounds.
 - Never clip with `overflow: hidden` or add a border ring around the logo.
-- Import from `@/components/Logo`: `LOGO_SRC` (circle), `LOGO_HORIZONTAL_SRC` (horizontal).
+- Import from `@/components/Logo`: `LOGO_VERTICAL_SRC` or `LOGO_SRC` (same vertical asset).
 
 ---
 

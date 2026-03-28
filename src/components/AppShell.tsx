@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CaretDown, Sun, Moon } from "@phosphor-icons/react";
@@ -13,7 +14,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { initializeSlotsIfNeeded } from "@/lib/slots";
 import { runMigrations } from "@/lib/storage";
 import { t } from "@/lib/i18n/translations";
-import { Logo } from "@/components/Logo";
+import { LOGO_HORIZONTAL_SRC, LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { MobileTopBar } from "@/components/mobile/MobileTopBar";
 import { Toast } from "./Toast";
 import { AuthModal } from "./AuthModal";
@@ -104,22 +105,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
     >
         <nav className="desktop-nav fixed top-4 left-4 right-4 md:left-8 md:right-8 z-[var(--z-nav)] flex items-center justify-between px-5 md:px-6 h-14 rounded-2xl bg-surface/95 backdrop-blur-xl backdrop-saturate-150 border border-brand/20 shadow-[var(--shadow-lg)] shrink-0">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div
-            className={cn(
-              "shrink-0 flex items-center justify-center overflow-hidden",
-              isHome ? "w-[30px] h-[30px] rounded-[7px]" : "w-[30px] h-[30px] rounded-[7px]",
-            )}
-          >
-            <Logo size={30} />
-          </div>
-          <span
-            className={cn(
-              "font-sans font-bold text-text-primary whitespace-nowrap",
-              isHome ? "text-[15px] tracking-[-0.3px]" : "text-[16px] tracking-[-0.3px]"
-            )}
-          >
-            Mher Thar Ser
+        <Link
+          href="/"
+          aria-label="Mher Thar Ser"
+          className="flex items-center gap-2 sm:gap-3 min-w-0 max-w-[min(100%,520px)]"
+        >
+          <span className="shrink-0 flex items-center justify-center">
+            <Image
+              src={LOGO_VERTICAL_SRC}
+              alt=""
+              width={1200}
+              height={2400}
+              className="h-10 w-auto max-w-[min(120px,18vw)] object-contain object-left sm:h-11 md:h-12"
+              priority
+            />
+          </span>
+          <span className="shrink-0 flex items-center justify-center min-w-0">
+            <Image
+              src={LOGO_HORIZONTAL_SRC}
+              alt=""
+              width={2400}
+              height={800}
+              className="h-9 w-auto max-w-[min(260px,42vw)] object-contain object-left sm:h-10 md:h-11"
+              priority
+            />
           </span>
         </Link>
 
@@ -339,12 +348,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {!isChat && !isHome && (
         <footer className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Logo size={24} />
-            <span className="font-sans text-[15px] font-bold text-text-primary">
-              Mher Thar Ser
-            </span>
-            <span className="text-[12px] text-text-muted ml-2">
+          <div className="flex items-center gap-3 flex-wrap" aria-label="Mher Thar Ser">
+            <Image
+              src={LOGO_VERTICAL_SRC}
+              alt=""
+              width={1200}
+              height={2400}
+              className="h-9 w-auto max-w-[120px] object-contain object-left"
+            />
+            <Image
+              src={LOGO_HORIZONTAL_SRC}
+              alt=""
+              width={2400}
+              height={800}
+              className="h-8 w-auto max-w-[200px] object-contain object-left"
+            />
+            <span className="text-[12px] text-text-muted">
               &copy; {new Date().getFullYear()}
             </span>
           </div>
