@@ -1331,31 +1331,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   text-decoration: none;
   color: inherit;
 }
-.topbar-logo-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: var(--brand);
+/* Horizontal wordmark PNG — no fill/border behind asset */
+.topbar-logo-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
+  min-width: 0;
+  flex: 1;
 }
-.topbar-logo-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.topbar-logo-text {
-  font-family: var(--font-sans), serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.topbar-logo-horizontal-img {
+  height: 36px;
+  width: auto;
+  max-width: min(220px, 52vw);
+  object-fit: contain;
+  object-position: left center;
+  display: block;
 }
 .topbar-right {
   display: flex;
