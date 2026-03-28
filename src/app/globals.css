@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css";
 
 /* ═══════════════════════════════════════════════════════════════════
    DESIGN TOKENS — Mher Thar Ser
@@ -1046,6 +1047,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   right: 10px !important;
 }
 
+/* leaflet-gesture-handling: typography + readable overlay on our tiles */
+.leaflet-container:after {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  padding: 20px 20px;
+}
+
 /* ── Card skeleton (landing) ── */
 .card-skeleton {
   border-radius: 16px;
@@ -1217,6 +1227,27 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   /* Main content padding for mobile topbar */
   .main-with-nav {
     padding-top: calc(var(--mobile-topbar-height) + env(safe-area-inset-top)) !important;
+  }
+  /* Home map: no document scroll — fill viewport under top bar */
+  #mts-app-root:has(#mts-home) {
+    min-height: 100dvh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+  #mts-main:has(#mts-home) {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  #mts-home {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -1542,19 +1573,21 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 20px 20px 0 0;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   padding-bottom: env(safe-area-inset-bottom);
-  max-height: 85svh;
+  max-height: 92svh;
   overflow: hidden;
 }
 @media (max-width: 767px) {
   .bottom-sheet {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
 }
 .bottom-sheet.snap-peek {
-  transform: translateY(calc(100% - 130px));
+  /* Bolt-style: show more of the sheet (search + card row) at rest */
+  transform: translateY(calc(100% - min(36vh, 300px)));
 }
 .bottom-sheet.snap-half {
-  transform: translateY(calc(100% - 340px));
+  transform: translateY(calc(100% - min(58vh, 560px)));
 }
 .bottom-sheet.snap-full {
   transform: translateY(0);
@@ -1622,24 +1655,46 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   color: white;
   border-color: var(--brand);
 }
+.found-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.found-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.found-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
 .sheet-cards {
   display: flex;
+  flex: 1 1 auto;
   gap: 12px;
   padding: 4px 16px 20px;
+  min-height: 148px;
+  min-width: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  overflow-y: hidden;
+  touch-action: pan-x pinch-zoom;
 }
 .sheet-cards::-webkit-scrollbar {
   display: none;
 }
 .sheet-card {
   flex-shrink: 0;
-  width: 200px;
+  width: min(268px, 82vw);
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
   transition: border-color 150ms;
@@ -1650,8 +1705,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .sheet-card.active {
   border-color: var(--brand);
 }
+.sheet-card-empty {
+  cursor: default;
+  opacity: 0.95;
+}
+.sc-body-empty {
+  padding: 20px 16px;
+  text-align: left;
+}
 .sc-img {
-  height: 100px;
+  height: 140px;
   width: 100%;
   overflow: hidden;
   position: relative;

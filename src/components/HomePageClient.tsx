@@ -77,7 +77,10 @@ export function HomePageClient() {
   const mobileHomeView = useMobileHomeViewStore((s) => s.view);
 
   return (
-    <div id="mts-home" className="min-h-screen overflow-x-hidden bg-bg">
+    <div
+      id="mts-home"
+      className="min-h-screen overflow-x-hidden bg-bg max-md:min-h-0 max-md:h-full max-md:overflow-hidden max-md:flex max-md:flex-col"
+    >
       {/* Mobile: map or list (interchangeable) */}
       <div id="mts-home-mobile-landing" className="mobile-landing-wrapper">
         {mobileHomeView === "map" ? (

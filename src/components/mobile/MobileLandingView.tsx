@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useMemo } from "react";
 import type { Restaurant } from "@/types";
 import { getDistanceKm } from "@/lib/map/distance";
 import { DiscoveryPanel } from "@/components/DiscoveryPanel";
@@ -39,13 +39,26 @@ export function MobileLandingView({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markerClickedRef = useRef(false);
 
-  const filteredRestaurants = restaurants
-    .filter((r) => getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng) <= radiusKm)
-    .sort(
-      (a, b) =>
-        getDistanceKm(centerLat, centerLng, a.geo.lat, a.geo.lng) -
-        getDistanceKm(centerLat, centerLng, b.geo.lat, b.geo.lng)
-    );
+  const { radiusMatched, sheetRestaurants } = useMemo(() => {
+    const distSort = (a: Restaurant, b: Restaurant) =>
+      getDistanceKm(centerLat, centerLng, a.geo.lat, a.geo.lng) -
+      getDistanceKm(centerLat, centerLng, b.geo.lat, b.geo.lng);
+
+    const inRadius = restaurants
+      .filter((r) => getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng) <= radiusKm)
+      .sort(distSort);
+
+    if (inRadius.length > 0) {
+      return { radiusMatched: inRadius, sheetRestaurants: inRadius };
+    }
+    if (restaurants.length === 0) {
+      return { radiusMatched: [] as Restaurant[], sheetRestaurants: [] as Restaurant[] };
+    }
+    return {
+      radiusMatched: [] as Restaurant[],
+      sheetRestaurants: [...restaurants].sort(distSort),
+    };
+  }, [restaurants, centerLat, centerLng, radiusKm]);
 
   const handleMapClick = useCallback(() => {
     if (markerClickedRef.current) {
@@ -61,7 +74,9 @@ export function MobileLandingView({
     setSelectedId(id);
     setSnap("half");
     setTimeout(() => {
-      const card = cardsRef.current?.querySelector(`[data-restaurant-id="${id}"]`);
+      const card = cardsRef.current?.querySelector(
+        `[data-restaurant-id="${id}"]`,
+      );
       card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }, 100);
   }, []);
@@ -89,7 +104,8 @@ export function MobileLandingView({
       </div>
       <MobileRadiusFloat radiusKm={radiusKm} onRadiusChange={onRadiusChange} />
       <MobileBottomSheet
-        restaurants={filteredRestaurants}
+        restaurants={sheetRestaurants}
+        radiusMatchCount={radiusMatched.length}
         centerLat={centerLat}
         centerLng={centerLng}
         loading={loading}

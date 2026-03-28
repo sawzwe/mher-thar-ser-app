@@ -14,6 +14,8 @@ import { getRestaurantPath } from "@/lib/restaurants/url";
 import { getPinColor, getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
 import { getTileUrl } from "@/lib/map/tiles";
+import { registerLeafletGestureHandling } from "@/lib/map/registerLeafletGestureHandling";
+import { cn } from "@/lib/utils";
 
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
 const RADIUS_OPTIONS = [1, 3, 5, 10, 20] as const;
@@ -86,16 +88,33 @@ export function DiscoveryPanel({
   const initMap = useCallback(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
     const L = require("leaflet");
+    registerLeafletGestureHandling();
     const stored = useThemeStore.getState().theme;
     const docTheme = document.documentElement.getAttribute("data-theme");
     const currentTheme = (docTheme === "dark" || docTheme === "light" ? docTheme : stored) as "light" | "dark";
     const tileUrl = getTileUrl(currentTheme);
+
+    const langAtInit = useLanguageStore.getState().lang;
+    const gestureOpts = _mobile
+      ? {
+          gestureHandling: true as const,
+          gestureHandlingOptions: {
+            duration: 1200,
+            text: {
+              touch: t(langAtInit, "mapGestureTwoFingers"),
+              scroll: t(langAtInit, "mapGestureScrollCtrl"),
+              scrollMac: t(langAtInit, "mapGestureScrollMac"),
+            },
+          },
+        }
+      : {};
 
     const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
       minZoom: 11,
       maxZoom: 18,
+      ...gestureOpts,
     }).setView([BANGKOK.lat, BANGKOK.lng], 12);
 
     const bounds = L.latLngBounds(
@@ -111,7 +130,7 @@ export function DiscoveryPanel({
     L.control.zoom({ position: "bottomright" }).addTo(map);
     mapRef.current = map;
     queueMicrotask(() => setMapReady(true));
-  }, []);
+  }, [_mobile]);
 
   useEffect(() => {
     initMap();
@@ -123,8 +142,21 @@ export function DiscoveryPanel({
       userMarkerRef.current = null;
       markersRef.current = {};
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- initMap is stable
-  }, []);
+  }, [initMap]);
+
+  /** Keep gesture hint copy in sync with app language (mobile map). */
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !_mobile || !mapReady) return;
+    const mac =
+      typeof navigator !== "undefined" &&
+      (navigator.platform?.toUpperCase().includes("MAC") ?? false);
+    el.setAttribute("data-gesture-handling-touch-content", t(lang, "mapGestureTwoFingers"));
+    el.setAttribute(
+      "data-gesture-handling-scroll-content",
+      mac ? t(lang, "mapGestureScrollMac") : t(lang, "mapGestureScrollCtrl"),
+    );
+  }, [lang, mapReady, _mobile, t]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -272,7 +304,10 @@ export function DiscoveryPanel({
   return (
     <section id="mts-discovery-panel" className="discovery-panel">
       <div className="map-col">
-        <div ref={containerRef} className="map-inner" />
+        <div
+          ref={containerRef}
+          className={cn("map-inner", _mobile && lang === "my" && "font-my")}
+        />
         {loading && (
           <div className="map-loading">
             <div className="map-loading-spinner" />

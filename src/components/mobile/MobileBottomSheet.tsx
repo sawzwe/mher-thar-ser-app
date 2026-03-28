@@ -23,6 +23,8 @@ function getStatus(r: Restaurant): "open" | "busy" | "closed" {
 
 interface MobileBottomSheetProps {
   restaurants: Restaurant[];
+  /** How many of `restaurants` are inside the map radius (0 if we fell back to “nearest”). */
+  radiusMatchCount: number;
   centerLat: number;
   centerLng: number;
   loading: boolean;
@@ -37,6 +39,7 @@ interface MobileBottomSheetProps {
 
 export function MobileBottomSheet({
   restaurants,
+  radiusMatchCount,
   centerLat,
   centerLng,
   loading,
@@ -66,6 +69,12 @@ export function MobileBottomSheet({
     }
     return true;
   });
+
+  const displayCards =
+    filtered.length > 0 ? filtered : restaurants.length > 0 ? restaurants : [];
+
+  const showingFilterFallback =
+    filtered.length === 0 && restaurants.length > 0 && displayCards.length > 0;
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
@@ -112,9 +121,32 @@ export function MobileBottomSheet({
         </div>
         <div className="found-row">
           <div className="found-dot" />
-          <span id="found-text">
-            {loading ? t(lang, "locating") : `${filtered.length} ${t(lang, "restaurantsNearby")}`}
-          </span>
+          <div className="found-row-text">
+            <span id="found-text">
+              {loading
+                ? t(lang, "locating")
+                : `${displayCards.length} ${t(lang, "restaurantsNearby")}`}
+            </span>
+            {!loading && showingFilterFallback && (
+              <span
+                className={cn("found-hint", lang === "my" && "my")}
+                title={t(lang, "sheetShowingAllFilters")}
+              >
+                {t(lang, "sheetShowingAllFilters")}
+              </span>
+            )}
+            {!loading &&
+              !showingFilterFallback &&
+              radiusMatchCount === 0 &&
+              displayCards.length > 0 && (
+                <span
+                  className={cn("found-hint", lang === "my" && "my")}
+                  title={t(lang, "sheetOutsideRadiusHint")}
+                >
+                  {t(lang, "sheetOutsideRadiusHint")}
+                </span>
+              )}
+          </div>
         </div>
       </div>
       <div className="sheet-filters">
@@ -130,7 +162,7 @@ export function MobileBottomSheet({
         ))}
       </div>
       <div ref={cardsRef} className="sheet-cards">
-        {filtered.map((r) => {
+        {displayCards.map((r) => {
           const status = getStatus(r);
           const dist = getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng);
           const emoji = getPinEmoji(r.cuisineTags, r.cuisineTags[0]);
@@ -149,7 +181,7 @@ export function MobileBottomSheet({
             >
               <div className="sc-img">
                 {hasImage ? (
-                  <Image src={r.imageUrl} alt={r.name} fill className="object-cover" sizes="200px" />
+                  <Image src={r.imageUrl} alt={r.name} fill className="object-cover" sizes="(max-width: 768px) 82vw, 268px" />
                 ) : (
                   <div className="sc-img-placeholder">{emoji}</div>
                 )}
@@ -173,6 +205,14 @@ export function MobileBottomSheet({
             </div>
           );
         })}
+        {!loading && displayCards.length === 0 && (
+          <div className="sheet-card sheet-card-empty">
+            <div className="sc-body sc-body-empty">
+              <div className="sc-name">{t(lang, "noRestaurantsFound")}</div>
+              <div className="sc-meta">{t(lang, "tryDifferentFilters")}</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
