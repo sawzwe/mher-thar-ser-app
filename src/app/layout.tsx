@@ -62,10 +62,21 @@ const notoMyanmar = Noto_Sans_Myanmar({
   preload: false,
 });
 
+const FAVICON_BASE = "/assets/favicon_io";
+
 export const metadata: Metadata = {
   title: "Mher Thar Ser - Restaurant Booking",
   description: "Discover restaurants, find deals, and book tables instantly.",
   robots: { index: false, follow: false },
+  manifest: `${FAVICON_BASE}/site.webmanifest`,
+  icons: {
+    icon: [
+      { url: `${FAVICON_BASE}/favicon.ico`, sizes: "48x48", type: "image/x-icon" },
+      { url: `${FAVICON_BASE}/favicon-32x32.png`, sizes: "32x32", type: "image/png" },
+      { url: `${FAVICON_BASE}/favicon-16x16.png`, sizes: "16x16", type: "image/png" },
+    ],
+    apple: `${FAVICON_BASE}/apple-touch-icon.png`,
+  },
 };
 
 export default function RootLayout({
