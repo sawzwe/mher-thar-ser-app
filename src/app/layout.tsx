@@ -4,25 +4,55 @@ import { Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 
-const walone = localFont({
+const pogonia = localFont({
   src: [
     {
-      path: "../../public/fonts/walone/Z06-Walone Thin.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-thin.ttf",
       weight: "100",
       style: "normal",
     },
     {
-      path: "../../public/fonts/walone/Z06-Walone Regular.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-extralight.ttf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-regular.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../public/fonts/walone/Z06-Walone Bold.ttf",
+      path: "../../public/fonts/pogonia-modern-font/pogonia-medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-semibold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-bold.ttf",
       weight: "700",
       style: "normal",
     },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-extrabold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/pogonia-modern-font/pogonia-black.ttf",
+      weight: "900",
+      style: "normal",
+    },
   ],
-  variable: "--font-walone",
+  variable: "--font-pogonia",
   display: "swap",
 });
 
@@ -32,10 +62,21 @@ const notoMyanmar = Noto_Sans_Myanmar({
   preload: false,
 });
 
+const FAVICON_BASE = "/assets/favicon_io";
+
 export const metadata: Metadata = {
   title: "Mher Thar Ser - Restaurant Booking",
   description: "Discover restaurants, find deals, and book tables instantly.",
   robots: { index: false, follow: false },
+  manifest: `${FAVICON_BASE}/site.webmanifest`,
+  icons: {
+    icon: [
+      { url: `${FAVICON_BASE}/favicon.ico`, sizes: "48x48", type: "image/x-icon" },
+      { url: `${FAVICON_BASE}/favicon-32x32.png`, sizes: "32x32", type: "image/png" },
+      { url: `${FAVICON_BASE}/favicon-16x16.png`, sizes: "16x16", type: "image/png" },
+    ],
+    apple: `${FAVICON_BASE}/apple-touch-icon.png`,
+  },
 };
 
 export default function RootLayout({
@@ -58,7 +99,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${walone.variable} ${notoMyanmar.variable} antialiased`}
+        className={`${pogonia.variable} ${notoMyanmar.variable} antialiased`}
       >
         <AppShell>{children}</AppShell>
       </body>

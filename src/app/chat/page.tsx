@@ -217,7 +217,7 @@ export default function ChatPage() {
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="flex h-[calc(100vh-56px)] overflow-hidden">
+    <div className="flex h-[calc(100vh-var(--mobile-topbar-height))] overflow-hidden">
       {/* Sidebar */}
       <div
         className={cn(

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CaretDown, Sun, Moon } from "@phosphor-icons/react";
@@ -13,7 +14,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { initializeSlotsIfNeeded } from "@/lib/slots";
 import { runMigrations } from "@/lib/storage";
 import { t } from "@/lib/i18n/translations";
-import { Logo } from "@/components/Logo";
+import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { MobileTopBar } from "@/components/mobile/MobileTopBar";
 import { Toast } from "./Toast";
 import { AuthModal } from "./AuthModal";
@@ -98,33 +99,37 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div
+      id="mts-app-root"
       className={cn(
         "min-h-screen flex flex-col bg-bg",
         isChat && "h-screen overflow-hidden",
       )}
     >
-        <nav className="desktop-nav fixed top-4 left-4 right-4 md:left-8 md:right-8 z-[var(--z-nav)] flex items-center justify-between px-5 md:px-6 h-14 rounded-2xl bg-surface/95 backdrop-blur-xl backdrop-saturate-150 border border-brand/20 shadow-[var(--shadow-lg)] shrink-0">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div
-            className={cn(
-              "shrink-0 flex items-center justify-center overflow-hidden",
-              isHome ? "w-[30px] h-[30px] rounded-[7px]" : "w-[30px] h-[30px] rounded-[7px]",
-            )}
-          >
-            <Logo size={30} />
-          </div>
-          <span
-            className={cn(
-              "font-sans font-bold text-text-primary whitespace-nowrap",
-              isHome ? "text-[15px] tracking-[-0.3px]" : "text-[16px] tracking-[-0.3px]"
-            )}
-          >
-            Mher Thar Ser
+        <nav
+          id="mts-nav-desktop"
+          className="desktop-nav fixed top-4 left-4 right-4 md:left-8 md:right-8 z-[var(--z-nav)] flex items-center justify-between px-5 md:px-6 h-14 rounded-2xl bg-surface/95 backdrop-blur-xl backdrop-saturate-150 border border-brand/20 shadow-[var(--shadow-lg)] shrink-0"
+        >
+        <Link
+          id="mts-nav-brand"
+          href="/"
+          aria-label="Mher Thar Ser"
+          className="flex items-center min-w-0 max-w-[min(100%,200px)]"
+        >
+          <span id="mts-nav-logo-vertical" className="shrink-0 flex items-center justify-center">
+            <Image
+              src={LOGO_VERTICAL_SRC}
+              alt=""
+              width={1200}
+              height={2400}
+              className="h-10 w-auto max-w-[min(120px,22vw)] object-contain object-left sm:h-11 md:h-12"
+              priority
+            />
           </span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div id="mts-nav-actions" className="flex items-center gap-1">
           <button
+            id="mts-nav-theme-toggle"
             type="button"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             className="flex items-center justify-center w-9 h-9 rounded-[var(--radius-full)] border border-border-strong text-text-muted hover:text-text-primary hover:border-brand transition-all bg-transparent cursor-pointer shrink-0"
@@ -132,8 +137,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             {theme === "light" ? <Moon size={18} weight="regular" /> : <Sun size={18} weight="regular" />}
           </button>
-          <div className="relative mr-2 md:mr-3">
+          <div id="mts-nav-lang" className="relative mr-2 md:mr-3">
             <button
+              id="mts-nav-lang-toggle"
               type="button"
               onClick={() => setLangDropdownOpen((o) => !o)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-full)] border border-border-strong text-[13px] font-medium text-text-primary hover:border-brand hover:text-text-primary transition-all bg-transparent cursor-pointer"
@@ -156,13 +162,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {langDropdownOpen && (
               <>
                 <div
+                  id="mts-nav-lang-backdrop"
                   className="fixed inset-0 z-[var(--z-overlay)]"
                   onClick={() => setLangDropdownOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-2 min-w-[140px] bg-surface border border-border-strong rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[calc(var(--z-overlay)+1)] overflow-hidden">
+                <div
+                  id="mts-nav-lang-dropdown"
+                  className="absolute right-0 top-full mt-2 min-w-[140px] bg-surface border border-border-strong rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[calc(var(--z-overlay)+1)] overflow-hidden"
+                >
                   {LANG_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
+                      id={`mts-nav-lang-option-${opt.value}`}
                       type="button"
                       onClick={() => {
                         setLang(opt.value);
@@ -189,6 +200,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <>
               {user && user.isAuthenticated() ? (
                 <Link
+                  id="mts-nav-bookings-shortcut"
                   href="/bookings"
                   className="hidden md:flex px-4 py-2 rounded-[100px] border border-border-strong text-[13px] font-medium text-text-secondary hover:text-text-primary transition-all"
                 >
@@ -196,35 +208,32 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </Link>
               ) : (
                 <button
+                  id="mts-nav-sign-in"
                   onClick={() => setAuthModal("sign-in")}
                   className="hidden md:flex px-4 py-2 rounded-[100px] border border-border-strong text-[13px] font-medium text-text-muted hover:text-text-primary transition-all bg-transparent cursor-pointer"
                 >
                   {t(lang, "signIn")}
                 </button>
               )}
-              {user?.isAuthenticated() ? (
-                <Link
-                  href="/restaurants"
-                  className="flex items-center gap-1 px-4 py-2 rounded-[100px] bg-brand text-white text-[13px] font-semibold hover:bg-brand-hover transition-all"
-                >
-                  {t(lang, "seeAllRestaurants")}
-                  <span className="hidden sm:inline">→</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/restaurants"
-                  className="flex items-center gap-1 px-4 py-2 rounded-[100px] bg-brand text-white text-[13px] font-semibold hover:bg-brand-hover transition-all"
-                >
-                  {t(lang, "seeAllRestaurants")}
-                  <span className="hidden sm:inline">→</span>
-                </Link>
-              )}
+              <Link
+                id="mts-nav-cta-restaurants"
+                href="/restaurants"
+                className="flex items-center gap-1 px-4 py-2 rounded-[100px] bg-brand text-white text-[13px] font-semibold hover:bg-brand-hover transition-all"
+              >
+                {t(lang, "seeAllRestaurants")}
+                <span className="hidden sm:inline">→</span>
+              </Link>
             </>
           ) : (
             <>
               {navItems.map((item) => (
                 <Link
                   key={item.href}
+                  id={
+                    item.href === "/"
+                      ? "mts-nav-link-discover"
+                      : `mts-nav-link-${item.href.slice(1)}`
+                  }
                   href={item.href}
                   className={cn(
                     "px-3 py-[5px] rounded-[var(--radius-full)] text-[13px] font-medium transition-all duration-[var(--dur-fast)]",
@@ -239,8 +248,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div className="w-px h-4 bg-border-strong mx-2" />
 
               {user && user.isAuthenticated() ? (
-            <div className="relative">
+            <div id="mts-nav-user" className="relative">
               <button
+                id="mts-nav-user-menu-trigger"
                 onClick={() => setUserMenuOpen((o) => !o)}
                 className="flex items-center gap-2 px-3 py-[5px] rounded-[var(--radius-full)] border border-border-strong text-[13px] font-medium text-text-secondary hover:border-brand hover:text-text-primary transition-all duration-[var(--dur-fast)] bg-transparent cursor-pointer"
               >
@@ -253,10 +263,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {userMenuOpen && (
                 <>
                   <div
+                    id="mts-nav-user-backdrop"
                     className="fixed inset-0 z-[var(--z-overlay)]"
                     onClick={() => setUserMenuOpen(false)}
                   />
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-border-strong rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[calc(var(--z-overlay)+1)] overflow-hidden">
+                  <div
+                    id="mts-nav-user-dropdown"
+                    className="absolute right-0 top-full mt-2 w-48 bg-surface border border-border-strong rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[calc(var(--z-overlay)+1)] overflow-hidden"
+                  >
                     <div className="px-4 py-3 border-b border-border">
                       <p className="text-[12px] font-semibold text-text-primary truncate">
                         {user.name}
@@ -271,6 +285,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       </span>
                       {user.type === "vendor" && (
                         <Link
+                          id="mts-nav-user-vendor"
                           href="/vendor"
                           className="block mt-2 text-[12px] font-medium text-brand-light hover:underline"
                           onClick={() => setUserMenuOpen(false)}
@@ -280,6 +295,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                       {user.type === "admin" && (
                         <Link
+                          id="mts-nav-user-admin"
                           href="/admin"
                           className="block mt-2 text-[12px] font-medium text-[#9B7CF5] hover:underline"
                           onClick={() => setUserMenuOpen(false)}
@@ -289,6 +305,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                       {user.type === "customer" && (
                         <Link
+                          id="mts-nav-user-claim"
                           href="/claim"
                           className="block mt-2 text-[12px] font-medium text-brand-light hover:underline"
                           onClick={() => setUserMenuOpen(false)}
@@ -298,6 +315,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                     </div>
                     <button
+                      id="mts-nav-sign-out"
                       onClick={async () => {
                         setUserMenuOpen(false);
                         setSignOutLoading(true);
@@ -318,6 +336,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           ) : (
             <button
+              id="mts-nav-sign-in"
               onClick={() => setAuthModal("sign-in")}
               className="px-3 py-[5px] rounded-[var(--radius-full)] border border-border-strong text-[13px] font-medium text-text-muted hover:border-brand hover:text-text-primary transition-all duration-[var(--dur-fast)] bg-transparent cursor-pointer"
             >
@@ -329,22 +348,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         </nav>
 
-      <div className="mobile-topbar-wrapper">
+      <div id="mts-mobile-topbar-wrapper" className="mobile-topbar-wrapper">
         <MobileTopBar />
       </div>
 
-      <main className={cn("flex-1", !isChat && "pt-20 main-with-nav", isChat && "overflow-hidden")}>
+      <main
+        id="mts-main"
+        className={cn("flex-1", !isChat && "pt-20 main-with-nav", isChat && "overflow-hidden")}
+      >
         {children}
       </main>
 
       {!isChat && !isHome && (
-        <footer className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Logo size={24} />
-            <span className="font-sans text-[15px] font-bold text-text-primary">
-              Mher Thar Ser
-            </span>
-            <span className="text-[12px] text-text-muted ml-2">
+        <footer id="mts-footer" className="border-t border-border py-6 px-6 md:px-8 flex items-center justify-between">
+          <div
+            id="mts-footer-brand"
+            className="flex items-center gap-3 flex-wrap"
+            aria-label="Mher Thar Ser"
+          >
+            <Image
+              id="mts-footer-logo-vertical"
+              src={LOGO_VERTICAL_SRC}
+              alt=""
+              width={1200}
+              height={2400}
+              className="h-9 w-auto max-w-[120px] object-contain object-left"
+            />
+            <span className="text-[12px] text-text-muted">
               &copy; {new Date().getFullYear()}
             </span>
           </div>

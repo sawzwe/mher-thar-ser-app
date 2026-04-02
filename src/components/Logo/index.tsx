@@ -2,10 +2,17 @@
 
 import Image from "next/image";
 
-export const LOGO_SRC = "/assets/logo/mher_that_ser_logo.png";
+/** Vertical wordmark + mascot — primary brand mark (nav, mobile top bar, footers). */
+export const LOGO_VERTICAL_SRC = "/assets/logo/logo_mascot_text_vertical.png";
+
+/** Circle mascot mark — optional (favicons, compact icon-only slots). */
+export const LOGO_CIRCLE_SRC = "/assets/logo/logo_mascot_circle.png";
+
+/** Same as vertical wordmark — for `import { LOGO_SRC }` */
+export const LOGO_SRC = LOGO_VERTICAL_SRC;
 
 export interface LogoProps {
-  /** Size in pixels. Default 30. */
+  /** Max box size in pixels (square). Default 30. Vertical artwork is letterboxed with object-contain. */
   size?: number;
   /** Optional className for the wrapper. */
   className?: string;
@@ -16,7 +23,7 @@ export interface LogoProps {
 export function Logo({ size = 30, className, objectFit = "contain" }: LogoProps) {
   return (
     <Image
-      src={LOGO_SRC}
+      src={LOGO_VERTICAL_SRC}
       alt="Mher Thar Ser"
       width={size}
       height={size}

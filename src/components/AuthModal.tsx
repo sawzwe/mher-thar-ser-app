@@ -129,7 +129,7 @@ export function AuthModal({
   };
 
   return (
-    <Modal isOpen onClose={onClose}>
+    <Modal id="mts-auth-modal" isOpen onClose={onClose}>
       <ModalHeader
         title={mode === "sign-in" ? "Welcome back" : "Create account"}
         titleMy={mode === "sign-in" ? "ပြန်လာပါ" : "အကောင့်ဖွင့်ပါ"}
