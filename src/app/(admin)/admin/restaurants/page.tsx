@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus, UploadSimple, CaretDown } from "@phosphor-icons/react";
+import { Plus, UploadSimple, CaretDown, XCircle } from "@phosphor-icons/react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TableSkeleton } from "@/components/admin/AdminPageSkeleton";
 
-type Restaurant = { id: string; name: string; slug: string | null; area: string; status: string };
+type Restaurant = {
+  id: string;
+  name: string;
+  slug: string | null;
+  area: string;
+  status: string;
+  menu_item_count: number;
+  has_menu: boolean;
+};
 
 export default function AdminRestaurantsPage() {
   const queryClient = useQueryClient();
@@ -29,6 +37,8 @@ export default function AdminRestaurantsPage() {
   const restaurants = data?.restaurants ?? [];
   const selectedCount = selected.size;
   const allSelected = restaurants.length > 0 && selectedCount === restaurants.length;
+  const withMenu = restaurants.filter((r) => r.has_menu).length;
+  const withoutMenu = restaurants.length - withMenu;
 
   const toggleAll = () => {
     if (allSelected) setSelected(new Set());
@@ -76,7 +86,7 @@ export default function AdminRestaurantsPage() {
     <div className="p-8 animate-admin-enter">
       <AdminPageHeader
         title="Restaurants"
-        subtitle="All restaurants. Bulk actions available when rows are selected."
+        subtitle="All restaurants. Menu column counts items in the database. Bulk actions when rows are selected."
         action={
           <div className="flex items-center gap-2">
             <Link
@@ -96,6 +106,19 @@ export default function AdminRestaurantsPage() {
           </div>
         }
       />
+
+      {!isLoading && restaurants.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 text-[13px]">
+          <span className="text-text-secondary">
+            <strong className="text-text-primary tabular-nums">{withMenu}</strong> with menu
+            <span className="text-text-muted mx-1">·</span>
+            <strong className="text-text-primary tabular-nums">{withoutMenu}</strong> no items
+          </span>
+          <span className="text-text-muted hidden sm:inline">
+            (empty categories or missing import show as 0 items)
+          </span>
+        </div>
+      )}
 
       {selectedCount > 0 && (
         <div className="mb-4 flex items-center gap-3">
@@ -163,7 +186,7 @@ export default function AdminRestaurantsPage() {
       )}
 
       {isLoading ? (
-        <TableSkeleton rows={8} cols={4} />
+        <TableSkeleton rows={8} cols={5} />
       ) : !restaurants.length ? (
         <div className="bg-card border border-border rounded-[14px] p-8 text-center text-text-muted text-[13px]">
           No restaurants.
@@ -186,6 +209,9 @@ export default function AdminRestaurantsPage() {
                 </th>
                 <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
                   Area
+                </th>
+                <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
+                  Menu
                 </th>
                 <th className="text-left text-xs font-bold text-text-muted uppercase px-4 py-3">
                   Status
@@ -213,6 +239,23 @@ export default function AdminRestaurantsPage() {
                     {r.name}
                   </td>
                   <td className="px-4 py-3 text-text-secondary">{r.area}</td>
+                  <td className="px-4 py-3">
+                    {r.has_menu ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-success-dim text-success tabular-nums">
+                          {r.menu_item_count}
+                        </span>
+                      </span>
+                    ) : (
+                      <span
+                        className="inline-flex items-center justify-center size-8 shrink-0 rounded-full border border-border bg-surface text-text-muted"
+                        title="No menu items"
+                        aria-label="No menu items"
+                      >
+                        <XCircle size={18} weight="regular" className="opacity-50" />
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
