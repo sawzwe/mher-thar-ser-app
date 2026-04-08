@@ -99,6 +99,12 @@ export function MobileBottomSheet({
     [snap, onSnapChange]
   );
 
+  const handleHandleTap = useCallback(() => {
+    if (snap === "peek") onSnapChange("half");
+    else if (snap === "half") onSnapChange("full");
+    else onSnapChange("full");
+  }, [snap, onSnapChange]);
+
   return (
     <div
       ref={sheetRef}
@@ -106,7 +112,15 @@ export function MobileBottomSheet({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="sheet-handle" />
+      <button
+        id="mts-mobile-sheet-handle"
+        type="button"
+        className="sheet-handle-btn"
+        aria-label="Expand restaurant list"
+        onClick={handleHandleTap}
+      >
+        <span className="sheet-handle" />
+      </button>
       <div className="sheet-peek">
         <div className="sheet-search">
           <span className="search-icon-sm">🔍</span>

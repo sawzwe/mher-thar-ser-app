@@ -281,7 +281,7 @@ export function RestaurantDetailClient({
                 <MapSection geo={r.geo} address={r.address} name={r.name} lang={lang} />
               </>
             )}
-            {activeTab === "menu" && <MenuSection menu={r.menu} />}
+            {activeTab === "menu" && <MenuSection key={r.id} menu={r.menu} />}
             {activeTab === "reviews" && <ReviewsSection restaurant={r} />}
           </div>
         </div>

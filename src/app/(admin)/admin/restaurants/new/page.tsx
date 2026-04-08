@@ -5,20 +5,23 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/input";
-import {
-  AREAS,
-  CUISINES,
-  PROVINCES,
-  BANGKOK_DISTRICTS,
-  BANGKOK_SUBDISTRICTS_BY_DISTRICT,
-} from "@/data/constants";
+import { AREAS, CUISINES } from "@/data/constants";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { useAdminLocationOptions } from "@/hooks/useAdminLocationOptions";
 
 export default function NewRestaurantPage() {
   const router = useRouter();
+  const {
+    provinceOptions,
+    districtOptionsForProvince,
+    subdistrictOptionsFor,
+    managedEnabled,
+  } = useAdminLocationOptions();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newDistrict, setNewDistrict] = useState("");
+  const [newSubdistrict, setNewSubdistrict] = useState("");
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -57,6 +60,38 @@ export default function NewRestaurantPage() {
         : [...f.cuisine_tags, c],
     }));
   };
+
+  const norm = (v: string) => v.trim().toLowerCase().replace(/\s+/g, " ");
+
+  const districtOptions = districtOptionsForProvince(form.province);
+  const subdistrictOptions = subdistrictOptionsFor(form.province, form.district);
+
+  const addDistrictToForm = () => {
+    const value = newDistrict.trim().replace(/\s+/g, " ");
+    if (!value) return;
+    const exists = districtOptions.some((d) => norm(d) === norm(value));
+    if (exists) {
+      setForm((f) => ({ ...f, district: districtOptions.find((d) => norm(d) === norm(value)) ?? value, subdistrict: "" }));
+      setNewDistrict("");
+      return;
+    }
+    setForm((f) => ({ ...f, district: value, subdistrict: "" }));
+    setNewDistrict("");
+  };
+
+  const addSubdistrictToForm = () => {
+    const value = newSubdistrict.trim().replace(/\s+/g, " ");
+    if (!value) return;
+    const exists = subdistrictOptions.some((s) => norm(s) === norm(value));
+    if (exists) {
+      setForm((f) => ({ ...f, subdistrict: subdistrictOptions.find((s) => norm(s) === norm(value)) ?? value }));
+      setNewSubdistrict("");
+      return;
+    }
+    setForm((f) => ({ ...f, subdistrict: value }));
+    setNewSubdistrict("");
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,15 +180,24 @@ export default function NewRestaurantPage() {
             label="Province"
             value={form.province}
             onChange={(e) =>
-              setForm((f) => ({ ...f, province: e.target.value }))
+              setForm((f) => ({
+                ...f,
+                province: e.target.value,
+                district: "",
+                subdistrict: "",
+              }))
             }
           >
             <option value="">Select province</option>
-            {PROVINCES.map((p) => (
+            {provinceOptions.map((p) => (
               <option key={p} value={p}>
                 {p}
               </option>
             ))}
+            {form.province &&
+              !provinceOptions.some((p) => norm(p) === norm(form.province)) && (
+                <option value={form.province}>{form.province}</option>
+              )}
           </Select>
           <Select
             label="District"
@@ -167,11 +211,15 @@ export default function NewRestaurantPage() {
             }
           >
             <option value="">Select district</option>
-            {[...BANGKOK_DISTRICTS].map((d) => (
+            {districtOptions.map((d) => (
               <option key={d} value={d}>
                 {d}
               </option>
             ))}
+            {form.district &&
+              !districtOptions.some((d) => norm(d) === norm(form.district)) && (
+                <option value={form.district}>{form.district}</option>
+              )}
           </Select>
           <Select
             label="Subdistrict"
@@ -181,14 +229,69 @@ export default function NewRestaurantPage() {
             }
           >
             <option value="">Select subdistrict</option>
-            {(BANGKOK_SUBDISTRICTS_BY_DISTRICT[form.district] ?? []).map(
+            {subdistrictOptions.map(
               (s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
               ),
             )}
+            {form.subdistrict &&
+              !subdistrictOptions.some((s) => norm(s) === norm(form.subdistrict)) && (
+                <option value={form.subdistrict}>{form.subdistrict}</option>
+              )}
           </Select>
+        </div>
+        {managedEnabled && (
+          <p className="text-xs text-text-muted -mt-2">
+            Province, district, and subdistrict lists come from{" "}
+            <Link href="/admin/settings/locations" className="text-brand-light underline">
+              Location settings
+            </Link>
+            . Add new entries there so they appear here for every restaurant.
+          </p>
+        )}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-2">
+            <Input
+              value={newDistrict}
+              onChange={(e) => setNewDistrict(e.target.value)}
+              placeholder={
+                managedEnabled
+                  ? "Or type a one-off district (not saved to Location settings)"
+                  : "Add district (for selected province)"
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addDistrictToForm();
+                }
+              }}
+            />
+            <Button type="button" variant="ghost" onClick={addDistrictToForm}>
+              Add
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newSubdistrict}
+              onChange={(e) => setNewSubdistrict(e.target.value)}
+              placeholder={
+                managedEnabled
+                  ? "Or type a one-off subdistrict"
+                  : "Add subdistrict (for selected district)"
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addSubdistrictToForm();
+                }
+              }}
+            />
+            <Button type="button" variant="ghost" onClick={addSubdistrictToForm}>
+              Add
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <Input

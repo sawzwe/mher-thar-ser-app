@@ -26,8 +26,6 @@ function sseChunk(event: SseEvent): Uint8Array {
 }
 
 export async function POST(req: Request, { params }: Params) {
-  const enc = new TextEncoder();
-
   const stream = new ReadableStream({
     async start(controller) {
       const send = (event: SseEvent) => controller.enqueue(sseChunk(event));

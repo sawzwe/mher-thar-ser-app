@@ -67,7 +67,7 @@ export function MobileTopBar() {
             height={2400}
             className="topbar-logo-wordmark-img"
             priority
-            sizes="(max-width: 768px) 28vw, 120px"
+            sizes="(max-width: 768px) 34vw, 140px"
           />
         </span>
       </Link>

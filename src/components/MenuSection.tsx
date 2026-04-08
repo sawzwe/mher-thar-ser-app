@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { MenuCategory } from "@/types";
 import { cn } from "@/lib/utils";
@@ -34,12 +34,6 @@ export function MenuSection({ menu }: MenuSectionProps) {
       if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
     }
   };
-
-  useEffect(() => {
-    if (menu.length > 0 && !openCategories.size) {
-      setOpenCategories(new Set([menu[0].name]));
-    }
-  }, [menu]);
 
   if (menu.length === 0) return null;
 

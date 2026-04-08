@@ -156,7 +156,7 @@ export function DiscoveryPanel({
       "data-gesture-handling-scroll-content",
       mac ? t(lang, "mapGestureScrollMac") : t(lang, "mapGestureScrollCtrl"),
     );
-  }, [lang, mapReady, _mobile, t]);
+  }, [lang, mapReady, _mobile]);
 
   useEffect(() => {
     const map = mapRef.current;
