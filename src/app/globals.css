@@ -114,13 +114,16 @@
   --dur-base: 220ms;
   --dur-slow: 350ms;
 
-  /* ── Z-INDEX ── */
+  /* ── Z-INDEX ──
+     Modal must sit above: nav (400), discovery map UI (was 400–500 in-map), Leaflet panes,
+     mobile topbar (1100), mobile menu (1150). Map columns use isolation so in-map z-values
+     do not leak to the document root. */
   --z-base: 0;
   --z-raised: 10;
   --z-overlay: 100;
-  --z-modal: 200;
   --z-toast: 300;
   --z-nav: 400;
+  --z-modal: 1300;
 
   /* Mobile shell — keep in sync with .mobile-topbar min-height + padding */
   --mobile-topbar-height: 72px;
@@ -737,10 +740,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 600px;
   background: var(--bg);
   border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
 }
 .map-col {
   flex: 0 0 55%;
   position: relative;
+  z-index: 0;
+  isolation: isolate;
   overflow: hidden;
 }
 .map-inner {
@@ -754,7 +762,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--bg) 60%, transparent);
-  z-index: 400;
+  /* Layer only inside .map-col (isolated); keep low to avoid global stacking bugs */
+  z-index: 5;
 }
 .map-loading-spinner {
   width: 40px;
@@ -771,7 +780,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--bg) 60%, transparent);
-  z-index: 400;
+  z-index: 5;
 }
 .map-loading-overlay-spinner {
   width: 40px;
@@ -785,7 +794,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 500;
+  z-index: 10;
 }
 .radius-row {
   position: absolute;
@@ -1274,6 +1283,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   width: 100%;
   height: 100%;
   z-index: 0;
+  isolation: isolate;
 }
 
 /* Mobile restaurants list (alternate home view) */
