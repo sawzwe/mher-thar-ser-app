@@ -22,17 +22,12 @@ import {
 import { MenuEditor } from "@/components/admin/MenuEditor";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/input";
-import {
-  AREAS,
-  CUISINES,
-  PROVINCES,
-  BANGKOK_DISTRICTS,
-  BANGKOK_SUBDISTRICTS_BY_DISTRICT,
-} from "@/data/constants";
+import { AREAS, CUISINES } from "@/data/constants";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { OpeningHoursEditor } from "@/components/admin/OpeningHoursEditor";
+import { useAdminLocationOptions } from "@/hooks/useAdminLocationOptions";
 import type { DayHours } from "@/types";
 
 const TABS = [
@@ -175,6 +170,12 @@ export default function AdminRestaurantEditPage() {
   const id = params.id as string;
   const router = useRouter();
   const queryClient = useQueryClient();
+  const {
+    provinceOptions,
+    districtOptionsForProvince,
+    subdistrictOptionsFor,
+    managedEnabled,
+  } = useAdminLocationOptions();
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("core");
 
@@ -376,7 +377,12 @@ export default function AdminRestaurantEditPage() {
     );
   }
 
-  const renderCoreTab = () => (
+  const renderCoreTab = () => {
+    const norm = (v: string) => v.trim().toLowerCase().replace(/\s+/g, " ");
+    const districtOptions = districtOptionsForProvince(form.province);
+    const subdistrictOptions = subdistrictOptionsFor(form.province, form.district);
+
+    return (
     <div className="flex flex-col gap-5">
       <SectionLabel>Identity</SectionLabel>
       <Input
@@ -423,14 +429,25 @@ export default function AdminRestaurantEditPage() {
         <Select
           label="Province"
           value={form.province}
-          onChange={(e) => setForm((f) => ({ ...f, province: e.target.value }))}
+          onChange={(e) =>
+            setForm((f) => ({
+              ...f,
+              province: e.target.value,
+              district: "",
+              subdistrict: "",
+            }))
+          }
         >
           <option value="">Select province</option>
-          {PROVINCES.map((p) => (
+          {provinceOptions.map((p) => (
             <option key={p} value={p}>
               {p}
             </option>
           ))}
+          {form.province &&
+            !provinceOptions.some((p) => norm(p) === norm(form.province)) && (
+              <option value={form.province}>{form.province}</option>
+            )}
         </Select>
         <Select
           label="District"
@@ -444,15 +461,15 @@ export default function AdminRestaurantEditPage() {
           }
         >
           <option value="">Select district</option>
-          {[...BANGKOK_DISTRICTS].map((d) => (
+          {districtOptions.map((d) => (
             <option key={d} value={d}>
               {d}
             </option>
           ))}
           {form.district &&
-            !(BANGKOK_DISTRICTS as readonly string[]).includes(
-              form.district,
-            ) && <option value={form.district}>{form.district}</option>}
+            !districtOptions.some((d) => norm(d) === norm(form.district)) && (
+              <option value={form.district}>{form.district}</option>
+            )}
         </Select>
         <Select
           label="Subdistrict"
@@ -462,17 +479,26 @@ export default function AdminRestaurantEditPage() {
           }
         >
           <option value="">Select subdistrict</option>
-          {(BANGKOK_SUBDISTRICTS_BY_DISTRICT[form.district] ?? []).map((s) => (
+          {subdistrictOptions.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
           ))}
           {form.subdistrict &&
-            !(BANGKOK_SUBDISTRICTS_BY_DISTRICT[form.district] ?? []).includes(
-              form.subdistrict,
-            ) && <option value={form.subdistrict}>{form.subdistrict}</option>}
+            !subdistrictOptions.some((s) => norm(s) === norm(form.subdistrict)) && (
+              <option value={form.subdistrict}>{form.subdistrict}</option>
+            )}
         </Select>
       </div>
+      {managedEnabled && (
+        <p className="text-xs text-text-muted">
+          Lists come from{" "}
+          <Link href="/admin/settings/locations" className="text-brand-light underline">
+            Location settings
+          </Link>
+          . Add entries there so they appear for every restaurant.
+        </p>
+      )}
       <div className="grid grid-cols-3 gap-4">
         <Input
           label="Postal Code"
@@ -607,7 +633,8 @@ export default function AdminRestaurantEditPage() {
         <AddCategoryRow onAdd={addAttributeCategory} />
       </div>
     </div>
-  );
+    );
+  };
 
   const renderMediaTab = () => (
     <div className="flex flex-col gap-5">

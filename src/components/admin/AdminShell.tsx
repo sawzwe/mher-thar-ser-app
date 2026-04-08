@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,6 +17,7 @@ import {
   UsersThree,
   SignOut,
   Globe,
+  MapPinLine,
 } from "@phosphor-icons/react";
 
 export type AdminShellUser = {
@@ -98,6 +99,13 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
     title: "System",
     items: [
       {
+        href: "/admin/settings/locations",
+        label: "Locations",
+        icon: MapPinLine,
+        apiPath: "/api/admin/locations",
+        queryKey: ["admin-locations"],
+      },
+      {
         href: "/admin/users",
         label: "Users & roles",
         icon: UsersThree,
@@ -116,6 +124,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/bookings": "Bookings",
   "/admin/reviews": "Reviews",
   "/admin/seo": "SEO",
+  "/admin/settings/locations": "Locations",
 };
 
 function getPageTitle(path: string | null): string {
@@ -137,6 +146,18 @@ export function AdminShell({
   const queryClient = useQueryClient();
   const signOut = useAuthStore((s) => s.signOut);
   const [signOutLoading, setSignOutLoading] = useState(false);
+  const [nowText, setNowText] = useState("—");
+
+  useEffect(() => {
+    // Render a stable placeholder on SSR, then hydrate with local time.
+    setNowText(
+      `${new Date().toLocaleDateString("en-GB", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })} · ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`
+    );
+  }, []);
 
   const handleSignOut = async () => {
     setSignOutLoading(true);
@@ -252,12 +273,7 @@ export function AdminShell({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-text-muted">
-              {new Date().toLocaleDateString("en-GB", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-              })}{" "}
-              · {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+              <span suppressHydrationWarning>{nowText}</span>
             </span>
           </div>
         </header>
