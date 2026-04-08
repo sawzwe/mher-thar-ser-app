@@ -123,7 +123,7 @@
   --z-nav: 400;
 
   /* Mobile shell — keep in sync with .mobile-topbar min-height + padding */
-  --mobile-topbar-height: 64px;
+  --mobile-topbar-height: 72px;
 }
 
 @theme inline {
@@ -1342,8 +1342,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   z-index: 1100;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  padding-top: calc(8px + env(safe-area-inset-top));
+  padding: 6px 16px;
+  padding-top: calc(6px + env(safe-area-inset-top));
   min-height: var(--mobile-topbar-height);
   background: color-mix(in srgb, var(--bg) 85%, transparent);
   backdrop-filter: blur(16px);
@@ -1371,12 +1371,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   min-width: 0;
   flex: 1;
+  height: 52px;
 }
 /* Vertical wordmark in mobile top bar — tall asset, cap height to fit bar */
 .topbar-logo-wordmark-img {
-  height: 40px;
+  height: 52px;
   width: auto;
-  max-width: min(96px, 28vw);
+  max-width: min(128px, 34vw);
   object-fit: contain;
   object-position: left center;
   display: block;
@@ -1539,6 +1540,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   .radius-float {
     display: flex;
   }
+  /* Keep radius control minimal by default; expand on tap. */
+  .radius-float-collapsed .ropt:not(.active) {
+    display: none;
+  }
+  .radius-float {
+    padding: 3px;
+    top: calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 8px);
+  }
 }
 .radius-float .ropt {
   padding: 7px 14px;
@@ -1565,14 +1574,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   left: 0;
   right: 0;
   z-index: 300;
-  background: color-mix(in srgb, var(--bg) 96%, transparent);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
   border-bottom: none;
-  border-radius: 20px 20px 0 0;
+  border-radius: 16px 16px 0 0;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  padding-bottom: env(safe-area-inset-bottom);
   max-height: 92svh;
   overflow: hidden;
 }
@@ -1583,21 +1590,36 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
 }
 .bottom-sheet.snap-peek {
-  /* Bolt-style: show more of the sheet (search + card row) at rest */
-  transform: translateY(calc(100% - min(36vh, 300px)));
+  /* Simplified rest state: search + nearby count only. */
+  transform: translateY(calc(100% - min(22vh, 180px)));
 }
 .bottom-sheet.snap-half {
-  transform: translateY(calc(100% - min(58vh, 560px)));
+  transform: translateY(calc(100% - min(52vh, 460px)));
 }
 .bottom-sheet.snap-full {
   transform: translateY(0);
 }
+.sheet-handle-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 0 8px;
+  cursor: pointer;
+}
 .sheet-handle {
-  width: 36px;
-  height: 4px;
-  background: color-mix(in srgb, var(--text-primary) 0.2, transparent);
-  border-radius: 2px;
-  margin: 12px auto 16px;
+  width: 52px;
+  height: 6px;
+  background: color-mix(in srgb, var(--text-primary) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 22%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+}
+.sheet-handle-btn:active .sheet-handle {
+  transform: scaleX(0.96);
 }
 .sheet-peek {
   padding: 0 16px 12px;
@@ -1675,9 +1697,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .sheet-cards {
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   gap: 12px;
-  padding: 4px 16px 20px;
+  padding: 4px 16px calc(14px + env(safe-area-inset-bottom));
   min-height: 148px;
   min-width: 0;
   overflow-x: auto;
@@ -1685,6 +1707,25 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pinch-zoom;
+}
+
+/* Mobile declutter: reveal secondary controls only when user expands sheet. */
+@media (max-width: 767px) {
+  .bottom-sheet.snap-peek .sheet-filters,
+  .bottom-sheet.snap-peek .sheet-cards {
+    display: none;
+  }
+  .bottom-sheet.snap-peek .sheet-peek {
+    padding-bottom: 14px;
+  }
+  .bottom-sheet.snap-half .sheet-filters,
+  .bottom-sheet.snap-full .sheet-filters {
+    display: flex;
+  }
+  .bottom-sheet.snap-half .sheet-cards,
+  .bottom-sheet.snap-full .sheet-cards {
+    display: flex;
+  }
 }
 .sheet-cards::-webkit-scrollbar {
   display: none;
