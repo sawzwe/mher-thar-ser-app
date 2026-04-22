@@ -2,17 +2,13 @@
 
 import Script from "next/script";
 
-type Props = {
-  gtmContainerId: string;
-};
-
 /**
- * Google Tag Manager loader. Container id is validated on the server before render.
+ * GTM loader — client component so next/script afterInteractive works correctly.
+ * ID is validated server-side before this component is rendered.
  */
-export function MarketingScripts({ gtmContainerId }: Props) {
+export function GtmScript({ gtmContainerId }: { gtmContainerId: string }) {
+  if (!/^GTM-[A-Z0-9]+$/i.test(gtmContainerId)) return null;
   const id = gtmContainerId;
-  if (!/^GTM-[A-Z0-9]+$/i.test(id)) return null;
-
   return (
     <Script
       id="gtm-base"

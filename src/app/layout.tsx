@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import { Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
-import { MarketingScripts } from "@/components/MarketingScripts";
-import { getGtmContainerIdForLayout } from "@/lib/integrations/getGtmForLayout";
+import { GtmScript } from "@/components/MarketingScripts";
+import { getIntegrationsForLayout } from "@/lib/integrations/getGtmForLayout";
 
 const pogonia = localFont({
   src: [
@@ -91,7 +91,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gtmId = await getGtmContainerIdForLayout();
+  const { gtmContainerId: gtmId, customScripts } = await getIntegrationsForLayout();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -121,7 +121,11 @@ export default async function RootLayout({
             />
           </noscript>
         )}
-        {gtmId && <MarketingScripts gtmContainerId={gtmId} />}
+        {gtmId && <GtmScript gtmContainerId={gtmId} />}
+        {/* Custom scripts injected server-side — scripts in SSR HTML execute on load */}
+        {customScripts && (
+          <div dangerouslySetInnerHTML={{ __html: customScripts }} />
+        )}
         <AppShell>{children}</AppShell>
       </body>
     </html>
