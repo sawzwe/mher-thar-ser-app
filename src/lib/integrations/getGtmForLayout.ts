@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeGtmIdOrNull } from "@/lib/integrations/validateGtmId";
 
@@ -7,7 +6,11 @@ export type SiteIntegrations = {
   customScripts: string | null;
 };
 
-async function fetchIntegrationsFromDb(): Promise<SiteIntegrations> {
+/**
+ * Fetch integrations for the root layout on every request.
+ * DB value wins over NEXT_PUBLIC_GTM_ID; falls back to env if table is missing.
+ */
+export async function getIntegrationsForLayout(): Promise<SiteIntegrations> {
   const fromEnv = normalizeGtmIdOrNull(process.env.NEXT_PUBLIC_GTM_ID);
   const fallback: SiteIntegrations = { gtmContainerId: fromEnv, customScripts: null };
   try {
@@ -26,12 +29,3 @@ async function fetchIntegrationsFromDb(): Promise<SiteIntegrations> {
     return fallback;
   }
 }
-
-/**
- * Integrations for the public layout: cached until the admin saves a new value
- * (the PATCH route calls revalidatePath("/", "layout") to bust the cache).
- */
-export const getIntegrationsForLayout = unstable_cache(
-  fetchIntegrationsFromDb,
-  ["site-integrations"],
-);
