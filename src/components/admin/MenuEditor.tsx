@@ -125,7 +125,13 @@ function ItemFormModal({
             <label className="text-[13px] font-semibold text-text-secondary block mb-2">Photo</label>
             {form.image_url && isValidHttpUrl(form.image_url) ? (
               <div className="relative group rounded-[var(--radius-md)] overflow-hidden border border-border aspect-[4/3] w-40">
-                <Image src={form.image_url} alt="" fill className="object-cover" sizes="160px" />
+                <Image
+                  src={form.image_url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="160px"
+                />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     type="button"
@@ -818,7 +824,13 @@ export function MenuEditor({ restaurantId: _restaurantId, restaurantSlug, apiPat
                           <div className="w-[72px] h-[72px] shrink-0 rounded-[var(--radius-md)] overflow-hidden bg-card border border-border flex items-center justify-center">
                             {item.image_url && isValidHttpUrl(item.image_url) ? (
                               <div className="relative w-full h-full">
-                                <Image src={item.image_url} alt={item.name} fill className="object-cover" sizes="72px" />
+                                <Image
+                                  src={item.image_url}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="72px"
+                                />
                               </div>
                             ) : (
                               <ImageSquare size={22} weight="light" className="text-text-disabled" />
