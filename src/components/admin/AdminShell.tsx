@@ -18,6 +18,7 @@ import {
   SignOut,
   Globe,
   MapPinLine,
+  Plugs,
 } from "@phosphor-icons/react";
 
 export type AdminShellUser = {
@@ -106,6 +107,13 @@ const NAV_SECTIONS: { title: string | null; items: NavItem[] }[] = [
         queryKey: ["admin-locations"],
       },
       {
+        href: "/admin/settings/integrations",
+        label: "Integrations",
+        icon: Plugs,
+        apiPath: "/api/admin/integrations",
+        queryKey: ["admin-integrations"],
+      },
+      {
         href: "/admin/users",
         label: "Users & roles",
         icon: UsersThree,
@@ -125,6 +133,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/reviews": "Reviews",
   "/admin/seo": "SEO",
   "/admin/settings/locations": "Locations",
+  "/admin/settings/integrations": "Integrations",
 };
 
 function getPageTitle(path: string | null): string {
