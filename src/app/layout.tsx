@@ -64,10 +64,15 @@ const notoMyanmar = Noto_Sans_Myanmar({
 
 const FAVICON_BASE = "/assets/favicon_io";
 
+const isProdDeployment = process.env.VERCEL_ENV === "production";
+
 export const metadata: Metadata = {
   title: "Mher Thar Ser - Restaurant Booking",
   description: "Discover restaurants, find deals, and book tables instantly.",
-  robots: { index: false, follow: false },
+  // Preview/local: avoid indexing WIP; production: allow (robots.txt also allows)
+  robots: isProdDeployment
+    ? { index: true, follow: true, googleBot: { index: true, follow: true } }
+    : { index: false, follow: false },
   manifest: `${FAVICON_BASE}/site.webmanifest`,
   icons: {
     icon: [
