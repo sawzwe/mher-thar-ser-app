@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
+import { GtmScript } from "@/components/MarketingScripts";
+import { getIntegrationsForLayout } from "@/lib/integrations/getGtmForLayout";
 
 const pogonia = localFont({
   src: [
@@ -84,11 +86,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { gtmContainerId: gtmId, customScripts } = await getIntegrationsForLayout();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -106,6 +110,22 @@ export default function RootLayout({
       <body
         className={`${pogonia.variable} ${notoMyanmar.variable} antialiased`}
       >
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height={0}
+              width={0}
+              style={{ display: "none", visibility: "hidden" }}
+              title="Google Tag Manager"
+            />
+          </noscript>
+        )}
+        {gtmId && <GtmScript gtmContainerId={gtmId} />}
+        {/* Custom scripts injected server-side — scripts in SSR HTML execute on load */}
+        {customScripts && (
+          <div dangerouslySetInnerHTML={{ __html: customScripts }} />
+        )}
         <AppShell>{children}</AppShell>
       </body>
     </html>
