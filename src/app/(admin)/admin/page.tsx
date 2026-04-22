@@ -322,8 +322,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-card border border-border rounded-[14px] overflow-hidden">
+        {/* Quick Actions — @container so 2-col only when this card is wide (avoids clipping in narrow lg column) */}
+        <div className="@container bg-card border border-border rounded-[14px] overflow-hidden">
           <div className="px-5 py-4 border-b border-border">
             <div className="text-[13px] font-bold text-text-primary">
               Quick Actions
@@ -332,78 +332,78 @@ export default function AdminDashboard() {
               Most frequent tasks
             </div>
           </div>
-          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="p-4 grid grid-cols-1 @md:grid-cols-2 gap-2">
             <Link
               href="/admin/vendors"
-              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group"
+              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group min-w-0"
             >
               <div className="w-8 h-8 rounded-lg bg-[rgba(139,108,245,0.12)] border border-[rgba(139,108,245,0.2)] flex items-center justify-center shrink-0">
                 <ShieldCheck size={16} weight="regular" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12.5px] font-semibold text-text-primary">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="text-[12.5px] font-semibold text-text-primary leading-snug break-words">
                   Verify vendors
                 </div>
-                <div className="text-[11px] text-text-muted">
+                <div className="text-[11px] text-text-muted leading-snug break-words">
                   {pendingCount} pending
                 </div>
               </div>
-              <span className="text-text-disabled group-hover:text-text-muted transition-colors">
+              <span className="text-text-disabled group-hover:text-text-muted transition-colors shrink-0 self-center" aria-hidden>
                 →
               </span>
             </Link>
             <Link
               href="/admin/restaurants/new"
-              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group"
+              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group min-w-0"
             >
               <div className="w-8 h-8 rounded-lg bg-[rgba(61,170,110,0.12)] border border-[rgba(61,170,110,0.2)] flex items-center justify-center shrink-0">
                 <Storefront size={16} weight="regular" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12.5px] font-semibold text-text-primary">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="text-[12.5px] font-semibold text-text-primary leading-snug break-words">
                   Add restaurant
                 </div>
-                <div className="text-[11px] text-text-muted">Seed catalog</div>
+                <div className="text-[11px] text-text-muted leading-snug break-words">Seed catalog</div>
               </div>
-              <span className="text-text-disabled group-hover:text-text-muted transition-colors">
+              <span className="text-text-disabled group-hover:text-text-muted transition-colors shrink-0 self-center" aria-hidden>
                 →
               </span>
             </Link>
             <Link
               href="/admin/users"
-              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group"
+              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group min-w-0"
             >
               <div className="w-8 h-8 rounded-lg bg-[rgba(74,159,212,0.12)] border border-[rgba(74,159,212,0.2)] flex items-center justify-center shrink-0">
                 <UsersThree size={16} weight="regular" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12.5px] font-semibold text-text-primary">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="text-[12.5px] font-semibold text-text-primary leading-snug break-words">
                   Manage users
                 </div>
-                <div className="text-[11px] text-text-muted">
+                <div className="text-[11px] text-text-muted leading-snug break-words">
                   {stats?.totalUsers ?? 0} total
                 </div>
               </div>
-              <span className="text-text-disabled group-hover:text-text-muted transition-colors">
+              <span className="text-text-disabled group-hover:text-text-muted transition-colors shrink-0 self-center" aria-hidden>
                 →
               </span>
             </Link>
             <Link
               href="/admin/restaurants"
-              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group"
+              className="flex items-center gap-2.5 p-3 rounded-[10px] bg-card-hover border border-border hover:border-[rgba(255,255,255,0.1)] hover:bg-card-active transition-all group min-w-0"
             >
               <div className="w-8 h-8 rounded-lg bg-[rgba(211,36,36,0.10)] border border-[rgba(211,36,36,0.22)] flex items-center justify-center shrink-0">
                 <StoreIcon size={16} weight="regular" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12.5px] font-semibold text-text-primary">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="text-[12.5px] font-semibold text-text-primary leading-snug break-words">
                   Restaurants
                 </div>
-                <div className="text-[11px] text-text-muted">
+                <div className="text-[11px] text-text-muted leading-snug break-words">
                   {data?.restaurantCount ?? 0} total
                 </div>
               </div>
-              <span className="text-text-disabled group-hover:text-text-muted transition-colors">
+              <span className="text-text-disabled group-hover:text-text-muted transition-colors shrink-0 self-center" aria-hidden>
                 →
               </span>
             </Link>

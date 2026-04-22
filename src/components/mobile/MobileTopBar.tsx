@@ -39,7 +39,10 @@ export function MobileTopBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
-  const [menuStyle, setMenuStyle] = useState<{ top: number; right: number } | null>(null);
+  const [menuStyle, setMenuStyle] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
 
   useLayoutEffect(() => {
     if (!menuOpen) {
@@ -51,7 +54,10 @@ export function MobileTopBar() {
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
     queueMicrotask(() =>
-      setMenuStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+      setMenuStyle({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      }),
     );
   }, [menuOpen]);
 
@@ -73,7 +79,11 @@ export function MobileTopBar() {
       </Link>
       <div id="mts-mobile-topbar-actions" className="topbar-right">
         {isHome ? (
-          <div id="mts-mobile-home-tabs" className="topbar-segmented" role="tablist">
+          <div
+            id="mts-mobile-home-tabs"
+            className="topbar-segmented"
+            role="tablist"
+          >
             <button
               id="mts-mobile-tab-map"
               type="button"
@@ -82,7 +92,7 @@ export function MobileTopBar() {
               onClick={() => setHomeView("map")}
               className={cn(
                 "topbar-segmented-btn",
-                homeView === "map" && "topbar-segmented-btn-active"
+                homeView === "map" && "topbar-segmented-btn-active",
               )}
             >
               <MapPin size={18} weight="fill" />
@@ -96,7 +106,7 @@ export function MobileTopBar() {
               onClick={() => setHomeView("list")}
               className={cn(
                 "topbar-segmented-btn",
-                homeView === "list" && "topbar-segmented-btn-active"
+                homeView === "list" && "topbar-segmented-btn-active",
               )}
             >
               <Storefront size={18} weight="regular" />
@@ -157,80 +167,106 @@ export function MobileTopBar() {
                     zIndex: 1150,
                   }}
                 >
-                <button
-                  id="mts-mobile-menu-lang-toggle"
-                  type="button"
-                  onClick={() => setLangOpen((o) => !o)}
-                  className="mobile-menu-item"
-                >
-                  <Globe size={18} weight="regular" className="shrink-0 text-text-muted" />
-                  <span className={cn(lang === "my" && "font-my")}>
-                    {LANG_OPTIONS.find((o) => o.value === lang)?.label ?? lang}
-                  </span>
-                  <CaretDown
-                    size={12}
-                    weight="bold"
-                    className={cn(
-                      "ml-auto shrink-0 text-text-muted transition-transform",
-                      langOpen && "rotate-180"
-                    )}
-                  />
-                </button>
-                {langOpen && (
-                  <div id="mts-mobile-menu-lang-sublist" className="mobile-menu-sublist">
-                    {LANG_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        id={`mts-mobile-lang-option-${opt.value}`}
-                        type="button"
-                        onClick={() => {
-                          setLang(opt.value);
-                          setLangOpen(false);
-                          setMenuOpen(false);
-                        }}
-                        className={cn(
-                          "mobile-menu-subitem",
-                          lang === opt.value && "mobile-menu-subitem-active"
-                        )}
-                      >
-                        <span className="text-base shrink-0">{opt.flag}</span>
-                        <span className={opt.value === "my" ? "font-my" : ""}>
-                          {opt.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <Link
-                  id="mts-mobile-menu-bookings"
-                  href="/bookings"
-                  className="mobile-menu-item"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <CalendarBlank size={18} weight="regular" className="shrink-0 text-text-muted" />
-                  {t(lang, "bookings")}
-                </Link>
-                <div className="mobile-menu-divider" />
-                <div className="mobile-menu-section">{t(lang, "settings")}</div>
-                <button
-                  id="mts-mobile-menu-theme"
-                  type="button"
-                  onClick={() => {
-                    setTheme(theme === "light" ? "dark" : "light");
-                    setMenuOpen(false);
-                  }}
-                  className="mobile-menu-item"
-                >
-                  {theme === "light" ? (
-                    <Moon size={18} weight="regular" className="shrink-0 text-text-muted" />
-                  ) : (
-                    <Sun size={18} weight="regular" className="shrink-0 text-text-muted" />
+                  <button
+                    id="mts-mobile-menu-lang-toggle"
+                    type="button"
+                    onClick={() => setLangOpen((o) => !o)}
+                    className="mobile-menu-item"
+                  >
+                    <Globe
+                      size={18}
+                      weight="regular"
+                      className="shrink-0 text-text-muted"
+                    />
+                    <span className={cn(lang === "my" && "font-my")}>
+                      {LANG_OPTIONS.find((o) => o.value === lang)?.label ??
+                        lang}
+                    </span>
+                    <CaretDown
+                      size={12}
+                      weight="bold"
+                      className={cn(
+                        "ml-auto shrink-0 text-text-muted transition-transform",
+                        langOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {langOpen && (
+                    <div
+                      id="mts-mobile-menu-lang-sublist"
+                      className="mobile-menu-sublist"
+                    >
+                      {LANG_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          id={`mts-mobile-lang-option-${opt.value}`}
+                          type="button"
+                          onClick={() => {
+                            setLang(opt.value);
+                            setLangOpen(false);
+                            setMenuOpen(false);
+                          }}
+                          className={cn(
+                            "mobile-menu-subitem",
+                            lang === opt.value && "mobile-menu-subitem-active",
+                          )}
+                        >
+                          <span className="text-base shrink-0">{opt.flag}</span>
+                          <span className={opt.value === "my" ? "font-my" : ""}>
+                            {opt.label}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   )}
-                  <span>{theme === "light" ? t(lang, "darkMode") : t(lang, "lightMode")}</span>
-                </button>
-              </div>
-            </>,
-              document.body
+                  <Link
+                    id="mts-mobile-menu-bookings"
+                    href="/bookings"
+                    className="mobile-menu-item"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <CalendarBlank
+                      size={18}
+                      weight="regular"
+                      className="shrink-0 text-text-muted"
+                    />
+                    {t(lang, "bookings")}
+                  </Link>
+                  <div className="mobile-menu-divider" />
+                  <div className="mobile-menu-section">
+                    {t(lang, "settings")}
+                  </div>
+                  <button
+                    id="mts-mobile-menu-theme"
+                    type="button"
+                    onClick={() => {
+                      setTheme(theme === "light" ? "dark" : "light");
+                      setMenuOpen(false);
+                    }}
+                    className="mobile-menu-item"
+                  >
+                    {theme === "light" ? (
+                      <Moon
+                        size={18}
+                        weight="regular"
+                        className="shrink-0 text-text-muted"
+                      />
+                    ) : (
+                      <Sun
+                        size={18}
+                        weight="regular"
+                        className="shrink-0 text-text-muted"
+                      />
+                    )}
+                    <span>
+                      {theme === "light"
+                        ? t(lang, "darkMode")
+                        : t(lang, "lightMode")}
+                    </span>
+                  </button>
+                </div>
+              </>,
+              document.body,
             )}
         </div>
       </div>
