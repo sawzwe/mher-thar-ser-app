@@ -7,6 +7,7 @@ import { Restaurant, Deal } from "@/types";
 import { fetchRestaurantById } from "@/lib/mockApi/restaurants";
 import { getSlotsForDate } from "@/lib/slots";
 import { BookingModal } from "@/components/BookingModal";
+import { featureConfig } from "@/lib/features/config";
 import { MapSection } from "@/components/MapSection";
 import { TransitSection } from "@/components/TransitSection";
 import { MenuSection } from "@/components/MenuSection";
@@ -221,7 +222,7 @@ export function RestaurantDetailClient({
                   )}
                 </section>
                 <OpeningHoursSection openingHours={r.openingHours} />
-                {r.deals.length > 0 && (
+                {featureConfig.bookingEnabled && r.deals.length > 0 && (
                   <section>
                     <h2 className="text-[18px] font-semibold text-text-primary mb-3">
                       {t(lang, "dealsOffers")}
@@ -290,6 +291,8 @@ export function RestaurantDetailClient({
         <div className="space-y-6">
           <Card className="sticky top-20">
             <CardContent className="space-y-4">
+              {featureConfig.bookingEnabled && (
+              <>
               <h3 className="text-[18px] font-semibold text-text-primary">
                 {t(lang, "checkAvailability")}
               </h3>
@@ -382,6 +385,8 @@ export function RestaurantDetailClient({
               >
                 {t(lang, "bookATable")}
               </Button>
+              </>
+              )}
 
               {/* Contact beside book */}
               {(r.phone ||
@@ -515,7 +520,7 @@ export function RestaurantDetailClient({
         </div>
       )}
 
-      {showBooking && (
+      {featureConfig.bookingEnabled && showBooking && (
         <BookingModal
           restaurant={restaurant}
           preselectedDeal={preselectedDeal}

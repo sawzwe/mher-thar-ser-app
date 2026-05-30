@@ -14,6 +14,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { initializeSlotsIfNeeded } from "@/lib/slots";
 import { runMigrations } from "@/lib/storage";
 import { t } from "@/lib/i18n/translations";
+import { featureConfig } from "@/lib/features/config";
 import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { MobileTopBar } from "@/components/mobile/MobileTopBar";
 import { Toast } from "./Toast";
@@ -85,7 +86,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: "/", label: t(lang, "discover") },
     { href: "/restaurants", label: t(lang, "seeAllRestaurants") },
     { href: "/chat", label: t(lang, "whatToEat") },
-    { href: "/bookings", label: t(lang, "bookings") },
+    // Booking temporarily disabled — hide the Bookings nav item.
+    ...(featureConfig.bookingEnabled
+      ? [{ href: "/bookings", label: t(lang, "bookings") }]
+      : []),
   ];
 
   const isChat = pathname === "/chat";
@@ -198,7 +202,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           {isHome ? (
             <>
-              {user && user.isAuthenticated() ? (
+              {user && user.isAuthenticated() && featureConfig.bookingEnabled ? (
                 <Link
                   id="mts-nav-bookings-shortcut"
                   href="/bookings"
@@ -206,7 +210,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 >
                   {t(lang, "bookings")}
                 </Link>
-              ) : (
+              ) : user && user.isAuthenticated() ? null : (
                 <button
                   id="mts-nav-sign-in"
                   onClick={() => setAuthModal("sign-in")}
@@ -381,7 +385,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </footer>
       )}
 
-      {pendingOffer && (
+      {featureConfig.bookingEnabled && pendingOffer && (
         <Toast
           message={`A spot opened up! ${pendingOffer.name} (party of ${pendingOffer.partySize}) can now book for ${pendingOffer.date} at ${pendingOffer.time}.`}
           type="success"

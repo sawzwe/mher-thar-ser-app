@@ -115,7 +115,7 @@ export function RestaurantCard({ restaurant, featured = false }: RestaurantCardP
             <div className="text-[12px] text-text-muted">No active deals</div>
           )}
           <span className="px-4 py-[7px] rounded-[var(--radius-md)] bg-brand-dim border border-brand-border text-brand-light text-[12px] font-semibold group-hover:bg-brand group-hover:text-white group-hover:border-brand transition-all duration-[var(--dur-base)]">
-            {featured ? "View & Book →" : "Book →"}
+            View →
           </span>
         </div>
       </div>

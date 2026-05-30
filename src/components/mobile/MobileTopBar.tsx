@@ -20,6 +20,7 @@ import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
 import { t } from "@/lib/i18n/translations";
+import { featureConfig } from "@/lib/features/config";
 import { cn } from "@/lib/utils";
 
 const LANG_OPTIONS = [
@@ -219,6 +220,7 @@ export function MobileTopBar() {
                       ))}
                     </div>
                   )}
+                  {featureConfig.bookingEnabled && (
                   <Link
                     id="mts-mobile-menu-bookings"
                     href="/bookings"
@@ -232,6 +234,7 @@ export function MobileTopBar() {
                     />
                     {t(lang, "bookings")}
                   </Link>
+                  )}
                   <div className="mobile-menu-divider" />
                   <div className="mobile-menu-section">
                     {t(lang, "settings")}
