@@ -794,7 +794,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 10;
+  /* Must sit above Leaflet's internal panes/controls (tile/marker/popup
+     panes range 200–700, controls are 800) so the radius selector and
+     "found" badge stay visible instead of being painted over by the map. */
+  z-index: 1000;
 }
 .radius-row {
   position: absolute;
@@ -804,9 +807,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: flex;
   gap: 3px;
   padding: 4px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
   border-radius: 100px;
+  box-shadow: var(--shadow-md);
   pointer-events: all;
   white-space: nowrap;
 }
@@ -1549,12 +1554,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 @media (max-width: 768px) {
   .radius-float {
     display: flex;
-  }
-  /* Keep radius control minimal by default; expand on tap. */
-  .radius-float-collapsed .ropt:not(.active) {
-    display: none;
-  }
-  .radius-float {
     padding: 3px;
     top: calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 8px);
   }

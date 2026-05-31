@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { featureConfig } from "@/lib/features/config";
 import { useBookingStore } from "@/stores/bookingStore";
 import { useWaitlistStore } from "@/stores/waitlistStore";
 import { useRestaurantStore } from "@/stores/restaurantStore";
@@ -30,10 +32,21 @@ export default function BookingsPage() {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
+    // Booking feature temporarily disabled — keep this page unreachable.
+    if (!featureConfig.bookingEnabled) {
+      router.replace("/");
+      return;
+    }
     useBookingStore.getState().loadBookings();
     useWaitlistStore.getState().loadWaitlist();
-  }, []);
+  }, [router]);
+
+  if (!featureConfig.bookingEnabled) {
+    return null;
+  }
 
   const handleCancel = async (id: string) => {
     if (!confirm("Are you sure you want to cancel this booking?")) return;

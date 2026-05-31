@@ -7,9 +7,11 @@ export type SortOption = "recommended" | "rating" | "best_value";
 interface Filters {
   search: string;
   area: string;
+  district: string;
   cuisine: string;
   priceTier: number | null;
   hasDeals: boolean;
+  hasMenu: boolean;
   availableToday: boolean;
   partySize: number | null;
 }
@@ -29,12 +31,19 @@ interface RestaurantState {
 const defaultFilters: Filters = {
   search: "",
   area: "",
+  district: "",
   cuisine: "",
   priceTier: null,
   hasDeals: false,
+  hasMenu: false,
   availableToday: false,
   partySize: null,
 };
+
+/** A restaurant "has a menu" when it has at least one category with items. */
+function restaurantHasMenu(r: Restaurant): boolean {
+  return Array.isArray(r.menu) && r.menu.some((cat) => cat.items.length > 0);
+}
 
 export const useRestaurantStore = create<RestaurantState>((set, get) => ({
   restaurants: [],
@@ -77,6 +86,10 @@ export const useRestaurantStore = create<RestaurantState>((set, get) => ({
       result = result.filter((r) => r.area === filters.area);
     }
 
+    if (filters.district) {
+      result = result.filter((r) => r.district === filters.district);
+    }
+
     if (filters.cuisine) {
       result = result.filter((r) => r.cuisineTags.includes(filters.cuisine));
     }
@@ -87,6 +100,10 @@ export const useRestaurantStore = create<RestaurantState>((set, get) => ({
 
     if (filters.hasDeals) {
       result = result.filter((r) => r.deals.length > 0);
+    }
+
+    if (filters.hasMenu) {
+      result = result.filter(restaurantHasMenu);
     }
 
     // Sort

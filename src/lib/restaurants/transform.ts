@@ -164,6 +164,7 @@ export function transformDbRestaurant(
     name: row.name,
     description: row.description ?? "",
     area: row.area ?? "",
+    district: row.district ?? null,
     address: buildFullAddress(row),
     geo: {
       lat: Number(row.lat) || 13.7563,
