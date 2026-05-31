@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { t } from "@/lib/i18n/translations";
 import { useLanguageStore } from "@/stores/languageStore";
 
@@ -13,24 +12,16 @@ interface MobileRadiusFloatProps {
 
 export function MobileRadiusFloat({ radiusKm, onRadiusChange }: MobileRadiusFloatProps) {
   const lang = useLanguageStore((s) => s.lang);
-  const [expanded, setExpanded] = useState(false);
 
+  // All radius options stay visible at all times (no collapse behavior).
   return (
-    <div className={`radius-float ${expanded ? "radius-float-expanded" : "radius-float-collapsed"}`}>
+    <div className="radius-float radius-float-expanded">
       {RADIUS_OPTIONS.map((km) => (
         <button
           key={km}
           type="button"
-          onClick={() => {
-            if (!expanded && radiusKm === km) {
-              setExpanded(true);
-              return;
-            }
-            onRadiusChange(km);
-            setExpanded(false);
-          }}
+          onClick={() => onRadiusChange(km)}
           className={`ropt ${radiusKm === km ? "active" : ""}`}
-          aria-expanded={radiusKm === km ? expanded : undefined}
         >
           {km} {t(lang, "km")}
         </button>

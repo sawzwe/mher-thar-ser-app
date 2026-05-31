@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useRestaurantStore, SortOption } from "@/stores/restaurantStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { t } from "@/lib/i18n/translations";
 import { RestaurantCard } from "@/components/RestaurantCard";
-import { AREAS, CUISINES } from "@/data/constants";
 import { cn } from "@/lib/utils";
 
 function FilterPill({
@@ -36,16 +35,25 @@ function FilterPill({
 
 export function RestaurantsPageClient() {
   const lang = useLanguageStore((s) => s.lang);
-  const { loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants } =
+  const { restaurants, loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants } =
     useRestaurantStore();
 
   useEffect(() => {
     useRestaurantStore.getState().loadRestaurants();
   }, []);
 
+  // Unique, sorted list of districts present in the loaded restaurants.
+  const districts = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of restaurants) {
+      const d = (r.district ?? "").trim();
+      if (d) set.add(d);
+    }
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [restaurants]);
+
   const results = filteredRestaurants();
-  const hasActiveFilters =
-    !!filters.search || !!filters.area || !!filters.cuisine || filters.priceTier !== null || filters.hasDeals;
+  const hasActiveFilters = !!filters.search || filters.hasMenu || !!filters.district;
 
   return (
     <div className="max-w-5xl mx-auto px-6 md:px-12 py-8">
@@ -76,32 +84,8 @@ export function RestaurantsPageClient() {
           {t(lang, "filter")}
         </span>
 
-        <FilterPill active={!filters.area} onClick={() => setFilter("area", "")}>
-          {t(lang, "all")}
-        </FilterPill>
-
-        {AREAS.slice(0, 8).map((a) => (
-          <FilterPill
-            key={a}
-            active={filters.area === a}
-            onClick={() => setFilter("area", filters.area === a ? "" : a)}
-          >
-            {a}
-          </FilterPill>
-        ))}
-
-        {CUISINES.slice(0, 6).map((c) => (
-          <FilterPill
-            key={c}
-            active={filters.cuisine === c}
-            onClick={() => setFilter("cuisine", filters.cuisine === c ? "" : c)}
-          >
-            {c}
-          </FilterPill>
-        ))}
-
-        <FilterPill active={filters.hasDeals} onClick={() => setFilter("hasDeals", !filters.hasDeals)}>
-          {t(lang, "hasDeals")}
+        <FilterPill active={filters.hasMenu} onClick={() => setFilter("hasMenu", !filters.hasMenu)}>
+          {t(lang, "hasMenu")}
         </FilterPill>
 
         {hasActiveFilters && (
@@ -127,6 +111,32 @@ export function RestaurantsPageClient() {
           </select>
         </div>
       </div>
+
+      {/* Filter by district */}
+      {districts.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-[15px] font-semibold text-text-primary mb-3">
+            {t(lang, "filterByDistrict")}
+          </h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <FilterPill
+              active={!filters.district}
+              onClick={() => setFilter("district", "")}
+            >
+              {t(lang, "all")}
+            </FilterPill>
+            {districts.map((d) => (
+              <FilterPill
+                key={d}
+                active={filters.district === d}
+                onClick={() => setFilter("district", filters.district === d ? "" : d)}
+              >
+                {d}
+              </FilterPill>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Results */}
       {loading ? (

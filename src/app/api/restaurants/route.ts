@@ -53,6 +53,29 @@ export async function GET(request: Request) {
 
     if (!rows) throw new Error("No data returned from Supabase");
 
+    // Determine which restaurants have menu items (count per restaurant).
+    // We only need a presence indicator for the list view, not the full menu.
+    const menuItemCountByRestaurant = new Map<string, number>();
+    {
+      const { data: categoryRows } = await supabase
+        .from("menu_categories")
+        .select("restaurant_id, menu_items(count)");
+      for (const row of (categoryRows ?? []) as {
+        restaurant_id: string;
+        menu_items: { count: number }[] | null;
+      }[]) {
+        const raw = row.menu_items;
+        const n =
+          Array.isArray(raw) && raw[0] && typeof raw[0].count === "number"
+            ? raw[0].count
+            : 0;
+        menuItemCountByRestaurant.set(
+          row.restaurant_id,
+          (menuItemCountByRestaurant.get(row.restaurant_id) ?? 0) + n,
+        );
+      }
+    }
+
     let restaurants: Restaurant[] = rows.map((row) => {
       const deals = (row.deals ?? []) as {
         id: string;
@@ -64,12 +87,28 @@ export async function GET(request: Request) {
         discount_pct?: number;
         conditions?: string;
       }[];
-      return transformDbRestaurant(
+      const restaurant = transformDbRestaurant(
         row as Parameters<typeof transformDbRestaurant>[0],
         {
           deals: Array.isArray(deals) ? deals.filter((d) => d && d.id) : [],
         },
       );
+      // Lightweight menu presence indicator for filtering/list display.
+      // Full menu details are loaded on the restaurant detail page.
+      const menuItemCount =
+        menuItemCountByRestaurant.get(restaurant.id) ?? 0;
+      if (menuItemCount > 0) {
+        restaurant.menu = [
+          {
+            name: "Menu",
+            items: Array.from({ length: menuItemCount }, () => ({
+              name: "",
+              price: 0,
+            })),
+          },
+        ];
+      }
+      return restaurant;
     });
 
     // Filter by lat/lng/radius when provided

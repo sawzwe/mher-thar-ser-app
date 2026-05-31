@@ -14,6 +14,8 @@
   "filter": "Filter",
   "all": "All",
   "hasDeals": "Has Deals",
+  "hasMenu": "Has Menu",
+  "filterByDistrict": "Filter By District",
   "clear": "Clear",
   "sort": "Sort",
   "sortRecommended": "Recommended",

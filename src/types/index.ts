@@ -49,6 +49,8 @@ export interface Restaurant {
   description: string;
   /** Area = neighbourhood (Silom, Sukhumvit, etc.) */
   area: string;
+  /** District (khet) — administrative district, e.g. Ratchathewi, Watthana */
+  district?: string | null;
   /** Full formatted address for display (street, subdistrict, district, province) */
   address: string;
   geo: Geo;
