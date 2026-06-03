@@ -245,19 +245,29 @@ export function DiscoveryPanel({
       const displayRating = r.googleRating ?? r.rating;
 
       const popupContent = document.createElement("div");
-      popupContent.style.cssText = "font-family:'DM Sans',sans-serif;padding:14px 16px;min-width:200px;border-radius:16px;";
-      popupContent.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
-          <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:700;color:#F5F4EF;">${r.name}</div>
-          <div style="font-size:12px;font-weight:700;color:#E09B2D;">★ ${displayRating.toFixed(1)}</div>
-        </div>
-        <div style="font-size:11px;color:#5C5B54;margin-bottom:10px;">${r.cuisineTags.join(", ") || r.area}</div>
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
-          <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#1a1a1a;color:#A09F97;">${formatDistance(dist)} ${t(lang, "away")}</span>
-          <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${statusStyle.bg};color:${statusStyle.color};">${t(lang, status)}</span>
-        </div>
-        <a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#E0052D;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>
-      `;
+      const viewDetailsLink = `<a href="/restaurant/${getRestaurantPath(r) || r.id}" style="display:block;text-align:center;background:#E0052D;color:white;padding:9px 16px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;">${t(lang, "viewDetails")}</a>`;
+      if (_mobile) {
+        // Mobile: minimal popup — just the "View Details" button.
+        // The full details (name, cuisine, distance, status, rating) are already
+        // shown in the highlighted card in the bottom sheet, so this avoids
+        // blocking the map.
+        popupContent.style.cssText = "font-family:'DM Sans',sans-serif;padding:10px 12px;min-width:160px;border-radius:16px;";
+        popupContent.innerHTML = viewDetailsLink;
+      } else {
+        popupContent.style.cssText = "font-family:'DM Sans',sans-serif;padding:14px 16px;min-width:200px;border-radius:16px;";
+        popupContent.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+            <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:700;color:#F5F4EF;">${r.name}</div>
+            <div style="font-size:12px;font-weight:700;color:#E09B2D;">★ ${displayRating.toFixed(1)}</div>
+          </div>
+          <div style="font-size:11px;color:#5C5B54;margin-bottom:10px;">${r.cuisineTags.join(", ") || r.area}</div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:#1a1a1a;color:#A09F97;">${formatDistance(dist)} ${t(lang, "away")}</span>
+            <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${statusStyle.bg};color:${statusStyle.color};">${t(lang, status)}</span>
+          </div>
+          ${viewDetailsLink}
+        `;
+      }
 
       const marker = L.marker([r.geo.lat, r.geo.lng], { icon })
         .addTo(map)
@@ -271,7 +281,7 @@ export function DiscoveryPanel({
 
       markersRef.current[r.id] = marker;
     });
-  }, [filteredRestaurants, centerLat, centerLng, mapReady, lang, onMarkerClick]);
+  }, [filteredRestaurants, centerLat, centerLng, mapReady, lang, onMarkerClick, _mobile]);
 
   // When external selectedId changes (e.g. from bottom sheet card), pan and open popup
   useEffect(() => {

@@ -12,7 +12,7 @@ import { getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
 import { cn } from "@/lib/utils";
 
-const SHEET_FILTERS = ["All", "Burmese", "Has Deals"] as const;
+const SHEET_FILTERS = ["All", "Has Menu"] as const;
 
 export type SheetSnap = "peek" | "half" | "full";
 
@@ -57,8 +57,7 @@ export function MobileBottomSheet({
   const startYRef = useRef(0);
 
   const filtered = restaurants.filter((r) => {
-    if (cuisineFilter === "Burmese" && !r.cuisineTags.includes("Burmese")) return false;
-    if (cuisineFilter === "Has Deals" && r.deals.length === 0) return false;
+    if (cuisineFilter === "Has Menu" && r.menu.length === 0) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -171,7 +170,7 @@ export function MobileBottomSheet({
             className={cn("fpill", cuisineFilter === f && "active")}
             onClick={() => setCuisineFilter(f)}
           >
-            {f === "All" ? t(lang, "all") : f === "Has Deals" ? t(lang, "hasDeals") : f}
+            {f === "All" ? t(lang, "all") : t(lang, "hasMenu")}
           </button>
         ))}
       </div>
