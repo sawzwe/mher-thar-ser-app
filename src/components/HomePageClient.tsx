@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useRestaurantStore } from "@/stores/restaurantStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
@@ -31,6 +32,7 @@ export function HomePageClient() {
   const [locationLoading, setLocationLoading] = useState(true);
   const [radiusKm, setRadiusKm] = useState(10);
   const [areaFilter, _setAreaFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const _centerLat = userLat ?? BANGKOK.lat;
   const _centerLng = userLng ?? BANGKOK.lng;
@@ -66,6 +68,12 @@ export function HomePageClient() {
               t.toLowerCase().includes(areaFilter.toLowerCase()),
             ),
         );
+
+  const filteredRestaurants = searchQuery.trim()
+    ? filteredByArea.filter((r) =>
+        r.name.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+      )
+    : filteredByArea;
 
   const _totalRestaurants = restaurants.length;
   const _totalReviews = restaurants.reduce(
@@ -127,25 +135,20 @@ export function HomePageClient() {
             <span>→</span>
           </Link>
 
-          {/* <div className="search-bar">
+          <div id="mts-home-search" className="search-bar mt-6">
             <MagnifyingGlass
               className="search-icon shrink-0 w-5 h-5"
               weight="bold"
             />
             <input
               type="text"
-              placeholder="Restaurant, cuisine, or area..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t(lang, "searchHomePlaceholder")}
+              aria-label={t(lang, "searchHomePlaceholder")}
               className="flex-1 min-w-0"
             />
-            <div className="search-divider" />
-            <span className="search-loc flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" weight="fill" />
-              Bangkok
-            </span>
-            <button type="button" className="search-btn">
-              Search
-            </button>
-          </div> */}
+          </div>
 
           {/* <div className="filter-row">
             {_AREA_FILTERS.map((f) => (
@@ -187,9 +190,10 @@ export function HomePageClient() {
           userLat={userLat}
           userLng={userLng}
           loading={locationLoading}
-          restaurants={filteredByArea}
+          restaurants={filteredRestaurants}
           radiusKm={radiusKm}
           onRadiusChange={setRadiusKm}
+          ignoreRadius={searchQuery.trim().length > 0}
         />
       </div>
 

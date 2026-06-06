@@ -39,6 +39,8 @@ interface DiscoveryPanelProps {
   restaurants: Restaurant[];
   radiusKm: number;
   onRadiusChange: (km: number) => void;
+  /** When true, bypass the radius filter (e.g. an active name search) */
+  ignoreRadius?: boolean;
   /** Mobile map-first layout */
   mobile?: boolean;
   /** Called when a map pin is clicked (mobile) */
@@ -56,6 +58,7 @@ export function DiscoveryPanel({
   restaurants,
   radiusKm,
   onRadiusChange,
+  ignoreRadius = false,
   mobile: _mobile = false,
   onMarkerClick,
   selectedId: externalSelectedId,
@@ -78,7 +81,11 @@ export function DiscoveryPanel({
   const centerLng = userLng ?? BANGKOK.lng;
 
   const filteredRestaurants = restaurants
-    .filter((r) => getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng) <= radiusKm)
+    .filter(
+      (r) =>
+        ignoreRadius ||
+        getDistanceKm(centerLat, centerLng, r.geo.lat, r.geo.lng) <= radiusKm,
+    )
     .sort(
       (a, b) =>
         getDistanceKm(centerLat, centerLng, a.geo.lat, a.geo.lng) -
