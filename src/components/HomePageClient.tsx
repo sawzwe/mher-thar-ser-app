@@ -107,6 +107,15 @@ export function HomePageClient() {
                 <RestaurantCard key={r.id} restaurant={r} />
               ))}
             </div>
+            <div className="flex items-center justify-end px-4 py-4 border-t border-border">
+              <Link
+                id="mts-home-mobile-privacy"
+                href="/privacy-policy"
+                className={`text-[12px] text-text-muted hover:text-text-primary transition-colors ${lang === "my" ? "my" : ""}`}
+              >
+                {t(lang, "privacyPolicy")}
+              </Link>
+            </div>
           </div>
         )}
       </div>
@@ -198,7 +207,7 @@ export function HomePageClient() {
       </div>
 
       {/* Footer */}
-      <footer id="mts-footer-home" className="desktop-only border-t border-border py-6 px-6 md:px-8 flex items-center justify-between bg-bg">
+      <footer id="mts-footer-home" className="desktop-only !flex border-t border-border py-6 px-6 md:px-8 items-center justify-between bg-bg">
         <div
           id="mts-footer-home-brand"
           className="flex items-center gap-3 flex-wrap"
@@ -216,6 +225,13 @@ export function HomePageClient() {
             &copy; {new Date().getFullYear()}
           </span>
         </div>
+        <Link
+          id="mts-footer-home-privacy"
+          href="/privacy-policy"
+          className={`text-[12px] text-text-muted hover:text-text-primary transition-colors ${lang === "my" ? "my" : ""}`}
+        >
+          {t(lang, "privacyPolicy")}
+        </Link>
       </footer>
     </div>
   );
