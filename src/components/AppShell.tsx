@@ -382,6 +382,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               &copy; {new Date().getFullYear()}
             </span>
           </div>
+          <Link
+            id="mts-footer-privacy"
+            href="/privacy-policy"
+            className={cn(
+              "text-[12px] text-text-muted hover:text-text-primary transition-colors",
+              lang === "my" && "my",
+            )}
+          >
+            {t(lang, "privacyPolicy")}
+          </Link>
         </footer>
       )}
 

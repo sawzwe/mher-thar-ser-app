@@ -143,12 +143,12 @@ Stable **`id`** attributes are added on shell, home, and auth UI so you can refe
 | `mts-mobile-lang-option-en` · `mts-mobile-lang-option-my` | Mobile language rows |
 | `mts-mobile-menu-bookings` · `mts-mobile-menu-theme` | Bookings link · theme row |
 | `mts-main` | Main content area |
-| `mts-footer` · `mts-footer-brand` · `mts-footer-logo-vertical` | AppShell footer (non-home) |
-| `mts-home` · `mts-home-mobile-landing` · `mts-home-mobile-list` | Home page regions |
+| `mts-footer` · `mts-footer-brand` · `mts-footer-logo-vertical` · `mts-footer-privacy` | AppShell footer (non-home) |
+| `mts-home` · `mts-home-mobile-landing` · `mts-home-mobile-list` · `mts-home-mobile-privacy` | Home page regions (mobile list has a privacy link) |
 | `mts-home-hero` · `mts-home-hero-inner` · `mts-home-hero-cta-restaurants` | Desktop hero |
 | `mts-discovery` | Wrapper around desktop `DiscoveryPanel` |
 | `mts-discovery-panel` | Map + list section |
-| `mts-footer-home` · `mts-footer-home-brand` · `mts-footer-home-logo-vertical` | Home-only desktop footer |
+| `mts-footer-home` · `mts-footer-home-brand` · `mts-footer-home-logo-vertical` · `mts-footer-home-privacy` | Home-only desktop footer |
 | `mts-auth-modal` | Auth modal backdrop root (`Modal`) |
 
 ---
