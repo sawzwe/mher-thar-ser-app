@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { UserFactory } from "@/lib/auth/UserFactory";
@@ -12,15 +13,20 @@ export default async function AdminVendorDetailPage({
 }) {
   const { id: vendorUserId } = await params;
   const supabase = await createClient();
-  await UserFactory.fromSupabase(supabase);
+  const user = await UserFactory.fromSupabase(supabase);
+  if (user.type !== "admin") {
+    redirect(user.isAuthenticated() ? "/" : `/sign-in?next=/admin/vendors/${vendorUserId}`);
+  }
+
+  const admin = createAdminClient();
 
   const [{ data: vp }, { data: authUser }] = await Promise.all([
-    supabase
+    admin
       .from("vendor_profiles")
       .select("user_id, company_name, restaurant_ids, verified_at")
       .eq("user_id", vendorUserId)
       .single(),
-    createAdminClient().auth.admin.getUserById(vendorUserId),
+    admin.auth.admin.getUserById(vendorUserId),
   ]);
 
   if (!vp) {
@@ -37,7 +43,7 @@ export default async function AdminVendorDetailPage({
     );
   }
 
-  const { data: vr } = await supabase
+  const { data: vr } = await admin
     .from("vendor_restaurants")
     .select("restaurant_id, role, restaurants(id, name, area, status)")
     .eq("vendor_id", vendorUserId);

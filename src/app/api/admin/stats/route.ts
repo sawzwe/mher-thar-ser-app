@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { countPendingVendorClaims } from "@/lib/admin/pendingVendors";
 
 export async function GET() {
   try {
-    const { supabase } = await requireAdmin();
+    await requireAdmin();
     const admin = createAdminClient();
     const today = new Date().toISOString().split("T")[0];
 
@@ -12,11 +13,8 @@ export async function GET() {
       await Promise.all([
         admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
         admin.from("user_roles").select("user_id, roles(slug)"),
-        supabase
-          .from("vendor_profiles")
-          .select("user_id", { count: "exact", head: true })
-          .is("verified_at", null),
-        supabase
+        countPendingVendorClaims(admin),
+        admin
           .from("bookings")
           .select("id", { count: "exact", head: true })
           .eq("date", today),
@@ -52,7 +50,7 @@ export async function GET() {
       customers,
       vendors,
       admins,
-      pendingVendors: pendingVendors.count ?? 0,
+      pendingVendors,
       todayBookings: todayBookings.count ?? 0,
     });
   } catch (err) {
