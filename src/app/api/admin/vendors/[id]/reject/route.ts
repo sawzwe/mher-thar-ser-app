@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { supabase } = await requireAdmin();
+    await requireAdmin();
+    const admin = createAdminClient();
     const { id: vendorUserId } = await params;
 
-    await supabase
+    await admin
       .from("vendor_restaurants")
       .delete()
       .eq("vendor_id", vendorUserId);
 
-    await supabase
+    await admin
       .from("vendor_profiles")
       .delete()
       .eq("user_id", vendorUserId);

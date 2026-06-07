@@ -1,27 +1,29 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { supabase } = await requireAdmin();
+    await requireAdmin();
+    const admin = createAdminClient();
     const { id: vendorUserId } = await params;
 
-    const { data: role } = await supabase
+    const { data: role } = await admin
       .from("roles")
       .select("id")
       .eq("slug", "vendor")
       .single();
 
     await Promise.all([
-      supabase
+      admin
         .from("vendor_profiles")
         .update({ verified_at: new Date().toISOString() })
         .eq("user_id", vendorUserId),
       role
-        ? supabase
+        ? admin
             .from("user_roles")
             .upsert(
               { user_id: vendorUserId, role_id: role.id },
@@ -30,27 +32,27 @@ export async function POST(
         : Promise.resolve(),
     ]);
 
-    const { data: vr } = await supabase
+    const { data: vr } = await admin
       .from("vendor_restaurants")
       .select("restaurant_id")
       .eq("vendor_id", vendorUserId);
 
     if (vr?.length) {
       const ids = vr.map((r: { restaurant_id: string }) => r.restaurant_id);
-      await supabase
+      await admin
         .from("restaurants")
         .update({ status: "active" })
         .in("id", ids);
     }
 
-    const { data: vp } = await supabase
+    const { data: vp } = await admin
       .from("vendor_profiles")
       .select("restaurant_ids")
       .eq("user_id", vendorUserId)
       .single();
 
     if (vp?.restaurant_ids?.length) {
-      await supabase
+      await admin
         .from("vendor_profiles")
         .update({ restaurant_ids: vp.restaurant_ids })
         .eq("user_id", vendorUserId);

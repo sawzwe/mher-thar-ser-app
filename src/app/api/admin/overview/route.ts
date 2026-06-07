@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  countPendingVendorClaims,
+  listPendingVendorClaims,
+} from "@/lib/admin/pendingVendors";
 
 export async function GET() {
   try {
@@ -11,24 +15,14 @@ export async function GET() {
     const [
       { data: listData },
       { data: roleRows },
-      { data: pendingProfiles },
-      { count: pendingCount },
+      pendingCount,
       { count: todayBookingsCount },
       { data: restaurants },
       { data: bookings },
     ] = await Promise.all([
       admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
       admin.from("user_roles").select("user_id, roles(slug)"),
-      supabase
-        .from("vendor_profiles")
-        .select("user_id, company_name, created_at")
-        .is("verified_at", null)
-        .order("created_at", { ascending: false })
-        .limit(10),
-      supabase
-        .from("vendor_profiles")
-        .select("user_id", { count: "exact", head: true })
-        .is("verified_at", null),
+      countPendingVendorClaims(admin),
       supabase
         .from("bookings")
         .select("id", { count: "exact", head: true })
@@ -76,13 +70,16 @@ export async function GET() {
       .sort((a, b) => b.bookingCount - a.bookingCount)
       .slice(0, 5);
 
-    const userMap = new Map(authUsers.map((u) => [u.id, u.email ?? ""]));
-    const activity = (pendingProfiles ?? []).map((p) => ({
+    const userMap = new Map(
+      authUsers.map((u) => [u.id, u.email ?? null] as const),
+    );
+    const pendingClaims = await listPendingVendorClaims(admin, userMap);
+    const activity = pendingClaims.slice(0, 10).map((p) => ({
       type: "vendor_claim" as const,
       user_id: p.user_id,
-      company_name: (p as { company_name?: string }).company_name ?? "",
-      email: userMap.get(p.user_id) ?? "",
-      created_at: (p as { created_at?: string }).created_at ?? "",
+      company_name: p.company_name,
+      email: p.email ?? "",
+      created_at: p.submitted_at,
     }));
 
     return NextResponse.json({

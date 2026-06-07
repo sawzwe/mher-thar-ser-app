@@ -1,0 +1,10 @@
+-- ══════════════════════════════════════════════════════════════════
+-- Migration 017: Document vendor_profiles schema (reference only)
+--
+-- Live columns on vendor_profiles:
+--   user_id (PK), company_name, tax_id, verified_at, restaurant_ids
+--
+-- There is NO created_at on vendor_profiles. Claim submission time
+-- is stored on vendor_restaurants.created_at when a user submits
+-- /claim. Admin pending-verification UIs should join that table.
+-- ══════════════════════════════════════════════════════════════════
