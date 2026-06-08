@@ -13,6 +13,7 @@ import {
   CaretDown,
   Globe,
   CalendarBlank,
+  Info,
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import { LOGO_VERTICAL_SRC } from "@/components/Logo";
@@ -235,6 +236,19 @@ export function MobileTopBar() {
                     {t(lang, "bookings")}
                   </Link>
                   )}
+                  <Link
+                    id="mts-mobile-menu-about"
+                    href="/about-us"
+                    className={cn("mobile-menu-item", lang === "my" && "font-my")}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Info
+                      size={18}
+                      weight="regular"
+                      className="shrink-0 text-text-muted"
+                    />
+                    {t(lang, "aboutUs")}
+                  </Link>
                   <div className="mobile-menu-divider" />
                   <div className="mobile-menu-section">
                     {t(lang, "settings")}
