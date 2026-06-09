@@ -90,6 +90,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ...(featureConfig.bookingEnabled
       ? [{ href: "/bookings", label: t(lang, "bookings") }]
       : []),
+    { href: "/about-us", label: t(lang, "aboutUs") },
   ];
 
   const isChat = pathname === "/chat";
@@ -200,35 +201,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </>
             )}
           </div>
-          {isHome ? (
-            <>
-              {user && user.isAuthenticated() && featureConfig.bookingEnabled ? (
-                <Link
-                  id="mts-nav-bookings-shortcut"
-                  href="/bookings"
-                  className="hidden md:flex px-4 py-2 rounded-[100px] border border-border-strong text-[13px] font-medium text-text-secondary hover:text-text-primary transition-all"
-                >
-                  {t(lang, "bookings")}
-                </Link>
-              ) : user && user.isAuthenticated() ? null : (
-                <button
-                  id="mts-nav-sign-in"
-                  onClick={() => setAuthModal("sign-in")}
-                  className="hidden md:flex px-4 py-2 rounded-[100px] border border-border-strong text-[13px] font-medium text-text-muted hover:text-text-primary transition-all bg-transparent cursor-pointer"
-                >
-                  {t(lang, "signIn")}
-                </button>
-              )}
-              <Link
-                id="mts-nav-cta-restaurants"
-                href="/restaurants"
-                className="flex items-center gap-1 px-4 py-2 rounded-[100px] bg-brand text-white text-[13px] font-semibold hover:bg-brand-hover transition-all"
-              >
-                {t(lang, "seeAllRestaurants")}
-                <span className="hidden sm:inline">→</span>
-              </Link>
-            </>
-          ) : (
+          {(
             <>
               {navItems.map((item) => (
                 <Link
@@ -244,6 +217,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     pathname === item.href
                       ? "bg-brand-dim text-brand-light"
                       : "text-text-muted hover:text-text-primary",
+                    lang === "my" && "font-my",
                   )}
                 >
                   {item.label}
@@ -382,16 +356,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               &copy; {new Date().getFullYear()}
             </span>
           </div>
-          <Link
-            id="mts-footer-privacy"
-            href="/privacy-policy"
-            className={cn(
-              "text-[12px] text-text-muted hover:text-text-primary transition-colors",
-              lang === "my" && "my",
-            )}
-          >
-            {t(lang, "privacyPolicy")}
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              id="mts-footer-about"
+              href="/about-us"
+              className={cn(
+                "text-[12px] text-text-muted hover:text-text-primary transition-colors",
+                lang === "my" && "my",
+              )}
+            >
+              {t(lang, "aboutUs")}
+            </Link>
+            <Link
+              id="mts-footer-privacy"
+              href="/privacy-policy"
+              className={cn(
+                "text-[12px] text-text-muted hover:text-text-primary transition-colors",
+                lang === "my" && "my",
+              )}
+            >
+              {t(lang, "privacyPolicy")}
+            </Link>
+          </div>
         </footer>
       )}
 
