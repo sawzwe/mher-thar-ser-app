@@ -12,6 +12,7 @@ interface Filters {
   priceTier: number | null;
   hasDeals: boolean;
   hasMenu: boolean;
+  servesMohHinGar: boolean;
   availableToday: boolean;
   partySize: number | null;
 }
@@ -36,6 +37,7 @@ const defaultFilters: Filters = {
   priceTier: null,
   hasDeals: false,
   hasMenu: false,
+  servesMohHinGar: false,
   availableToday: false,
   partySize: null,
 };
@@ -104,6 +106,10 @@ export const useRestaurantStore = create<RestaurantState>((set, get) => ({
 
     if (filters.hasMenu) {
       result = result.filter(restaurantHasMenu);
+    }
+
+    if (filters.servesMohHinGar) {
+      result = result.filter((r) => r.servesMohHinGar === true);
     }
 
     // Sort
