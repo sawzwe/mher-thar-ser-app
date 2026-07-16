@@ -14,9 +14,12 @@ import {
   Globe,
   CalendarBlank,
   Info,
+  SignIn,
+  SignOut,
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import { LOGO_VERTICAL_SRC } from "@/components/Logo";
+import { useAuthStore } from "@/stores/authStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useMobileHomeViewStore } from "@/stores/mobileHomeViewStore";
@@ -32,6 +35,8 @@ const LANG_OPTIONS = [
 export function MobileTopBar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const user = useAuthStore((s) => s.user);
+  const signOut = useAuthStore((s) => s.signOut);
   const lang = useLanguageStore((s) => s.lang);
   const setLang = useLanguageStore((s) => s.setLang);
   const theme = useThemeStore((s) => s.theme);
@@ -40,6 +45,8 @@ export function MobileTopBar() {
   const setHomeView = useMobileHomeViewStore((s) => s.setView);
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [signOutLoading, setSignOutLoading] = useState(false);
+  const isAuthenticated = !!user && user.isAuthenticated();
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const [menuStyle, setMenuStyle] = useState<{
     top: number;
@@ -221,6 +228,19 @@ export function MobileTopBar() {
                       ))}
                     </div>
                   )}
+                  <Link
+                    id="mts-mobile-menu-restaurants"
+                    href="/restaurants"
+                    className={cn("mobile-menu-item", lang === "my" && "font-my")}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Storefront
+                      size={18}
+                      weight="regular"
+                      className="shrink-0 text-text-muted"
+                    />
+                    {t(lang, "seeAllRestaurants")}
+                  </Link>
                   {featureConfig.bookingEnabled && (
                   <Link
                     id="mts-mobile-menu-bookings"
@@ -249,6 +269,96 @@ export function MobileTopBar() {
                     />
                     {t(lang, "aboutUs")}
                   </Link>
+                  <div className="mobile-menu-divider" />
+                  {isAuthenticated && user ? (
+                    <>
+                      <div className="mobile-menu-section">{user.name}</div>
+                      {user.type === "vendor" && (
+                        <Link
+                          id="mts-mobile-menu-vendor"
+                          href="/vendor"
+                          className="mobile-menu-item"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Storefront
+                            size={18}
+                            weight="regular"
+                            className="shrink-0 text-text-muted"
+                          />
+                          Vendor Dashboard
+                        </Link>
+                      )}
+                      {user.type === "admin" && (
+                        <Link
+                          id="mts-mobile-menu-admin"
+                          href="/admin"
+                          className="mobile-menu-item"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Storefront
+                            size={18}
+                            weight="regular"
+                            className="shrink-0 text-text-muted"
+                          />
+                          Admin Panel
+                        </Link>
+                      )}
+                      {user.type === "customer" && (
+                        <Link
+                          id="mts-mobile-menu-claim"
+                          href="/claim"
+                          className="mobile-menu-item"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Storefront
+                            size={18}
+                            weight="regular"
+                            className="shrink-0 text-text-muted"
+                          />
+                          Claim your restaurant
+                        </Link>
+                      )}
+                      <button
+                        id="mts-mobile-menu-sign-out"
+                        type="button"
+                        disabled={signOutLoading}
+                        onClick={async () => {
+                          setSignOutLoading(true);
+                          try {
+                            await signOut();
+                          } finally {
+                            setSignOutLoading(false);
+                            setMenuOpen(false);
+                          }
+                        }}
+                        className="mobile-menu-item disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        <SignOut
+                          size={18}
+                          weight="regular"
+                          className="shrink-0 text-text-muted"
+                        />
+                        {signOutLoading ? "Signing out…" : "Sign out"}
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      id="mts-mobile-menu-sign-in"
+                      href="/sign-in"
+                      className={cn(
+                        "mobile-menu-item",
+                        lang === "my" && "font-my",
+                      )}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <SignIn
+                        size={18}
+                        weight="regular"
+                        className="shrink-0 text-text-muted"
+                      />
+                      {t(lang, "signIn")}
+                    </Link>
+                  )}
                   <div className="mobile-menu-divider" />
                   <div className="mobile-menu-section">
                     {t(lang, "settings")}
