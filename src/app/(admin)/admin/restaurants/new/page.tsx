@@ -50,6 +50,7 @@ export default function NewRestaurantPage() {
     logo_url: "",
     street_view_url: "",
     restaurant_type: "",
+    serves_moh_hin_gar: false,
   });
 
   const toggleCuisine = (c: string) => {
@@ -459,6 +460,20 @@ export default function NewRestaurantPage() {
           onChange={(e) => setForm((f) => ({ ...f, postal_code: e.target.value }))}
           placeholder="10110"
         />
+
+        <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
+          <input
+            type="checkbox"
+            checked={form.serves_moh_hin_gar}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, serves_moh_hin_gar: e.target.checked }))
+            }
+            className="w-4 h-4 accent-brand cursor-pointer"
+          />
+          <span className="text-[13px] text-text-primary">
+            Serves Moh Hin Gar (မုန့်ဟင်းခါး)
+          </span>
+        </label>
 
         <Select
           label="Status"

@@ -12,6 +12,7 @@ import { LOGO_VERTICAL_SRC } from "@/components/Logo";
 import { DiscoveryPanel } from "@/components/DiscoveryPanel";
 import { MobileLandingView } from "@/components/mobile/MobileLandingView";
 import { RestaurantCard } from "@/components/RestaurantCard";
+import { cn } from "@/lib/utils";
 import type { Restaurant } from "@/types";
 
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
@@ -32,6 +33,7 @@ export function HomePageClient() {
   const [locationLoading, setLocationLoading] = useState(true);
   const [radiusKm, setRadiusKm] = useState(10);
   const [areaFilter, _setAreaFilter] = useState("All");
+  const [mohHinGarOnly, setMohHinGarOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const _centerLat = userLat ?? BANGKOK.lat;
@@ -58,7 +60,7 @@ export function HomePageClient() {
     );
   }, []);
 
-  const filteredByArea =
+  const filteredByAreaBase =
     areaFilter === "All"
       ? restaurants
       : restaurants.filter(
@@ -68,6 +70,10 @@ export function HomePageClient() {
               t.toLowerCase().includes(areaFilter.toLowerCase()),
             ),
         );
+
+  const filteredByArea = mohHinGarOnly
+    ? filteredByAreaBase.filter((r) => r.servesMohHinGar === true)
+    : filteredByAreaBase;
 
   const filteredRestaurants = searchQuery.trim()
     ? filteredByArea.filter((r) =>
@@ -102,6 +108,26 @@ export function HomePageClient() {
           />
         ) : (
           <div id="mts-home-mobile-list" className="mobile-restaurants-list">
+            <div className="sheet-filters px-4 pt-3">
+              <button
+                type="button"
+                className={cn("fpill", !mohHinGarOnly && "active")}
+                onClick={() => setMohHinGarOnly(false)}
+              >
+                {t(lang, "all")}
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "fpill",
+                  mohHinGarOnly && "active",
+                  lang === "my" && "font-my",
+                )}
+                onClick={() => setMohHinGarOnly(true)}
+              >
+                {t(lang, "servesMohHinGar")}
+              </button>
+            </div>
             <div className="mobile-restaurants-list-inner">
               {filteredByArea.map((r) => (
                 <RestaurantCard key={r.id} restaurant={r} />
@@ -157,6 +183,18 @@ export function HomePageClient() {
               aria-label={t(lang, "searchHomePlaceholder")}
               className="flex-1 min-w-0"
             />
+          </div>
+
+          <div className="filter-row">
+            <button
+              id="mts-home-filter-moh-hin-gar"
+              type="button"
+              onClick={() => setMohHinGarOnly((v) => !v)}
+              className={`fpill ${mohHinGarOnly ? "active" : ""} ${lang === "my" ? "font-my" : ""}`}
+              aria-pressed={mohHinGarOnly}
+            >
+              {t(lang, "servesMohHinGar")}
+            </button>
           </div>
 
           {/* <div className="filter-row">

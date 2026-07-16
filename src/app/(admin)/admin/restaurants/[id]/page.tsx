@@ -95,6 +95,7 @@ type Restaurant = {
   logo_url: string | null;
   street_view_url: string | null;
   restaurant_type: string | null;
+  serves_moh_hin_gar?: boolean | null;
   google_place_id: string | null;
   google_rating: number | null;
   google_review_count: number | null;
@@ -218,6 +219,7 @@ export default function AdminRestaurantEditPage() {
     tiktok_url: "",
     logo_url: "",
     street_view_url: "",
+    serves_moh_hin_gar: false,
     attributes: {} as Record<string, Record<string, boolean>>,
   });
 
@@ -260,6 +262,7 @@ export default function AdminRestaurantEditPage() {
         tiktok_url: restaurant.tiktok_url ?? "",
         logo_url: restaurant.logo_url ?? "",
         street_view_url: restaurant.street_view_url ?? "",
+        serves_moh_hin_gar: restaurant.serves_moh_hin_gar ?? false,
         attributes:
           restaurant.attributes && typeof restaurant.attributes === "object"
             ? restaurant.attributes
@@ -563,6 +566,21 @@ export default function AdminRestaurantEditPage() {
           placeholder="e.g. Burmese restaurant"
         />
       </div>
+
+      <SectionLabel>Dishes</SectionLabel>
+      <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
+        <input
+          type="checkbox"
+          checked={form.serves_moh_hin_gar}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, serves_moh_hin_gar: e.target.checked }))
+          }
+          className="w-4 h-4 accent-brand cursor-pointer"
+        />
+        <span className="text-[13px] text-text-primary">
+          Serves Moh Hin Gar (မုန့်ဟင်းခါး)
+        </span>
+      </label>
 
       <SectionLabel>Hours</SectionLabel>
       <OpeningHoursEditor

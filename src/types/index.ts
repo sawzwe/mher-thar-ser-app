@@ -76,6 +76,8 @@ export interface Restaurant {
   logoUrl?: string;
   streetViewUrl?: string;
   restaurantType?: string;
+  /** Whether this restaurant serves Moh Hin Gar (မုန့်ဟင်းခါး) */
+  servesMohHinGar?: boolean;
   attributes?: Record<string, Record<string, boolean>>;
   googlePlaceId?: string;
   googleMapsUrl?: string;

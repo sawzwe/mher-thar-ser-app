@@ -61,6 +61,7 @@ export async function POST(req: Request) {
       logo_url: body.logo_url?.trim() || null,
       street_view_url: body.street_view_url?.trim() || null,
       restaurant_type: body.restaurant_type?.trim() || null,
+      serves_moh_hin_gar: body.serves_moh_hin_gar === true,
     };
 
     const { data, error } = await supabase

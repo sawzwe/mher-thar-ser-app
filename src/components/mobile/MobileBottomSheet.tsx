@@ -12,7 +12,7 @@ import { getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
 import { cn } from "@/lib/utils";
 
-const SHEET_FILTERS = ["All", "Has Menu"] as const;
+const SHEET_FILTERS = ["All", "Has Menu", "Moh Hin Gar"] as const;
 
 export type SheetSnap = "peek" | "half" | "full";
 
@@ -58,6 +58,7 @@ export function MobileBottomSheet({
 
   const filtered = restaurants.filter((r) => {
     if (cuisineFilter === "Has Menu" && r.menu.length === 0) return false;
+    if (cuisineFilter === "Moh Hin Gar" && r.servesMohHinGar !== true) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -163,16 +164,28 @@ export function MobileBottomSheet({
         </div>
       </div>
       <div className="sheet-filters">
-        {SHEET_FILTERS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            className={cn("fpill", cuisineFilter === f && "active")}
-            onClick={() => setCuisineFilter(f)}
-          >
-            {f === "All" ? t(lang, "all") : t(lang, "hasMenu")}
-          </button>
-        ))}
+        {SHEET_FILTERS.map((f) => {
+          const label =
+            f === "All"
+              ? t(lang, "all")
+              : f === "Has Menu"
+                ? t(lang, "hasMenu")
+                : t(lang, "servesMohHinGar");
+          return (
+            <button
+              key={f}
+              type="button"
+              className={cn(
+                "fpill",
+                cuisineFilter === f && "active",
+                f === "Moh Hin Gar" && lang === "my" && "font-my",
+              )}
+              onClick={() => setCuisineFilter(f)}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
       <div ref={cardsRef} className="sheet-cards">
         {displayCards.map((r) => {

@@ -53,7 +53,11 @@ export function RestaurantsPageClient() {
   }, [restaurants]);
 
   const results = filteredRestaurants();
-  const hasActiveFilters = !!filters.search || filters.hasMenu || !!filters.district;
+  const hasActiveFilters =
+    !!filters.search ||
+    filters.hasMenu ||
+    filters.servesMohHinGar ||
+    !!filters.district;
 
   return (
     <div className="max-w-5xl mx-auto px-6 md:px-12 py-8">
@@ -86,6 +90,15 @@ export function RestaurantsPageClient() {
 
         <FilterPill active={filters.hasMenu} onClick={() => setFilter("hasMenu", !filters.hasMenu)}>
           {t(lang, "hasMenu")}
+        </FilterPill>
+
+        <FilterPill
+          active={filters.servesMohHinGar}
+          onClick={() => setFilter("servesMohHinGar", !filters.servesMohHinGar)}
+        >
+          <span className={lang === "my" ? "font-my" : undefined}>
+            {t(lang, "servesMohHinGar")}
+          </span>
         </FilterPill>
 
         {hasActiveFilters && (
