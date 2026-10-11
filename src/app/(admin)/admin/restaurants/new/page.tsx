@@ -9,6 +9,7 @@ import { AREAS, CUISINES } from "@/data/constants";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useAdminLocationOptions } from "@/hooks/useAdminLocationOptions";
+import { DishTagPicker } from "@/components/admin/DishTagPicker";
 
 export default function NewRestaurantPage() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function NewRestaurantPage() {
     logo_url: "",
     street_view_url: "",
     restaurant_type: "",
-    serves_moh_hin_gar: false,
+    dish_tags: [] as string[],
   });
 
   const toggleCuisine = (c: string) => {
@@ -461,19 +462,10 @@ export default function NewRestaurantPage() {
           placeholder="10110"
         />
 
-        <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
-          <input
-            type="checkbox"
-            checked={form.serves_moh_hin_gar}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, serves_moh_hin_gar: e.target.checked }))
-            }
-            className="w-4 h-4 accent-brand cursor-pointer"
-          />
-          <span className="text-[13px] text-text-primary">
-            Serves Moh Hin Gar (မုန့်ဟင်းခါး)
-          </span>
-        </label>
+        <DishTagPicker
+          value={form.dish_tags}
+          onChange={(dish_tags) => setForm((f) => ({ ...f, dish_tags }))}
+        />
 
         <Select
           label="Status"

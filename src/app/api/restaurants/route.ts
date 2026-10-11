@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { transformDbRestaurant } from "@/lib/restaurants/transform";
+import { resolveDishTagSlugsByRestaurant } from "@/lib/dishTags";
 import type { Restaurant } from "@/types";
 
 function getDistanceKm(
@@ -76,6 +77,12 @@ export async function GET(request: Request) {
       }
     }
 
+    // Dish tags (e.g. Moh Hin Gar) for the filter pills.
+    const dishTagsByRestaurant = await resolveDishTagSlugsByRestaurant(
+      supabase,
+      rows.map((r) => ({ id: r.id as string, name: (r.name as string) ?? "" })),
+    );
+
     let restaurants: Restaurant[] = rows.map((row) => {
       const deals = (row.deals ?? []) as {
         id: string;
@@ -91,6 +98,7 @@ export async function GET(request: Request) {
         row as Parameters<typeof transformDbRestaurant>[0],
         {
           deals: Array.isArray(deals) ? deals.filter((d) => d && d.id) : [],
+          dishTags: dishTagsByRestaurant.get(row.id as string) ?? [],
         },
       );
       // Lightweight menu presence indicator for filtering/list display.

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { transformDbRestaurant } from "@/lib/restaurants/transform";
+import { resolveDishTagSlugsByRestaurant } from "@/lib/dishTags";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -127,6 +128,13 @@ export async function POST(request: NextRequest) {
       .select("*, deals(id, title, type, description, price, discount, discount_pct, conditions)")
       .eq("status", "active")
       .order("name");
+    const dishTagsByRestaurant = await resolveDishTagSlugsByRestaurant(
+      supabase,
+      (rows ?? []).map((r) => ({
+        id: (r as { id: string }).id,
+        name: (r as { name?: string }).name ?? "",
+      })),
+    );
     restaurants = (rows ?? []).map((row) => {
       const dealsRaw = (row as { deals?: unknown }).deals ?? [];
       const deals = Array.isArray(dealsRaw) ? dealsRaw : [];
@@ -141,6 +149,8 @@ export async function POST(request: NextRequest) {
           discount_pct: d.discount_pct as number | undefined,
           conditions: d.conditions as string | undefined,
         })),
+        dishTags:
+          dishTagsByRestaurant.get((row as { id: string }).id) ?? [],
       });
       return { ...r, deals: r.deals };
     });

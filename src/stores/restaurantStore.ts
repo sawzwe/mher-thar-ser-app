@@ -12,7 +12,8 @@ interface Filters {
   priceTier: number | null;
   hasDeals: boolean;
   hasMenu: boolean;
-  servesMohHinGar: boolean;
+  /** Dish tag slugs; a restaurant must serve ALL selected dishes. */
+  dishTags: string[];
   availableToday: boolean;
   partySize: number | null;
 }
@@ -24,6 +25,8 @@ interface RestaurantState {
   sort: SortOption;
   loadRestaurants: () => Promise<void>;
   setFilter: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
+  /** Add/remove a dish tag slug from the active filter. */
+  toggleDishTag: (slug: string) => void;
   setSort: (sort: SortOption) => void;
   resetFilters: () => void;
   filteredRestaurants: () => Restaurant[];
@@ -37,7 +40,7 @@ const defaultFilters: Filters = {
   priceTier: null,
   hasDeals: false,
   hasMenu: false,
-  servesMohHinGar: false,
+  dishTags: [],
   availableToday: false,
   partySize: null,
 };
@@ -62,6 +65,17 @@ export const useRestaurantStore = create<RestaurantState>((set, get) => ({
   setFilter: (key, value) => {
     set((state) => ({
       filters: { ...state.filters, [key]: value },
+    }));
+  },
+
+  toggleDishTag: (slug) => {
+    set((state) => ({
+      filters: {
+        ...state.filters,
+        dishTags: state.filters.dishTags.includes(slug)
+          ? state.filters.dishTags.filter((s) => s !== slug)
+          : [...state.filters.dishTags, slug],
+      },
     }));
   },
 
@@ -108,8 +122,10 @@ export const useRestaurantStore = create<RestaurantState>((set, get) => ({
       result = result.filter(restaurantHasMenu);
     }
 
-    if (filters.servesMohHinGar) {
-      result = result.filter((r) => r.servesMohHinGar === true);
+    if (filters.dishTags.length > 0) {
+      result = result.filter((r) =>
+        filters.dishTags.every((slug) => r.dishTags?.includes(slug)),
+      );
     }
 
     // Sort

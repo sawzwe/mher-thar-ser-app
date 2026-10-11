@@ -13,6 +13,8 @@ import { DiscoveryPanel } from "@/components/DiscoveryPanel";
 import { MobileLandingView } from "@/components/mobile/MobileLandingView";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { cn } from "@/lib/utils";
+import { useDishTags } from "@/hooks/useDishTags";
+import { dishTagLabel } from "@/lib/dishTags";
 import type { Restaurant } from "@/types";
 
 const BANGKOK = { lat: 13.7563, lng: 100.5018 } as const;
@@ -33,8 +35,10 @@ export function HomePageClient() {
   const [locationLoading, setLocationLoading] = useState(true);
   const [radiusKm, setRadiusKm] = useState(10);
   const [areaFilter, _setAreaFilter] = useState("All");
-  const [mohHinGarOnly, setMohHinGarOnly] = useState(false);
+  /** Active dish tag slug, or null for "All". */
+  const [dishTagFilter, setDishTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { dishTags } = useDishTags();
 
   const _centerLat = userLat ?? BANGKOK.lat;
   const _centerLng = userLng ?? BANGKOK.lng;
@@ -71,8 +75,8 @@ export function HomePageClient() {
             ),
         );
 
-  const filteredByArea = mohHinGarOnly
-    ? filteredByAreaBase.filter((r) => r.servesMohHinGar === true)
+  const filteredByArea = dishTagFilter
+    ? filteredByAreaBase.filter((r) => r.dishTags?.includes(dishTagFilter))
     : filteredByAreaBase;
 
   const filteredRestaurants = searchQuery.trim()
@@ -111,22 +115,29 @@ export function HomePageClient() {
             <div className="sheet-filters px-4 pt-3">
               <button
                 type="button"
-                className={cn("fpill", !mohHinGarOnly && "active")}
-                onClick={() => setMohHinGarOnly(false)}
+                className={cn("fpill", !dishTagFilter && "active")}
+                onClick={() => setDishTagFilter(null)}
               >
                 {t(lang, "all")}
               </button>
-              <button
-                type="button"
-                className={cn(
-                  "fpill",
-                  mohHinGarOnly && "active",
-                  lang === "my" && "font-my",
-                )}
-                onClick={() => setMohHinGarOnly(true)}
-              >
-                {t(lang, "servesMohHinGar")}
-              </button>
+              {dishTags.map((tag) => (
+                <button
+                  key={tag.slug}
+                  type="button"
+                  className={cn(
+                    "fpill",
+                    dishTagFilter === tag.slug && "active",
+                    lang === "my" && "font-my",
+                  )}
+                  onClick={() =>
+                    setDishTagFilter(
+                      dishTagFilter === tag.slug ? null : tag.slug,
+                    )
+                  }
+                >
+                  {dishTagLabel(tag, lang)}
+                </button>
+              ))}
             </div>
             <div className="mobile-restaurants-list-inner">
               {filteredByArea.map((r) => (
@@ -185,17 +196,26 @@ export function HomePageClient() {
             />
           </div>
 
-          <div className="filter-row">
-            <button
-              id="mts-home-filter-moh-hin-gar"
-              type="button"
-              onClick={() => setMohHinGarOnly((v) => !v)}
-              className={`fpill ${mohHinGarOnly ? "active" : ""} ${lang === "my" ? "font-my" : ""}`}
-              aria-pressed={mohHinGarOnly}
-            >
-              {t(lang, "servesMohHinGar")}
-            </button>
-          </div>
+          {dishTags.length > 0 && (
+            <div className="filter-row">
+              {dishTags.map((tag) => (
+                <button
+                  key={tag.slug}
+                  id={`mts-home-filter-${tag.slug}`}
+                  type="button"
+                  onClick={() =>
+                    setDishTagFilter(
+                      dishTagFilter === tag.slug ? null : tag.slug,
+                    )
+                  }
+                  className={`fpill ${dishTagFilter === tag.slug ? "active" : ""} ${lang === "my" ? "font-my" : ""}`}
+                  aria-pressed={dishTagFilter === tag.slug}
+                >
+                  {dishTagLabel(tag, lang)}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* <div className="filter-row">
             {_AREA_FILTERS.map((f) => (
