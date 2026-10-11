@@ -28,6 +28,7 @@ import { CardListSkeleton } from "@/components/admin/AdminPageSkeleton";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { OpeningHoursEditor } from "@/components/admin/OpeningHoursEditor";
 import { useAdminLocationOptions } from "@/hooks/useAdminLocationOptions";
+import { DishTagPicker } from "@/components/admin/DishTagPicker";
 import type { DayHours } from "@/types";
 
 const TABS = [
@@ -95,7 +96,7 @@ type Restaurant = {
   logo_url: string | null;
   street_view_url: string | null;
   restaurant_type: string | null;
-  serves_moh_hin_gar?: boolean | null;
+  dish_tags?: string[] | null;
   google_place_id: string | null;
   google_rating: number | null;
   google_review_count: number | null;
@@ -219,7 +220,7 @@ export default function AdminRestaurantEditPage() {
     tiktok_url: "",
     logo_url: "",
     street_view_url: "",
-    serves_moh_hin_gar: false,
+    dish_tags: [] as string[],
     attributes: {} as Record<string, Record<string, boolean>>,
   });
 
@@ -262,7 +263,9 @@ export default function AdminRestaurantEditPage() {
         tiktok_url: restaurant.tiktok_url ?? "",
         logo_url: restaurant.logo_url ?? "",
         street_view_url: restaurant.street_view_url ?? "",
-        serves_moh_hin_gar: restaurant.serves_moh_hin_gar ?? false,
+        dish_tags: Array.isArray(restaurant.dish_tags)
+          ? restaurant.dish_tags
+          : [],
         attributes:
           restaurant.attributes && typeof restaurant.attributes === "object"
             ? restaurant.attributes
@@ -568,19 +571,11 @@ export default function AdminRestaurantEditPage() {
       </div>
 
       <SectionLabel>Dishes</SectionLabel>
-      <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
-        <input
-          type="checkbox"
-          checked={form.serves_moh_hin_gar}
-          onChange={(e) =>
-            setForm((f) => ({ ...f, serves_moh_hin_gar: e.target.checked }))
-          }
-          className="w-4 h-4 accent-brand cursor-pointer"
-        />
-        <span className="text-[13px] text-text-primary">
-          Serves Moh Hin Gar (မုန့်ဟင်းခါး)
-        </span>
-      </label>
+      <DishTagPicker
+        hideLabel
+        value={form.dish_tags}
+        onChange={(dish_tags) => setForm((f) => ({ ...f, dish_tags }))}
+      />
 
       <SectionLabel>Hours</SectionLabel>
       <OpeningHoursEditor

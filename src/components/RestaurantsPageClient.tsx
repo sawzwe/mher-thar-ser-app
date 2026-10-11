@@ -7,6 +7,8 @@ import { useLanguageStore } from "@/stores/languageStore";
 import { t } from "@/lib/i18n/translations";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { cn } from "@/lib/utils";
+import { useDishTags } from "@/hooks/useDishTags";
+import { dishTagLabel } from "@/lib/dishTags";
 
 function FilterPill({
   active,
@@ -35,8 +37,18 @@ function FilterPill({
 
 export function RestaurantsPageClient() {
   const lang = useLanguageStore((s) => s.lang);
-  const { restaurants, loading, filters, sort, setFilter, setSort, resetFilters, filteredRestaurants } =
-    useRestaurantStore();
+  const {
+    restaurants,
+    loading,
+    filters,
+    sort,
+    setFilter,
+    toggleDishTag,
+    setSort,
+    resetFilters,
+    filteredRestaurants,
+  } = useRestaurantStore();
+  const { dishTags } = useDishTags();
 
   useEffect(() => {
     useRestaurantStore.getState().loadRestaurants();
@@ -56,7 +68,7 @@ export function RestaurantsPageClient() {
   const hasActiveFilters =
     !!filters.search ||
     filters.hasMenu ||
-    filters.servesMohHinGar ||
+    filters.dishTags.length > 0 ||
     !!filters.district;
 
   return (
@@ -92,14 +104,17 @@ export function RestaurantsPageClient() {
           {t(lang, "hasMenu")}
         </FilterPill>
 
-        <FilterPill
-          active={filters.servesMohHinGar}
-          onClick={() => setFilter("servesMohHinGar", !filters.servesMohHinGar)}
-        >
-          <span className={lang === "my" ? "font-my" : undefined}>
-            {t(lang, "servesMohHinGar")}
-          </span>
-        </FilterPill>
+        {dishTags.map((tag) => (
+          <FilterPill
+            key={tag.slug}
+            active={filters.dishTags.includes(tag.slug)}
+            onClick={() => toggleDishTag(tag.slug)}
+          >
+            <span className={lang === "my" ? "font-my" : undefined}>
+              {dishTagLabel(tag, lang)}
+            </span>
+          </FilterPill>
+        ))}
 
         {hasActiveFilters && (
           <button

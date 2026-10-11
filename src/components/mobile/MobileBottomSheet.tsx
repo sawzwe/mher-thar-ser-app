@@ -11,8 +11,17 @@ import { getRestaurantPath } from "@/lib/restaurants/url";
 import { getPinEmoji } from "@/lib/map/cuisine";
 import { getDistanceKm, formatDistance } from "@/lib/map/distance";
 import { cn } from "@/lib/utils";
+import { useDishTags } from "@/hooks/useDishTags";
+import { dishTagLabel } from "@/lib/dishTags";
 
-const SHEET_FILTERS = ["All", "Has Menu", "Moh Hin Gar"] as const;
+/**
+ * Active sheet filter: the two built-ins, or a dish tag by slug.
+ * Dish options come from the DB so new dishes need no code change.
+ */
+type SheetFilter =
+  | { kind: "all" }
+  | { kind: "hasMenu" }
+  | { kind: "dish"; slug: string };
 
 export type SheetSnap = "peek" | "half" | "full";
 
@@ -52,13 +61,19 @@ export function MobileBottomSheet({
   cardsRef,
 }: MobileBottomSheetProps) {
   const lang = useLanguageStore((s) => s.lang);
-  const [cuisineFilter, setCuisineFilter] = useState<typeof SHEET_FILTERS[number]>("All");
+  const [sheetFilter, setSheetFilter] = useState<SheetFilter>({ kind: "all" });
   const [searchQuery, setSearchQuery] = useState("");
   const startYRef = useRef(0);
+  const { dishTags } = useDishTags();
 
   const filtered = restaurants.filter((r) => {
-    if (cuisineFilter === "Has Menu" && r.menu.length === 0) return false;
-    if (cuisineFilter === "Moh Hin Gar" && r.servesMohHinGar !== true) return false;
+    if (sheetFilter.kind === "hasMenu" && r.menu.length === 0) return false;
+    if (
+      sheetFilter.kind === "dish" &&
+      !r.dishTags?.includes(sheetFilter.slug)
+    ) {
+      return false;
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -164,28 +179,36 @@ export function MobileBottomSheet({
         </div>
       </div>
       <div className="sheet-filters">
-        {SHEET_FILTERS.map((f) => {
-          const label =
-            f === "All"
-              ? t(lang, "all")
-              : f === "Has Menu"
-                ? t(lang, "hasMenu")
-                : t(lang, "servesMohHinGar");
-          return (
-            <button
-              key={f}
-              type="button"
-              className={cn(
-                "fpill",
-                cuisineFilter === f && "active",
-                f === "Moh Hin Gar" && lang === "my" && "font-my",
-              )}
-              onClick={() => setCuisineFilter(f)}
-            >
-              {label}
-            </button>
-          );
-        })}
+        <button
+          type="button"
+          className={cn("fpill", sheetFilter.kind === "all" && "active")}
+          onClick={() => setSheetFilter({ kind: "all" })}
+        >
+          {t(lang, "all")}
+        </button>
+        <button
+          type="button"
+          className={cn("fpill", sheetFilter.kind === "hasMenu" && "active")}
+          onClick={() => setSheetFilter({ kind: "hasMenu" })}
+        >
+          {t(lang, "hasMenu")}
+        </button>
+        {dishTags.map((tag) => (
+          <button
+            key={tag.slug}
+            type="button"
+            className={cn(
+              "fpill",
+              sheetFilter.kind === "dish" &&
+                sheetFilter.slug === tag.slug &&
+                "active",
+              lang === "my" && "font-my",
+            )}
+            onClick={() => setSheetFilter({ kind: "dish", slug: tag.slug })}
+          >
+            {dishTagLabel(tag, lang)}
+          </button>
+        ))}
       </div>
       <div ref={cardsRef} className="sheet-cards">
         {displayCards.map((r) => {

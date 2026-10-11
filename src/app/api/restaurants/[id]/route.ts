@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { transformDbRestaurant } from "@/lib/restaurants/transform";
+import { resolveDishTagSlugsByRestaurant } from "@/lib/dishTags";
 import type { MenuCategory } from "@/types";
 
 const UUID_REGEX =
@@ -76,6 +77,11 @@ export async function GET(
     }[];
     const reviews = reviewsRes.data ?? [];
 
+    const dishTagsByRestaurant = await resolveDishTagSlugsByRestaurant(
+      supabase,
+      [{ id: restaurantId, name: (restaurant.name as string) ?? "" }],
+    );
+
     const menu: MenuCategory[] = categories
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map((cat) => ({
@@ -106,6 +112,7 @@ export async function GET(
         deals,
         reviewCount,
         avgRating,
+        dishTags: dishTagsByRestaurant.get(restaurantId) ?? [],
       },
     );
     transformed.menu = menu;

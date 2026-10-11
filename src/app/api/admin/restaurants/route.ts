@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
 import { CUISINES } from "@/data/constants";
+import { setRestaurantDishTags } from "@/lib/dishTags";
 
 export async function POST(req: Request) {
   try {
@@ -61,7 +62,6 @@ export async function POST(req: Request) {
       logo_url: body.logo_url?.trim() || null,
       street_view_url: body.street_view_url?.trim() || null,
       restaurant_type: body.restaurant_type?.trim() || null,
-      serves_moh_hin_gar: body.serves_moh_hin_gar === true,
     };
 
     const { data, error } = await supabase
@@ -71,6 +71,12 @@ export async function POST(req: Request) {
       .single();
 
     if (error) throw error;
+
+    // Dish tags live in a join table, so they are written after insert.
+    if (Array.isArray(body.dish_tags)) {
+      await setRestaurantDishTags(supabase, data.id as string, body.dish_tags);
+    }
+
     return NextResponse.json(data);
   } catch (err) {
     const e = err as Error & { status?: number };

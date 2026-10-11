@@ -1,32 +1,5 @@
 import type { Restaurant, Deal, DayHours } from "@/types";
 
-/**
- * Restaurants known to serve Moh Hin Gar (မုန့်ဟင်းခါး).
- *
- * This is a temporary code-side fallback used until the `serves_moh_hin_gar`
- * database column (migration 018) is applied. Once the column exists and rows
- * are seeded, that value takes precedence; this list simply guarantees the
- * filter works even before the migration runs. Matching is by normalized name.
- */
-const MOH_HIN_GAR_NAMES: readonly string[] = [
-  "Alinga Tea & Dining-Ramma 9",
-  "Asian Taste by Mhway Mhway Lay",
-  "Hometown Burmese Restaurant",
-  "Kitchen Ayeyarwady",
-  "Mandalay Food House",
-  "Shwe Tea House & Noodles",
-  "The Burma Food House",
-  "The Daily Dish",
-  "YGN Tea & Food - On Nut",
-];
-
-/** Normalize a name for resilient matching (lowercase, alphanumerics only). */
-function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-const MOH_HIN_GAR_NAME_SET = new Set(MOH_HIN_GAR_NAMES.map(normalizeName));
-
 type DbRestaurant = {
   id: string;
   slug?: string | null;
@@ -56,7 +29,6 @@ type DbRestaurant = {
   logo_url?: string | null;
   street_view_url?: string | null;
   restaurant_type?: string | null;
-  serves_moh_hin_gar?: boolean | null;
   attributes?: Record<string, Record<string, boolean>> | null;
   google_place_id?: string | null;
   google_maps_url?: string | null;
@@ -146,7 +118,6 @@ type RestaurantRow = {
   logo_url?: string | null;
   street_view_url?: string | null;
   restaurant_type?: string | null;
-  serves_moh_hin_gar?: boolean | null;
   attributes?: Record<string, Record<string, boolean>> | null;
   google_place_id?: string | null;
   google_maps_url?: string | null;
@@ -171,7 +142,13 @@ function buildFullAddress(row: {
 
 export function transformDbRestaurant(
   row: DbRestaurant | RestaurantRow,
-  opts?: { deals?: DbDeal[]; reviewCount?: number; avgRating?: number },
+  opts?: {
+    deals?: DbDeal[];
+    reviewCount?: number;
+    avgRating?: number;
+    /** Dish tag slugs from `restaurant_dish_tags`. */
+    dishTags?: string[];
+  },
 ): Restaurant {
   const deals: Deal[] = (opts?.deals ?? []).map((d) => ({
     id: d.id,
@@ -221,9 +198,7 @@ export function transformDbRestaurant(
     logoUrl: row.logo_url ?? undefined,
     streetViewUrl: row.street_view_url ?? undefined,
     restaurantType: row.restaurant_type ?? undefined,
-    servesMohHinGar:
-      row.serves_moh_hin_gar === true ||
-      MOH_HIN_GAR_NAME_SET.has(normalizeName(row.name)),
+    dishTags: opts?.dishTags ?? [],
     attributes: row.attributes ?? undefined,
     googlePlaceId: row.google_place_id ?? undefined,
     googleMapsUrl: row.google_maps_url ?? undefined,

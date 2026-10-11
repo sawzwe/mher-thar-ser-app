@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/apiGuard";
 import { CUISINES } from "@/data/constants";
+import {
+  resolveDishTagSlugsByRestaurant,
+  setRestaurantDishTags,
+} from "@/lib/dishTags";
 
 export async function GET(
   _req: Request,
@@ -20,7 +24,16 @@ export async function GET(
       return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
 
-    return NextResponse.json(data);
+    // Surface dish tags as slugs so the edit form can hydrate its checkboxes.
+    const dishTagsByRestaurant = await resolveDishTagSlugsByRestaurant(
+      supabase,
+      [{ id, name: (data.name as string) ?? "" }],
+    );
+
+    return NextResponse.json({
+      ...data,
+      dish_tags: dishTagsByRestaurant.get(id) ?? [],
+    });
   } catch (err) {
     const e = err as Error & { status?: number };
     return NextResponse.json(
@@ -93,7 +106,6 @@ export async function PATCH(
       logo_url: body.logo_url?.trim() || null,
       street_view_url: body.street_view_url?.trim() || null,
       restaurant_type: body.restaurant_type?.trim() || null,
-      serves_moh_hin_gar: body.serves_moh_hin_gar === true,
       ...(Array.isArray(body.opening_hours) && { opening_hours: body.opening_hours }),
       ...(body.attributes != null &&
         typeof body.attributes === "object" && {
@@ -109,6 +121,12 @@ export async function PATCH(
       .single();
 
     if (error) throw error;
+
+    // Dish tags live in a join table, so they are written separately.
+    if (Array.isArray(body.dish_tags)) {
+      await setRestaurantDishTags(supabase, id, body.dish_tags);
+    }
+
     return NextResponse.json(data);
   } catch (err) {
     const e = err as Error & { status?: number };

@@ -76,8 +76,12 @@ export interface Restaurant {
   logoUrl?: string;
   streetViewUrl?: string;
   restaurantType?: string;
-  /** Whether this restaurant serves Moh Hin Gar (မုန့်ဟင်းခါး) */
-  servesMohHinGar?: boolean;
+  /**
+   * Slugs of the dishes this restaurant serves (e.g. ["moh-hin-gar"]).
+   * Sourced from the `restaurant_dish_tags` join table. Optional because
+   * static seed/demo fixtures omit it; API responses always set it.
+   */
+  dishTags?: string[];
   attributes?: Record<string, Record<string, boolean>>;
   googlePlaceId?: string;
   googleMapsUrl?: string;
